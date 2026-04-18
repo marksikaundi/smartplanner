@@ -22,8 +22,9 @@ import {
 } from "react-native";
 
 export default function UploadContentScreen() {
+  const categories = ["Materials", "Resources", "Assignments", "Notes"];
   const [title, setTitle] = useState("");
-  const [category, setCategory] = useState("");
+  const [category, setCategory] = useState(categories[0]);
   const [description, setDescription] = useState("");
   const [file, setFile] = useState<
     | {
@@ -65,6 +66,11 @@ export default function UploadContentScreen() {
 
     if (!file) {
       Alert.alert("Missing file", "Pick a file to upload.");
+      return;
+    }
+
+    if (!category.trim()) {
+      Alert.alert("Missing category", "Select a category for this content.");
       return;
     }
 
@@ -157,13 +163,27 @@ export default function UploadContentScreen() {
           />
 
           <Text style={styles.label}>Category</Text>
-          <TextInput
-            value={category}
-            onChangeText={setCategory}
-            placeholder="Materials, Assignments, Resources"
-            placeholderTextColor="#9AA0B4"
-            style={styles.input}
-          />
+          <View style={styles.categoryRow}>
+            {categories.map((item) => (
+              <Pressable
+                key={item}
+                onPress={() => setCategory(item)}
+                style={[
+                  styles.categoryChip,
+                  category === item ? styles.categoryChipActive : null,
+                ]}
+              >
+                <Text
+                  style={[
+                    styles.categoryText,
+                    category === item ? styles.categoryTextActive : null,
+                  ]}
+                >
+                  {item}
+                </Text>
+              </Pressable>
+            ))}
+          </View>
 
           <Text style={styles.label}>Description</Text>
           <TextInput
@@ -264,6 +284,28 @@ const styles = StyleSheet.create({
     color: "#FFFFFF",
     fontSize: 12,
     fontWeight: "700",
+  },
+  categoryRow: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 10,
+  },
+  categoryChip: {
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 12,
+    backgroundColor: "#F1F2F6",
+  },
+  categoryChipActive: {
+    backgroundColor: "#34356E",
+  },
+  categoryText: {
+    fontSize: 12,
+    color: "#2D2E3A",
+    fontWeight: "600",
+  },
+  categoryTextActive: {
+    color: "#FFFFFF",
   },
   fileButton: {
     flexDirection: "row",

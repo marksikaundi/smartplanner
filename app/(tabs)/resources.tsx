@@ -1,3 +1,5 @@
+import { databases } from "@/lib/appwrite";
+import { APPWRITE_IDS, isConfigured } from "@/lib/appwrite-ids";
 import { Feather } from "@expo/vector-icons";
 import { useEffect, useMemo, useState } from "react";
 import {
@@ -8,8 +10,6 @@ import {
   Text,
   View,
 } from "react-native";
-import { databases } from "@/lib/appwrite";
-import { APPWRITE_IDS, isConfigured } from "@/lib/appwrite-ids";
 
 export default function ResourcesScreen() {
   const resources = useMemo(

@@ -20,6 +20,7 @@ export default function TabLayout() {
       <Tabs.Screen name="resources" options={{ href: null }} />
       <Tabs.Screen name="assignments" options={{ href: null }} />
       <Tabs.Screen name="notes" options={{ href: null }} />
+      <Tabs.Screen name="notes-editor" options={{ href: null }} />
     </Tabs>
   );
 }

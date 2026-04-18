@@ -1,5 +1,6 @@
 import { Feather } from "@expo/vector-icons";
-import { useMemo } from "react";
+import { useRouter } from "expo-router";
+import { useEffect, useMemo, useState } from "react";
 import {
   Pressable,
   SafeAreaView,
@@ -8,21 +9,27 @@ import {
   Text,
   View,
 } from "react-native";
+import { databases } from "@/lib/appwrite";
+import { APPWRITE_IDS, isConfigured } from "@/lib/appwrite-ids";
 
 export default function NotesScreen() {
+  const router = useRouter();
   const notes = useMemo(
     () => [
       {
+        id: "note-1",
         title: "Organic chemistry recap",
         subtitle: "Key reactions and catalysts",
         date: "Today",
       },
       {
+        id: "note-2",
         title: "Math formulas",
         subtitle: "Quadratic shortcuts",
         date: "Yesterday",
       },
       {
+        id: "note-3",
         title: "Lab prep",
         subtitle: "Safety checklist",
         date: "Apr 10",
@@ -30,6 +37,49 @@ export default function NotesScreen() {
     ],
     [],
   );
+  const [data, setData] = useState(notes);
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    let isActive = true;
+
+    const loadNotes = async () => {
+      if (!isConfigured(APPWRITE_IDS.collections.notes)) {
+        return;
+      }
+
+      try {
+        setIsLoading(true);
+        const response = await databases.listDocuments(
+          APPWRITE_IDS.databaseId,
+          APPWRITE_IDS.collections.notes,
+        );
+        if (isActive) {
+          const mapped = response.documents.map((doc) => ({
+            id: doc.$id,
+            title: String(doc.title ?? "Untitled"),
+            subtitle: String(doc.body ?? ""),
+            date: String(doc.updatedAt ?? doc.$updatedAt ?? ""),
+          }));
+          setData(mapped);
+        }
+      } catch {
+        if (isActive) {
+          setData(notes);
+        }
+      } finally {
+        if (isActive) {
+          setIsLoading(false);
+        }
+      }
+    };
+
+    loadNotes();
+
+    return () => {
+      isActive = false;
+    };
+  }, [notes]);
 
   return (
     <SafeAreaView style={styles.screen}>
@@ -39,14 +89,26 @@ export default function NotesScreen() {
       >
         <View style={styles.header}>
           <Text style={styles.title}>Notes</Text>
-          <Pressable style={styles.addButton}>
+          <Pressable
+            style={styles.addButton}
+            onPress={() => router.push("/(tabs)/notes-editor")}
+          >
             <Feather name="plus" size={16} color="#FFFFFF" />
             <Text style={styles.addButtonText}>New</Text>
           </Pressable>
         </View>
 
-        {notes.map((item) => (
-          <View key={item.title} style={styles.card}>
+        {data.map((item) => (
+          <Pressable
+            key={item.id}
+            style={styles.card}
+            onPress={() =>
+              router.push({
+                pathname: "/(tabs)/notes-editor",
+                params: { noteId: item.id },
+              })
+            }
+          >
             <View style={styles.iconWrap}>
               <Feather name="edit-2" size={16} color="#2D2E3A" />
             </View>
@@ -55,8 +117,11 @@ export default function NotesScreen() {
               <Text style={styles.cardSubtitle}>{item.subtitle}</Text>
             </View>
             <Text style={styles.dateText}>{item.date}</Text>
-          </View>
+          </Pressable>
         ))}
+        {isLoading ? (
+          <Text style={styles.loadingText}>Loading notes...</Text>
+        ) : null}
       </ScrollView>
     </SafeAreaView>
   );
@@ -129,5 +194,11 @@ const styles = StyleSheet.create({
   dateText: {
     fontSize: 11,
     color: "#7A7D92",
+  },
+  loadingText: {
+    fontSize: 12,
+    color: "#7A7D92",
+    textAlign: "center",
+    marginTop: 6,
   },
 });

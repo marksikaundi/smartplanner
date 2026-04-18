@@ -260,11 +260,6 @@ export default function HomeScreen() {
             <Text style={styles.primaryButtonText}>Login</Text>
           </Pressable>
 
-          <View style={styles.dividerRow}>
-            <View style={styles.dividerLine} />
-            <Text style={styles.dividerText}>Email login only</Text>
-            <View style={styles.dividerLine} />
-          </View>
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -443,20 +438,5 @@ const styles = StyleSheet.create({
     color: "#FFFFFF",
     fontSize: 15,
     fontWeight: "700",
-  },
-  dividerRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 16,
-  },
-  dividerLine: {
-    flex: 1,
-    height: 1,
-    backgroundColor: "#E6ECEE",
-  },
-  dividerText: {
-    color: "#9AA8AC",
-    fontSize: 12,
-    marginHorizontal: 8,
   },
 });

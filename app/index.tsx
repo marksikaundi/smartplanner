@@ -14,7 +14,7 @@ import {
   View,
 } from "react-native";
 
-export default function HomeScreen() {
+export default function LoginScreen() {
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
@@ -58,7 +58,7 @@ export default function HomeScreen() {
     try {
       setIsSubmitting(true);
       await account.createEmailPasswordSession(email.trim(), password);
-      Alert.alert("Success", "Logged in successfully.");
+      router.replace("/(tabs)");
     } catch (error) {
       const message =
         typeof error === "object" && error && "message" in error
@@ -129,13 +129,6 @@ export default function HomeScreen() {
         showsVerticalScrollIndicator={false}
       >
         <View style={styles.header}>
-          <Pressable
-            style={styles.backButton}
-            accessibilityLabel="Go back"
-            onPress={() => router.back()}
-          >
-            <Feather name="arrow-left" size={18} color="#D8E6E9" />
-          </Pressable>
           <Text style={styles.headerTitle}>
             Go ahead and complete your account and setup
           </Text>
@@ -297,16 +290,6 @@ const styles = StyleSheet.create({
   header: {
     paddingTop: 12,
     paddingBottom: 24,
-  },
-  backButton: {
-    width: 34,
-    height: 34,
-    borderRadius: 17,
-    borderWidth: 1,
-    borderColor: "rgba(255, 255, 255, 0.2)",
-    alignItems: "center",
-    justifyContent: "center",
-    marginBottom: 18,
   },
   headerTitle: {
     color: "#F3FAFB",

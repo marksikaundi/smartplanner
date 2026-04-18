@@ -1,18 +1,22 @@
 import { Feather } from "@expo/vector-icons";
-import { useRouter } from "expo-router";
-import { useMemo } from "react";
-import {
-  Pressable,
-  SafeAreaView,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
-} from "react-native";
+import { type Href, useRouter } from "expo-router";
+import { type ComponentProps, useMemo } from "react";
+import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+
+type FeatherIconName = ComponentProps<typeof Feather>["name"];
+type DashboardRoute = Href;
 
 export default function DashboardScreen() {
   const router = useRouter();
-  const quickLinks = useMemo(
+  const quickLinks = useMemo<
+    {
+      label: string;
+      color: string;
+      icon: FeatherIconName;
+      route: DashboardRoute;
+    }[]
+  >(
     () => [
       {
         label: "Materials",
@@ -42,7 +46,15 @@ export default function DashboardScreen() {
     [],
   );
 
-  const actionCards = useMemo(
+  const actionCards = useMemo<
+    {
+      title: string;
+      description: string;
+      action: string;
+      color: string;
+      route: DashboardRoute;
+    }[]
+  >(
     () => [
       {
         title: "Course Outline",

@@ -114,15 +114,16 @@ export default function UploadContentScreen() {
         ];
         setUploadProgress(5);
         const jwt = await account.createJWT();
-        const fileInfo = await FileSystem.getInfoAsync(file.uri, {
-          size: true,
-        });
+        const fileInfo = await FileSystem.getInfoAsync(file.uri);
+        const totalBytes =
+          fileInfo.exists && "size" in fileInfo
+            ? Number(fileInfo.size ?? 0)
+            : 0;
 
-        if (!fileInfo.exists || !fileInfo.size) {
+        if (!fileInfo.exists || !totalBytes) {
           throw new Error("Unable to read the selected file.");
         }
 
-        const totalBytes = fileInfo.size;
         const fileId = ID.unique();
         let uploadId: string | null = null;
         let created: any = null;

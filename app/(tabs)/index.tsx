@@ -1,4 +1,5 @@
 import { Feather, FontAwesome } from "@expo/vector-icons";
+import * as Linking from "expo-linking";
 import { useRouter } from "expo-router";
 import { useMemo, useState } from "react";
 import {
@@ -11,6 +12,7 @@ import {
   TextInput,
   View,
 } from "react-native";
+import { account } from "@/lib/appwrite";
 
 export default function HomeScreen() {
   const router = useRouter();
@@ -18,6 +20,7 @@ export default function HomeScreen() {
   const [rememberMe, setRememberMe] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState<{ email?: string; password?: string }>(
     {},
   );
@@ -47,12 +50,57 @@ export default function HomeScreen() {
     return Object.keys(nextErrors).length === 0;
   };
 
-  const handleLogin = () => {
+  const handleLogin = async () => {
     if (!validateForm()) {
       return;
     }
 
-    Alert.alert("Success", "Logged in successfully.");
+    try {
+      setIsSubmitting(true);
+      await account.createEmailPasswordSession(email.trim(), password);
+      Alert.alert("Success", "Logged in successfully.");
+    } catch (error) {
+      const message =
+        typeof error === "object" && error && "message" in error
+          ? String(error.message)
+          : "Unable to log in right now.";
+      Alert.alert("Login failed", message);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleForgotPassword = async () => {
+    if (!email.trim()) {
+      setErrors((current) => ({
+        ...current,
+        email: "Enter your email to reset your password.",
+      }));
+      return;
+    }
+
+    if (!validateEmail(email)) {
+      setErrors((current) => ({
+        ...current,
+        email: "Enter a valid email address.",
+      }));
+      return;
+    }
+
+    try {
+      setIsSubmitting(true);
+      const recoveryUrl = Linking.createURL("/reset-password");
+      await account.createRecovery(email.trim(), recoveryUrl);
+      Alert.alert("Check your inbox", "We sent a recovery link to your email.");
+    } catch (error) {
+      const message =
+        typeof error === "object" && error && "message" in error
+          ? String(error.message)
+          : "Unable to send recovery email.";
+      Alert.alert("Reset failed", message);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -196,16 +244,19 @@ export default function HomeScreen() {
               </View>
               <Text style={styles.rememberText}>Remember Me</Text>
             </Pressable>
-            <Pressable
-              onPress={() =>
-                Alert.alert("Reset", "Password reset flow goes here.")
-              }
-            >
+            <Pressable onPress={handleForgotPassword}>
               <Text style={styles.forgotText}>Forgot Password?</Text>
             </Pressable>
           </View>
 
-          <Pressable style={styles.primaryButton} onPress={handleLogin}>
+          <Pressable
+            style={[
+              styles.primaryButton,
+              isSubmitting ? styles.primaryButtonDisabled : null,
+            ]}
+            onPress={handleLogin}
+            disabled={isSubmitting}
+          >
             <Text style={styles.primaryButtonText}>Login</Text>
           </Pressable>
 
@@ -403,6 +454,9 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
     alignItems: "center",
     marginBottom: 18,
+  },
+  primaryButtonDisabled: {
+    opacity: 0.6,
   },
   primaryButtonText: {
     color: "#FFFFFF",

@@ -11,6 +11,7 @@ import {
   TextInput,
   View,
 } from "react-native";
+import { account, ID } from "@/lib/appwrite";
 
 export default function SignUpScreen() {
   const router = useRouter();
@@ -21,6 +22,7 @@ export default function SignUpScreen() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState<{
     firstName?: string;
     lastName?: string;
@@ -74,12 +76,26 @@ export default function SignUpScreen() {
     return Object.keys(nextErrors).length === 0;
   };
 
-  const handleSignUp = () => {
+  const handleSignUp = async () => {
     if (!validateForm()) {
       return;
     }
 
-    Alert.alert("Success", "Account created successfully.");
+    try {
+      setIsSubmitting(true);
+      const fullName = `${firstName.trim()} ${lastName.trim()}`.trim();
+      await account.create(ID.unique(), email.trim(), password, fullName);
+      await account.createEmailPasswordSession(email.trim(), password);
+      Alert.alert("Success", "Account created successfully.");
+    } catch (error) {
+      const message =
+        typeof error === "object" && error && "message" in error
+          ? String(error.message)
+          : "Unable to create your account right now.";
+      Alert.alert("Sign up failed", message);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -294,7 +310,14 @@ export default function SignUpScreen() {
             <Text style={styles.errorText}>{errors.confirmPassword}</Text>
           ) : null}
 
-          <Pressable style={styles.primaryButton} onPress={handleSignUp}>
+          <Pressable
+            style={[
+              styles.primaryButton,
+              isSubmitting ? styles.primaryButtonDisabled : null,
+            ]}
+            onPress={handleSignUp}
+            disabled={isSubmitting}
+          >
             <Text style={styles.primaryButtonText}>Register</Text>
           </Pressable>
         </View>

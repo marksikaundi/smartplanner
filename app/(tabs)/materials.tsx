@@ -1,5 +1,5 @@
 import { Feather } from "@expo/vector-icons";
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   Pressable,
   SafeAreaView,
@@ -8,6 +8,8 @@ import {
   Text,
   View,
 } from "react-native";
+import { databases } from "@/lib/appwrite";
+import { APPWRITE_IDS, isConfigured } from "@/lib/appwrite-ids";
 
 export default function MaterialsScreen() {
   const materials = useMemo(
@@ -35,6 +37,48 @@ export default function MaterialsScreen() {
     ],
     [],
   );
+  const [data, setData] = useState(materials);
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    let isActive = true;
+
+    const loadMaterials = async () => {
+      if (!isConfigured(APPWRITE_IDS.collections.materials)) {
+        return;
+      }
+
+      try {
+        setIsLoading(true);
+        const response = await databases.listDocuments(
+          APPWRITE_IDS.databaseId,
+          APPWRITE_IDS.collections.materials,
+        );
+        if (isActive) {
+          const mapped = response.documents.map((doc) => ({
+            title: String(doc.title ?? doc.name ?? "Material"),
+            subtitle: String(doc.subtitle ?? doc.summary ?? ""),
+            type: String(doc.type ?? doc.format ?? "PDF"),
+          }));
+          setData(mapped);
+        }
+      } catch {
+        if (isActive) {
+          setData(materials);
+        }
+      } finally {
+        if (isActive) {
+          setIsLoading(false);
+        }
+      }
+    };
+
+    loadMaterials();
+
+    return () => {
+      isActive = false;
+    };
+  }, [materials]);
 
   return (
     <SafeAreaView style={styles.screen}>
@@ -49,7 +93,7 @@ export default function MaterialsScreen() {
           </Text>
         </View>
 
-        {materials.map((item) => (
+        {data.map((item) => (
           <View key={item.title} style={styles.card}>
             <View style={styles.iconWrap}>
               <Feather name="file-text" size={16} color="#2D2E3A" />
@@ -63,6 +107,9 @@ export default function MaterialsScreen() {
             </Pressable>
           </View>
         ))}
+        {isLoading ? (
+          <Text style={styles.loadingText}>Loading materials...</Text>
+        ) : null}
       </ScrollView>
     </SafeAreaView>
   );
@@ -130,5 +177,11 @@ const styles = StyleSheet.create({
     fontSize: 11,
     fontWeight: "700",
     color: "#2D2E3A",
+  },
+  loadingText: {
+    fontSize: 12,
+    color: "#7A7D92",
+    textAlign: "center",
+    marginTop: 6,
   },
 });

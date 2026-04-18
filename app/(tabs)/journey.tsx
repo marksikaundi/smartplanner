@@ -1,5 +1,6 @@
 import { Feather } from "@expo/vector-icons";
-import { useMemo } from "react";
+import { useLocalSearchParams } from "expo-router";
+import { useEffect, useMemo, useState } from "react";
 import {
   Pressable,
   SafeAreaView,
@@ -8,11 +9,15 @@ import {
   Text,
   View,
 } from "react-native";
+import { databases, Query } from "@/lib/appwrite";
+import { APPWRITE_IDS, isConfigured } from "@/lib/appwrite-ids";
 
 export default function JourneyScreen() {
+  const { programId } = useLocalSearchParams<{ programId?: string }>();
   const chapters = useMemo(
     () => [
       {
+        id: "chapter-1",
         title: "Chapter 1",
         subtitle: "Organic chemistry",
         topics: "15 Topics",
@@ -20,6 +25,7 @@ export default function JourneyScreen() {
         status: "done",
       },
       {
+        id: "chapter-2",
         title: "Chapter 2",
         subtitle: "Organic chemistry",
         topics: "15 Topics",
@@ -27,6 +33,7 @@ export default function JourneyScreen() {
         status: "active",
       },
       {
+        id: "chapter-3",
         title: "Chapter 3",
         subtitle: "Organic chemistry",
         topics: "15 Topics",
@@ -34,6 +41,7 @@ export default function JourneyScreen() {
         status: "locked",
       },
       {
+        id: "chapter-4",
         title: "Chapter 4",
         subtitle: "Organic chemistry",
         topics: "15 Topics",
@@ -43,6 +51,62 @@ export default function JourneyScreen() {
     ],
     [],
   );
+  const [data, setData] = useState(chapters);
+  const [headerTitle, setHeaderTitle] = useState("Chemistry");
+  const [headerSubtitle, setHeaderSubtitle] = useState("10 Chapters");
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    let isActive = true;
+
+    const loadChapters = async () => {
+      if (!isConfigured(APPWRITE_IDS.collections.chapters)) {
+        return;
+      }
+
+      try {
+        setIsLoading(true);
+        const queries = [];
+        if (programId) {
+          queries.push(Query.equal("programId", String(programId)));
+        }
+        const response = await databases.listDocuments(
+          APPWRITE_IDS.databaseId,
+          APPWRITE_IDS.collections.chapters,
+          queries,
+        );
+        if (isActive) {
+          const mapped = response.documents.map((doc) => ({
+            id: doc.$id,
+            title: String(doc.title ?? doc.name ?? "Chapter"),
+            subtitle: String(doc.subtitle ?? doc.subject ?? "Course"),
+            topics: String(doc.topics ?? doc.topicCount ?? "Topics"),
+            color: String(doc.color ?? "#E8F2FF"),
+            status: String(doc.status ?? "active"),
+          }));
+          setData(mapped);
+          if (response.documents[0]?.programName) {
+            setHeaderTitle(String(response.documents[0].programName));
+          }
+          setHeaderSubtitle(`${mapped.length} Chapters`);
+        }
+      } catch {
+        if (isActive) {
+          setData(chapters);
+        }
+      } finally {
+        if (isActive) {
+          setIsLoading(false);
+        }
+      }
+    };
+
+    loadChapters();
+
+    return () => {
+      isActive = false;
+    };
+  }, [chapters, programId]);
 
   return (
     <SafeAreaView style={styles.screen}>
@@ -51,13 +115,13 @@ export default function JourneyScreen() {
         showsVerticalScrollIndicator={false}
       >
         <View style={styles.header}>
-          <Text style={styles.title}>Chemistry</Text>
-          <Text style={styles.subtitle}>10 Chapters</Text>
+          <Text style={styles.title}>{headerTitle}</Text>
+          <Text style={styles.subtitle}>{headerSubtitle}</Text>
         </View>
 
-        {chapters.map((chapter) => (
+        {data.map((chapter) => (
           <View
-            key={chapter.title}
+            key={chapter.id}
             style={[styles.chapterCard, { backgroundColor: chapter.color }]}
           >
             <View style={styles.chapterLeft}>
@@ -99,6 +163,9 @@ export default function JourneyScreen() {
             </Pressable>
           </View>
         ))}
+        {isLoading ? (
+          <Text style={styles.loadingText}>Loading chapters...</Text>
+        ) : null}
       </ScrollView>
     </SafeAreaView>
   );
@@ -185,5 +252,11 @@ const styles = StyleSheet.create({
   },
   statusLocked: {
     backgroundColor: "#5B5C73",
+  },
+  loadingText: {
+    fontSize: 12,
+    color: "#7A7D92",
+    textAlign: "center",
+    marginTop: 6,
   },
 });

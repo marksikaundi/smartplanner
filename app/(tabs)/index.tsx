@@ -1,98 +1,324 @@
-import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
-
-import { HelloWave } from '@/components/hello-wave';
-import ParallaxScrollView from '@/components/parallax-scroll-view';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { Link } from 'expo-router';
+import { Feather, FontAwesome } from '@expo/vector-icons';
+import { useMemo, useState } from 'react';
+import {
+  Pressable,
+  SafeAreaView,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+} from 'react-native';
 
 export default function HomeScreen() {
-  return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12',
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <Link href="/modal">
-          <Link.Trigger>
-            <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-          </Link.Trigger>
-          <Link.Preview />
-          <Link.Menu>
-            <Link.MenuAction title="Action" icon="cube" onPress={() => alert('Action pressed')} />
-            <Link.MenuAction
-              title="Share"
-              icon="square.and.arrow.up"
-              onPress={() => alert('Share pressed')}
-            />
-            <Link.Menu title="More" icon="ellipsis">
-              <Link.MenuAction
-                title="Delete"
-                icon="trash"
-                destructive
-                onPress={() => alert('Delete pressed')}
-              />
-            </Link.Menu>
-          </Link.Menu>
-        </Link>
+  const [showPassword, setShowPassword] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
+  const gridLines = useMemo(() => Array.from({ length: 6 }, (_, index) => index), []);
 
-        <ThemedText>
-          {`Tap the Explore tab to learn more about what's included in this starter app.`}
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          {`When you're ready, run `}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+  return (
+    <SafeAreaView style={styles.screen}>
+      <View style={styles.headerBackground}>
+        <View pointerEvents="none" style={styles.grid}>
+          {gridLines.map((line) => (
+            <View
+              key={`v-${line}`}
+              style={[styles.gridLineVertical, { left: `${(line + 1) * 14}%` }]}
+            />
+          ))}
+          {gridLines.map((line) => (
+            <View
+              key={`h-${line}`}
+              style={[styles.gridLineHorizontal, { top: `${(line + 1) * 12}%` }]}
+            />
+          ))}
+        </View>
+      </View>
+      <ScrollView
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}>
+        <View style={styles.header}>
+          <Pressable style={styles.backButton} accessibilityLabel="Go back">
+            <Feather name="arrow-left" size={18} color="#D8E6E9" />
+          </Pressable>
+          <Text style={styles.headerTitle}>Go ahead and complete your account and setup</Text>
+          <Text style={styles.headerSubtitle}>
+            Create your account and simplify your workflow instantly.
+          </Text>
+        </View>
+
+        <View style={styles.card}>
+          <View style={styles.segment}>
+            <Pressable style={[styles.segmentButton, styles.segmentActive]}>
+              <Text style={[styles.segmentText, styles.segmentActiveText]}>Login</Text>
+            </Pressable>
+            <Pressable style={styles.segmentButton}>
+              <Text style={styles.segmentText}>Sign Up</Text>
+            </Pressable>
+          </View>
+
+          <Text style={styles.label}>Email</Text>
+          <TextInput
+            placeholder="wadewarren@gmail.com"
+            placeholderTextColor="#96A6AA"
+            style={styles.input}
+            keyboardType="email-address"
+            autoCapitalize="none"
+          />
+
+          <Text style={styles.label}>Password</Text>
+          <View style={styles.inputRow}>
+            <TextInput
+              placeholder="xxxxxxxx"
+              placeholderTextColor="#96A6AA"
+              style={[styles.input, styles.inputWithIcon]}
+              secureTextEntry={!showPassword}
+            />
+            <Pressable
+              onPress={() => setShowPassword((value) => !value)}
+              style={styles.iconButton}
+              accessibilityLabel={showPassword ? 'Hide password' : 'Show password'}>
+              <Feather name={showPassword ? 'eye' : 'eye-off'} size={18} color="#7D8C90" />
+            </Pressable>
+          </View>
+
+          <View style={styles.rememberRow}>
+            <Pressable
+              style={styles.checkboxWrap}
+              onPress={() => setRememberMe((value) => !value)}
+              accessibilityLabel="Remember me"
+              accessibilityRole="checkbox"
+              accessibilityState={{ checked: rememberMe }}>
+              <View style={[styles.checkbox, rememberMe ? styles.checkboxChecked : null]}>
+                {rememberMe ? <Feather name="check" size={12} color="#0F2D33" /> : null}
+              </View>
+              <Text style={styles.rememberText}>Remember Me</Text>
+            </Pressable>
+            <Pressable>
+              <Text style={styles.forgotText}>Forgot Password?</Text>
+            </Pressable>
+          </View>
+
+          <Pressable style={styles.primaryButton}>
+            <Text style={styles.primaryButtonText}>Login</Text>
+          </Pressable>
+
+          <View style={styles.dividerRow}>
+            <View style={styles.dividerLine} />
+            <Text style={styles.dividerText}>Or login with</Text>
+            <View style={styles.dividerLine} />
+          </View>
+
+          <View style={styles.socialRow}>
+            <Pressable style={styles.socialButton}>
+              <FontAwesome name="google" size={16} color="#DB4437" />
+              <Text style={styles.socialButtonText}>Google</Text>
+            </Pressable>
+            <Pressable style={styles.socialButton}>
+              <FontAwesome name="facebook" size={16} color="#1877F2" />
+              <Text style={styles.socialButtonText}>Facebook</Text>
+            </Pressable>
+          </View>
+        </View>
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  titleContainer: {
+  screen: {
+    flex: 1,
+    backgroundColor: '#1A4650',
+  },
+  headerBackground: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: '#1A4650',
+  },
+  grid: {
+    ...StyleSheet.absoluteFillObject,
+    opacity: 0.14,
+  },
+  gridLineVertical: {
+    position: 'absolute',
+    width: 1,
+    height: '100%',
+    backgroundColor: '#9BC1C7',
+  },
+  gridLineHorizontal: {
+    position: 'absolute',
+    height: 1,
+    width: '100%',
+    backgroundColor: '#9BC1C7',
+  },
+  scrollContent: {
+    paddingHorizontal: 20,
+    paddingBottom: 40,
+  },
+  header: {
+    paddingTop: 12,
+    paddingBottom: 24,
+  },
+  backButton: {
+    width: 34,
+    height: 34,
+    borderRadius: 17,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.2)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 18,
+  },
+  headerTitle: {
+    color: '#F3FAFB',
+    fontSize: 22,
+    fontWeight: '700',
+    marginBottom: 10,
+  },
+  headerSubtitle: {
+    color: 'rgba(255, 255, 255, 0.72)',
+    fontSize: 14,
+    lineHeight: 20,
+  },
+  card: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 22,
+    padding: 20,
+    shadowColor: '#0F2D33',
+    shadowOpacity: 0.12,
+    shadowOffset: { width: 0, height: 10 },
+    shadowRadius: 18,
+    elevation: 6,
+  },
+  segment: {
+    flexDirection: 'row',
+    backgroundColor: '#F1F4F5',
+    borderRadius: 16,
+    padding: 4,
+    marginBottom: 18,
+  },
+  segmentButton: {
+    flex: 1,
+    paddingVertical: 10,
+    borderRadius: 14,
+    alignItems: 'center',
+  },
+  segmentText: {
+    color: '#9AA8AC',
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  segmentActive: {
+    backgroundColor: '#FFFFFF',
+  },
+  segmentActiveText: {
+    color: '#1C3E45',
+  },
+  label: {
+    color: '#829497',
+    fontSize: 12,
+    fontWeight: '600',
+    marginBottom: 6,
+  },
+  inputRow: {
+    position: 'relative',
+  },
+  input: {
+    backgroundColor: '#FFFFFF',
+    borderWidth: 1,
+    borderColor: '#E6ECEE',
+    borderRadius: 12,
+    paddingHorizontal: 14,
+    paddingVertical: 12,
+    fontSize: 14,
+    color: '#1F2D32',
+    marginBottom: 14,
+  },
+  inputWithIcon: {
+    paddingRight: 44,
+  },
+  iconButton: {
+    position: 'absolute',
+    right: 12,
+    top: 12,
+  },
+  rememberRow: {
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 18,
+  },
+  checkboxWrap: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  checkbox: {
+    width: 18,
+    height: 18,
+    borderRadius: 5,
+    borderWidth: 1,
+    borderColor: '#CBD5D8',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 8,
+    backgroundColor: '#FFFFFF',
+  },
+  checkboxChecked: {
+    backgroundColor: '#E3F1F3',
+    borderColor: '#B3D3D8',
+  },
+  rememberText: {
+    color: '#8B9A9D',
+    fontSize: 12,
+  },
+  forgotText: {
+    color: '#1C3E45',
+    fontSize: 12,
+    fontWeight: '600',
+  },
+  primaryButton: {
+    backgroundColor: '#1A4650',
+    borderRadius: 14,
+    paddingVertical: 14,
+    alignItems: 'center',
+    marginBottom: 18,
+  },
+  primaryButtonText: {
+    color: '#FFFFFF',
+    fontSize: 15,
+    fontWeight: '700',
+  },
+  dividerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  dividerLine: {
+    flex: 1,
+    height: 1,
+    backgroundColor: '#E6ECEE',
+  },
+  dividerText: {
+    color: '#9AA8AC',
+    fontSize: 12,
+    marginHorizontal: 8,
+  },
+  socialRow: {
+    flexDirection: 'row',
+    gap: 12,
+  },
+  socialButton: {
+    flex: 1,
+    borderWidth: 1,
+    borderColor: '#E6ECEE',
+    borderRadius: 12,
+    paddingVertical: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexDirection: 'row',
     gap: 8,
   },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
-  },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
+  socialButtonText: {
+    color: '#1C3E45',
+    fontSize: 13,
+    fontWeight: '600',
   },
 });

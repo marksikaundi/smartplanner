@@ -57,6 +57,13 @@ export default function LoginScreen() {
 
     try {
       setIsSubmitting(true);
+      try {
+        await account.getSession("current");
+        router.replace("/(tabs)");
+        return;
+      } catch {
+        // No active session yet.
+      }
       await account.createEmailPasswordSession(email.trim(), password);
       router.replace("/(tabs)");
     } catch (error) {

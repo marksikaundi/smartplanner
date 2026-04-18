@@ -8,11 +8,16 @@ export default function DashboardScreen() {
     <SafeAreaView style={styles.screen}>
       <View style={styles.header}>
         <Text style={styles.title}>Dashboard</Text>
-        <Text style={styles.subtitle}>Welcome back. Your tabs are active here.</Text>
+        <Text style={styles.subtitle}>
+          Welcome back. Your tabs are active here.
+        </Text>
       </View>
       <View style={styles.card}>
         <Text style={styles.cardTitle}>Quick Actions</Text>
-        <Pressable style={styles.actionButton} onPress={() => router.push("/explore")}>
+        <Pressable
+          style={styles.actionButton}
+          onPress={() => router.push("/explore")}
+        >
           <Text style={styles.actionText}>Go to Explore</Text>
         </Pressable>
       </View>

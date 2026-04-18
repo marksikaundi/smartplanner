@@ -1,3 +1,4 @@
+import { APPWRITE_IDS } from "@/lib/appwrite-ids";
 import {
   Account,
   Client,
@@ -9,7 +10,6 @@ import {
   Role,
   Storage,
 } from "appwrite";
-import { APPWRITE_IDS } from "@/lib/appwrite-ids";
 
 const client = new Client()
   .setEndpoint(APPWRITE_IDS.endpoint)

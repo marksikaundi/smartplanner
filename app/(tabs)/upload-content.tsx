@@ -1,4 +1,11 @@
-import { account, databases, ID, Permission, Role, storage } from "@/lib/appwrite";
+import {
+  account,
+  databases,
+  ID,
+  Permission,
+  Role,
+  storage,
+} from "@/lib/appwrite";
 import { APPWRITE_IDS, isConfigured } from "@/lib/appwrite-ids";
 import { Feather } from "@expo/vector-icons";
 import * as DocumentPicker from "expo-document-picker";
@@ -227,7 +234,10 @@ export default function UploadContentScreen() {
             ? String(error.message)
             : "Unable to upload your content.";
         const normalized = message.toLowerCase();
-        if (normalized.includes("backend write error") || normalized.includes("503")) {
+        if (
+          normalized.includes("backend write error") ||
+          normalized.includes("503")
+        ) {
           message =
             "Appwrite returned a 503 while writing the file. Try again in a moment or upload a smaller file.";
         } else if (

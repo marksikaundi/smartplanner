@@ -20,19 +20,21 @@ export function CustomTabBar({
   navigation,
 }: BottomTabBarProps) {
   const insets = useSafeAreaInsets();
+  const activeKey = state.routes[state.index]?.key;
+  const visibleRoutes = state.routes.filter((route) => TAB_CONFIG[route.name]);
 
   return (
     <View
       style={[styles.container, { paddingBottom: Math.max(insets.bottom, 10) }]}
     >
       <View style={styles.bar}>
-        {state.routes.map((route, index) => {
+        {visibleRoutes.map((route) => {
           const { options } = descriptors[route.key];
           const config = TAB_CONFIG[route.name] ?? {
             label: options.title ?? route.name,
             icon: "circle",
           };
-          const isFocused = state.index === index;
+          const isFocused = route.key === activeKey;
 
           const onPress = () => {
             const event = navigation.emit({

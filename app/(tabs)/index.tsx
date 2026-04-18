@@ -86,7 +86,7 @@ export default function DashboardScreen() {
       >
         <View style={styles.topBar}>
           <View style={styles.avatar}>
-            <Text style={styles.avatarText}>KW</Text>
+            <Feather name="user" size={20} color="#2D2E3A" />
           </View>
           <View style={styles.topBarActions}>
             <Pressable style={styles.iconCircle}>
@@ -99,7 +99,7 @@ export default function DashboardScreen() {
         </View>
 
         <View style={styles.header}>
-          <Text style={styles.greeting}>Hey kid,</Text>
+          <Text style={styles.greeting}>Hey there,</Text>
           <Text style={styles.title}>Welcome back</Text>
         </View>
 
@@ -239,11 +239,6 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 6 },
     shadowRadius: 12,
     elevation: 3,
-  },
-  avatarText: {
-    fontSize: 16,
-    fontWeight: "700",
-    color: "#2D2E3A",
   },
   topBarActions: {
     flexDirection: "row",

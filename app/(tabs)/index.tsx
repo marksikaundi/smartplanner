@@ -1,5 +1,5 @@
 import { account } from "@/lib/appwrite";
-import { Feather, FontAwesome } from "@expo/vector-icons";
+import { Feather } from "@expo/vector-icons";
 import * as Linking from "expo-linking";
 import { useRouter } from "expo-router";
 import { useMemo, useState } from "react";
@@ -262,27 +262,8 @@ export default function HomeScreen() {
 
           <View style={styles.dividerRow}>
             <View style={styles.dividerLine} />
-            <Text style={styles.dividerText}>Or login with</Text>
+            <Text style={styles.dividerText}>Email login only</Text>
             <View style={styles.dividerLine} />
-          </View>
-
-          <View style={styles.socialRow}>
-            <Pressable
-              style={styles.socialButton}
-              onPress={() => Alert.alert("Google", "Google sign-in goes here.")}
-            >
-              <FontAwesome name="google" size={16} color="#DB4437" />
-              <Text style={styles.socialButtonText}>Google</Text>
-            </Pressable>
-            <Pressable
-              style={styles.socialButton}
-              onPress={() =>
-                Alert.alert("Facebook", "Facebook sign-in goes here.")
-              }
-            >
-              <FontAwesome name="facebook" size={16} color="#1877F2" />
-              <Text style={styles.socialButtonText}>Facebook</Text>
-            </Pressable>
           </View>
         </View>
       </ScrollView>
@@ -478,24 +459,9 @@ const styles = StyleSheet.create({
     fontSize: 12,
     marginHorizontal: 8,
   },
-  socialRow: {
-    flexDirection: "row",
-    gap: 12,
-  },
-  socialButton: {
-    flex: 1,
-    borderWidth: 1,
-    borderColor: "#E6ECEE",
-    borderRadius: 12,
-    paddingVertical: 12,
-    alignItems: "center",
-    justifyContent: "center",
-    flexDirection: "row",
-    gap: 8,
-  },
-  socialButtonText: {
-    color: "#1C3E45",
-    fontSize: 13,
-    fontWeight: "600",
+  dividerText: {
+    color: "#9AA8AC",
+    fontSize: 12,
+    marginHorizontal: 8,
   },
 });

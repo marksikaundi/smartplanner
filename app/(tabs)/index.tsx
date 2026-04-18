@@ -85,9 +85,14 @@ export default function DashboardScreen() {
         showsVerticalScrollIndicator={false}
       >
         <View style={styles.topBar}>
-          <View style={styles.avatar}>
+          <Pressable
+            style={styles.avatar}
+            onPress={() => router.push("/(tabs)/profile")}
+            accessibilityRole="button"
+            accessibilityLabel="Open profile"
+          >
             <Feather name="user" size={20} color="#2D2E3A" />
-          </View>
+          </Pressable>
           <View style={styles.topBarActions}>
             <Pressable style={styles.iconCircle}>
               <Feather name="bell" size={18} color="#2D2E3A" />

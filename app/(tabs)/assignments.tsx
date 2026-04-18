@@ -39,7 +39,9 @@ export default function AssignmentsScreen() {
       >
         <View style={styles.header}>
           <Text style={styles.title}>Past Assignments</Text>
-          <Text style={styles.subtitle}>Review submissions and upcoming tasks</Text>
+          <Text style={styles.subtitle}>
+            Review submissions and upcoming tasks
+          </Text>
         </View>
 
         {assignments.map((item) => (

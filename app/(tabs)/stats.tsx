@@ -1,12 +1,6 @@
 import { Feather } from "@expo/vector-icons";
 import { useMemo } from "react";
-import {
-  SafeAreaView,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
-} from "react-native";
+import { SafeAreaView, ScrollView, StyleSheet, Text, View } from "react-native";
 
 export default function StatsScreen() {
   const highlights = useMemo(
@@ -64,7 +58,9 @@ export default function StatsScreen() {
               </View>
             ))}
           </View>
-          <Text style={styles.sectionHint}>You&apos;re up 12% from last week.</Text>
+          <Text style={styles.sectionHint}>
+            You&apos;re up 12% from last week.
+          </Text>
         </View>
 
         <View style={styles.sectionCard}>

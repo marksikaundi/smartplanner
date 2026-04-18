@@ -42,7 +42,9 @@ export default function ProgramsScreen() {
       >
         <View style={styles.header}>
           <Text style={styles.title}>Programs</Text>
-          <Text style={styles.subtitle}>Pick a course to continue learning</Text>
+          <Text style={styles.subtitle}>
+            Pick a course to continue learning
+          </Text>
         </View>
 
         {programs.map((program) => (

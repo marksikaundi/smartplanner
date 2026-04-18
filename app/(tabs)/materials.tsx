@@ -44,7 +44,9 @@ export default function MaterialsScreen() {
       >
         <View style={styles.header}>
           <Text style={styles.title}>Materials</Text>
-          <Text style={styles.subtitle}>Download and review your study assets</Text>
+          <Text style={styles.subtitle}>
+            Download and review your study assets
+          </Text>
         </View>
 
         {materials.map((item) => (

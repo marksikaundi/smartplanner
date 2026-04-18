@@ -75,7 +75,9 @@ export default function ProfileScreen() {
             </Text>
           </View>
           <Text style={styles.title}>{accountInfo.name || "Your Profile"}</Text>
-          <Text style={styles.subtitle}>{accountInfo.email || "Signed in"}</Text>
+          <Text style={styles.subtitle}>
+            {accountInfo.email || "Signed in"}
+          </Text>
         </View>
 
         <View style={styles.sectionCard}>

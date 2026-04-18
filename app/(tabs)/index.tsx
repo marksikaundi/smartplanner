@@ -125,7 +125,10 @@ export default function DashboardScreen() {
               Track your ranking this week
             </Text>
           </View>
-          <Pressable style={styles.heroAction} onPress={() => router.push("/(tabs)/stats")}>
+          <Pressable
+            style={styles.heroAction}
+            onPress={() => router.push("/(tabs)/stats")}
+          >
             <Text style={styles.heroActionText}>View</Text>
           </Pressable>
         </View>

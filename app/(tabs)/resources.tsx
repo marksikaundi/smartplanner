@@ -12,10 +12,26 @@ import {
 export default function ResourcesScreen() {
   const resources = useMemo(
     () => [
-      { title: "Reference Library", subtitle: "Curated textbooks", icon: "book" },
-      { title: "Video Lessons", subtitle: "Short topic videos", icon: "play-circle" },
-      { title: "Practice Bank", subtitle: "Past exam questions", icon: "clipboard" },
-      { title: "Discussion Forum", subtitle: "Ask for help", icon: "message-circle" },
+      {
+        title: "Reference Library",
+        subtitle: "Curated textbooks",
+        icon: "book",
+      },
+      {
+        title: "Video Lessons",
+        subtitle: "Short topic videos",
+        icon: "play-circle",
+      },
+      {
+        title: "Practice Bank",
+        subtitle: "Past exam questions",
+        icon: "clipboard",
+      },
+      {
+        title: "Discussion Forum",
+        subtitle: "Ask for help",
+        icon: "message-circle",
+      },
     ],
     [],
   );
@@ -28,7 +44,9 @@ export default function ResourcesScreen() {
       >
         <View style={styles.header}>
           <Text style={styles.title}>Resources</Text>
-          <Text style={styles.subtitle}>Tools to support your study sessions</Text>
+          <Text style={styles.subtitle}>
+            Tools to support your study sessions
+          </Text>
         </View>
 
         {resources.map((item) => (

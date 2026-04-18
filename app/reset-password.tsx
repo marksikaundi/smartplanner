@@ -143,9 +143,15 @@ export default function ResetPasswordScreen() {
             <Pressable
               onPress={() => setShowPassword((value) => !value)}
               style={styles.iconButton}
-              accessibilityLabel={showPassword ? "Hide password" : "Show password"}
+              accessibilityLabel={
+                showPassword ? "Hide password" : "Show password"
+              }
             >
-              <Feather name={showPassword ? "eye" : "eye-off"} size={18} color="#7D8C90" />
+              <Feather
+                name={showPassword ? "eye" : "eye-off"}
+                size={18}
+                color="#7D8C90"
+              />
             </Pressable>
           </View>
           {errors.password ? (
@@ -174,9 +180,15 @@ export default function ResetPasswordScreen() {
             <Pressable
               onPress={() => setShowConfirm((value) => !value)}
               style={styles.iconButton}
-              accessibilityLabel={showConfirm ? "Hide password" : "Show password"}
+              accessibilityLabel={
+                showConfirm ? "Hide password" : "Show password"
+              }
             >
-              <Feather name={showConfirm ? "eye" : "eye-off"} size={18} color="#7D8C90" />
+              <Feather
+                name={showConfirm ? "eye" : "eye-off"}
+                size={18}
+                color="#7D8C90"
+              />
             </Pressable>
           </View>
           {errors.confirm ? (

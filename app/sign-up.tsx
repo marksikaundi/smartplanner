@@ -1,4 +1,5 @@
 import { Feather } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
 import { useMemo, useState } from "react";
 import {
   Alert,
@@ -10,7 +11,6 @@ import {
   TextInput,
   View,
 } from "react-native";
-import { useRouter } from "expo-router";
 
 export default function SignUpScreen() {
   const router = useRouter();
@@ -21,15 +21,13 @@ export default function SignUpScreen() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [errors, setErrors] = useState<
-    {
-      firstName?: string;
-      lastName?: string;
-      email?: string;
-      password?: string;
-      confirmPassword?: string;
-    }
-  >({});
+  const [errors, setErrors] = useState<{
+    firstName?: string;
+    lastName?: string;
+    email?: string;
+    password?: string;
+    confirmPassword?: string;
+  }>({});
   const gridLines = useMemo(
     () => Array.from({ length: 6 }, (_, index) => index),
     [],
@@ -146,12 +144,18 @@ export default function SignUpScreen() {
               <TextInput
                 placeholder="Wade"
                 placeholderTextColor="#96A6AA"
-                style={[styles.input, errors.firstName ? styles.inputError : null]}
+                style={[
+                  styles.input,
+                  errors.firstName ? styles.inputError : null,
+                ]}
                 value={firstName}
                 onChangeText={(value) => {
                   setFirstName(value);
                   if (errors.firstName) {
-                    setErrors((current) => ({ ...current, firstName: undefined }));
+                    setErrors((current) => ({
+                      ...current,
+                      firstName: undefined,
+                    }));
                   }
                 }}
               />
@@ -164,12 +168,18 @@ export default function SignUpScreen() {
               <TextInput
                 placeholder="Warren"
                 placeholderTextColor="#96A6AA"
-                style={[styles.input, errors.lastName ? styles.inputError : null]}
+                style={[
+                  styles.input,
+                  errors.lastName ? styles.inputError : null,
+                ]}
                 value={lastName}
                 onChangeText={(value) => {
                   setLastName(value);
                   if (errors.lastName) {
-                    setErrors((current) => ({ ...current, lastName: undefined }));
+                    setErrors((current) => ({
+                      ...current,
+                      lastName: undefined,
+                    }));
                   }
                 }}
               />
@@ -203,7 +213,9 @@ export default function SignUpScreen() {
               }
             }}
           />
-          {errors.email ? <Text style={styles.errorText}>{errors.email}</Text> : null}
+          {errors.email ? (
+            <Text style={styles.errorText}>{errors.email}</Text>
+          ) : null}
 
           <Text style={styles.label}>Password</Text>
           <View style={styles.inputRow}>
@@ -227,9 +239,15 @@ export default function SignUpScreen() {
             <Pressable
               onPress={() => setShowPassword((value) => !value)}
               style={styles.iconButton}
-              accessibilityLabel={showPassword ? "Hide password" : "Show password"}
+              accessibilityLabel={
+                showPassword ? "Hide password" : "Show password"
+              }
             >
-              <Feather name={showPassword ? "eye" : "eye-off"} size={18} color="#7D8C90" />
+              <Feather
+                name={showPassword ? "eye" : "eye-off"}
+                size={18}
+                color="#7D8C90"
+              />
             </Pressable>
           </View>
           {errors.password ? (
@@ -261,9 +279,15 @@ export default function SignUpScreen() {
             <Pressable
               onPress={() => setShowConfirm((value) => !value)}
               style={styles.iconButton}
-              accessibilityLabel={showConfirm ? "Hide password" : "Show password"}
+              accessibilityLabel={
+                showConfirm ? "Hide password" : "Show password"
+              }
             >
-              <Feather name={showConfirm ? "eye" : "eye-off"} size={18} color="#7D8C90" />
+              <Feather
+                name={showConfirm ? "eye" : "eye-off"}
+                size={18}
+                color="#7D8C90"
+              />
             </Pressable>
           </View>
           {errors.confirmPassword ? (

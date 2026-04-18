@@ -1,4 +1,5 @@
 import { Feather, FontAwesome } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
 import { useMemo, useState } from "react";
 import {
   Alert,
@@ -10,7 +11,6 @@ import {
   TextInput,
   View,
 } from "react-native";
-import { useRouter } from "expo-router";
 
 export default function HomeScreen() {
   const router = useRouter();
@@ -18,7 +18,9 @@ export default function HomeScreen() {
   const [rememberMe, setRememberMe] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
+  const [errors, setErrors] = useState<{ email?: string; password?: string }>(
+    {},
+  );
   const gridLines = useMemo(
     () => Array.from({ length: 6 }, (_, index) => index),
     [],
@@ -216,9 +218,7 @@ export default function HomeScreen() {
           <View style={styles.socialRow}>
             <Pressable
               style={styles.socialButton}
-              onPress={() =>
-                Alert.alert("Google", "Google sign-in goes here.")
-              }
+              onPress={() => Alert.alert("Google", "Google sign-in goes here.")}
             >
               <FontAwesome name="google" size={16} color="#DB4437" />
               <Text style={styles.socialButtonText}>Google</Text>

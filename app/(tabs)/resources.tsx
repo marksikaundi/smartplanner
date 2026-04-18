@@ -1,5 +1,5 @@
 import { Feather } from "@expo/vector-icons";
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   Pressable,
   SafeAreaView,
@@ -8,6 +8,8 @@ import {
   Text,
   View,
 } from "react-native";
+import { databases } from "@/lib/appwrite";
+import { APPWRITE_IDS, isConfigured } from "@/lib/appwrite-ids";
 
 export default function ResourcesScreen() {
   const resources = useMemo(
@@ -35,6 +37,48 @@ export default function ResourcesScreen() {
     ],
     [],
   );
+  const [data, setData] = useState(resources);
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    let isActive = true;
+
+    const loadResources = async () => {
+      if (!isConfigured(APPWRITE_IDS.collections.resources)) {
+        return;
+      }
+
+      try {
+        setIsLoading(true);
+        const response = await databases.listDocuments(
+          APPWRITE_IDS.databaseId,
+          APPWRITE_IDS.collections.resources,
+        );
+        if (isActive) {
+          const mapped = response.documents.map((doc) => ({
+            title: String(doc.title ?? doc.name ?? "Resource"),
+            subtitle: String(doc.subtitle ?? doc.summary ?? ""),
+            icon: String(doc.icon ?? "book"),
+          }));
+          setData(mapped);
+        }
+      } catch {
+        if (isActive) {
+          setData(resources);
+        }
+      } finally {
+        if (isActive) {
+          setIsLoading(false);
+        }
+      }
+    };
+
+    loadResources();
+
+    return () => {
+      isActive = false;
+    };
+  }, [resources]);
 
   return (
     <SafeAreaView style={styles.screen}>
@@ -49,7 +93,7 @@ export default function ResourcesScreen() {
           </Text>
         </View>
 
-        {resources.map((item) => (
+        {data.map((item) => (
           <Pressable key={item.title} style={styles.card}>
             <View style={styles.iconWrap}>
               <Feather name={item.icon} size={16} color="#2D2E3A" />
@@ -61,6 +105,9 @@ export default function ResourcesScreen() {
             <Feather name="chevron-right" size={16} color="#9AA0B4" />
           </Pressable>
         ))}
+        {isLoading ? (
+          <Text style={styles.loadingText}>Loading resources...</Text>
+        ) : null}
       </ScrollView>
     </SafeAreaView>
   );
@@ -117,5 +164,11 @@ const styles = StyleSheet.create({
     fontSize: 11,
     color: "#6D6F7F",
     marginTop: 3,
+  },
+  loadingText: {
+    fontSize: 12,
+    color: "#7A7D92",
+    textAlign: "center",
+    marginTop: 6,
   },
 });

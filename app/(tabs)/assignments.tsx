@@ -1,5 +1,5 @@
 import { Feather } from "@expo/vector-icons";
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   Pressable,
   SafeAreaView,
@@ -8,6 +8,8 @@ import {
   Text,
   View,
 } from "react-native";
+import { databases } from "@/lib/appwrite";
+import { APPWRITE_IDS, isConfigured } from "@/lib/appwrite-ids";
 
 export default function AssignmentsScreen() {
   const assignments = useMemo(
@@ -30,6 +32,48 @@ export default function AssignmentsScreen() {
     ],
     [],
   );
+  const [data, setData] = useState(assignments);
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    let isActive = true;
+
+    const loadAssignments = async () => {
+      if (!isConfigured(APPWRITE_IDS.collections.assignments)) {
+        return;
+      }
+
+      try {
+        setIsLoading(true);
+        const response = await databases.listDocuments(
+          APPWRITE_IDS.databaseId,
+          APPWRITE_IDS.collections.assignments,
+        );
+        if (isActive) {
+          const mapped = response.documents.map((doc) => ({
+            title: String(doc.title ?? doc.name ?? "Assignment"),
+            subtitle: String(doc.subtitle ?? doc.details ?? ""),
+            status: String(doc.status ?? "Pending"),
+          }));
+          setData(mapped);
+        }
+      } catch {
+        if (isActive) {
+          setData(assignments);
+        }
+      } finally {
+        if (isActive) {
+          setIsLoading(false);
+        }
+      }
+    };
+
+    loadAssignments();
+
+    return () => {
+      isActive = false;
+    };
+  }, [assignments]);
 
   return (
     <SafeAreaView style={styles.screen}>
@@ -44,7 +88,7 @@ export default function AssignmentsScreen() {
           </Text>
         </View>
 
-        {assignments.map((item) => (
+        {data.map((item) => (
           <View key={item.title} style={styles.card}>
             <View style={styles.iconWrap}>
               <Feather name="clipboard" size={16} color="#2D2E3A" />
@@ -58,6 +102,9 @@ export default function AssignmentsScreen() {
             </Pressable>
           </View>
         ))}
+        {isLoading ? (
+          <Text style={styles.loadingText}>Loading assignments...</Text>
+        ) : null}
       </ScrollView>
     </SafeAreaView>
   );
@@ -125,5 +172,11 @@ const styles = StyleSheet.create({
     fontSize: 11,
     fontWeight: "700",
     color: "#2D2E3A",
+  },
+  loadingText: {
+    fontSize: 12,
+    color: "#7A7D92",
+    textAlign: "center",
+    marginTop: 6,
   },
 });

@@ -1,3 +1,5 @@
+import { databases, Query } from "@/lib/appwrite";
+import { APPWRITE_IDS, isConfigured } from "@/lib/appwrite-ids";
 import { Feather } from "@expo/vector-icons";
 import { useLocalSearchParams } from "expo-router";
 import { useEffect, useMemo, useState } from "react";
@@ -9,8 +11,6 @@ import {
   Text,
   View,
 } from "react-native";
-import { databases, Query } from "@/lib/appwrite";
-import { APPWRITE_IDS, isConfigured } from "@/lib/appwrite-ids";
 
 export default function JourneyScreen() {
   const { programId } = useLocalSearchParams<{ programId?: string }>();

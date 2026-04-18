@@ -14,7 +14,11 @@ const TAB_CONFIG: Record<
   profile: { label: "Profile", icon: "user" },
 };
 
-export function CustomTabBar({ state, descriptors, navigation }: BottomTabBarProps) {
+export function CustomTabBar({
+  state,
+  descriptors,
+  navigation,
+}: BottomTabBarProps) {
   const insets = useSafeAreaInsets();
 
   return (
@@ -50,14 +54,18 @@ export function CustomTabBar({ state, descriptors, navigation }: BottomTabBarPro
               accessibilityState={isFocused ? { selected: true } : {}}
               style={[styles.item, isFocused ? styles.itemActive : null]}
             >
-              <View style={[styles.iconWrap, isFocused ? styles.iconActive : null]}>
+              <View
+                style={[styles.iconWrap, isFocused ? styles.iconActive : null]}
+              >
                 <Feather
                   name={config.icon}
                   size={18}
                   color={isFocused ? "#FFFFFF" : "#8A8DA2"}
                 />
               </View>
-              <Text style={[styles.label, isFocused ? styles.labelActive : null]}>
+              <Text
+                style={[styles.label, isFocused ? styles.labelActive : null]}
+              >
                 {config.label}
               </Text>
             </Pressable>

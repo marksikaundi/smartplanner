@@ -14,10 +14,30 @@ export default function DashboardScreen() {
   const router = useRouter();
   const quickLinks = useMemo(
     () => [
-      { label: "Materials", color: "#FFE6D6", icon: "book-open" },
-      { label: "Programs", color: "#DDF4FF", icon: "grid" },
-      { label: "Resources", color: "#E7F8E9", icon: "folder" },
-      { label: "Past Assignments", color: "#F4E7FF", icon: "archive" },
+      {
+        label: "Materials",
+        color: "#FFE6D6",
+        icon: "book-open",
+        route: "/(tabs)/materials",
+      },
+      {
+        label: "Programs",
+        color: "#DDF4FF",
+        icon: "grid",
+        route: "/(tabs)/explore",
+      },
+      {
+        label: "Resources",
+        color: "#E7F8E9",
+        icon: "folder",
+        route: "/(tabs)/resources",
+      },
+      {
+        label: "Past Assignments",
+        color: "#F4E7FF",
+        icon: "archive",
+        route: "/(tabs)/assignments",
+      },
     ],
     [],
   );
@@ -29,12 +49,14 @@ export default function DashboardScreen() {
         description: "Organized syllabus and milestones",
         action: "Open",
         color: "#E6EDFF",
+        route: "/(tabs)/journey",
       },
       {
         title: "Take Notes",
         description: "Capture ideas and study points",
         action: "Write",
         color: "#FFF1D6",
+        route: "/(tabs)/notes",
       },
     ],
     [],
@@ -83,7 +105,11 @@ export default function DashboardScreen() {
 
         <View style={styles.quickRow}>
           {quickLinks.map((item) => (
-            <Pressable key={item.label} style={styles.quickItem}>
+            <Pressable
+              key={item.label}
+              style={styles.quickItem}
+              onPress={() => router.push(item.route)}
+            >
               <View style={[styles.quickIcon, { backgroundColor: item.color }]}>
                 <Feather name={item.icon} size={18} color="#2D2E3A" />
               </View>
@@ -99,14 +125,14 @@ export default function DashboardScreen() {
               Track your ranking this week
             </Text>
           </View>
-          <Pressable style={styles.heroAction}>
+          <Pressable style={styles.heroAction} onPress={() => router.push("/(tabs)/stats")}>
             <Text style={styles.heroActionText}>View</Text>
           </Pressable>
         </View>
 
         <View style={styles.sectionHeader}>
           <Text style={styles.sectionTitle}>Available Programs</Text>
-          <Pressable>
+          <Pressable onPress={() => router.push("/(tabs)/explore")}>
             <Text style={styles.sectionLink}>View all</Text>
           </Pressable>
         </View>
@@ -118,7 +144,10 @@ export default function DashboardScreen() {
             >
               <Text style={styles.programTitle}>{card.title}</Text>
               <Text style={styles.programSubtitle}>{card.description}</Text>
-              <Pressable style={styles.programButton}>
+              <Pressable
+                style={styles.programButton}
+                onPress={() => router.push(card.route)}
+              >
                 <Text style={styles.programButtonText}>{card.action}</Text>
                 <Feather name="arrow-right" size={14} color="#2D2E3A" />
               </Pressable>
@@ -128,7 +157,7 @@ export default function DashboardScreen() {
 
         <View style={styles.sectionHeader}>
           <Text style={styles.sectionTitle}>Today&apos;s Homework</Text>
-          <Pressable>
+          <Pressable onPress={() => router.push("/(tabs)/assignments")}>
             <Text style={styles.sectionLink}>View all</Text>
           </Pressable>
         </View>
@@ -142,7 +171,10 @@ export default function DashboardScreen() {
                 <Text style={styles.listTitle}>{item.title}</Text>
                 <Text style={styles.listSubtitle}>{item.subtitle}</Text>
               </View>
-              <Pressable style={styles.listAction}>
+              <Pressable
+                style={styles.listAction}
+                onPress={() => router.push("/(tabs)/assignments")}
+              >
                 <Text style={styles.listActionText}>{item.action}</Text>
               </Pressable>
             </View>
@@ -151,16 +183,22 @@ export default function DashboardScreen() {
 
         <View style={styles.sectionHeader}>
           <Text style={styles.sectionTitle}>Resources</Text>
-          <Pressable>
+          <Pressable onPress={() => router.push("/(tabs)/resources")}>
             <Text style={styles.sectionLink}>Browse</Text>
           </Pressable>
         </View>
         <View style={styles.resourceRow}>
-          <Pressable style={styles.resourceCard}>
+          <Pressable
+            style={styles.resourceCard}
+            onPress={() => router.push("/(tabs)/materials")}
+          >
             <Text style={styles.resourceTitle}>Materials</Text>
             <Text style={styles.resourceSubtitle}>PDFs, slides, audio</Text>
           </Pressable>
-          <Pressable style={styles.resourceCard}>
+          <Pressable
+            style={styles.resourceCard}
+            onPress={() => router.push("/(tabs)/notes")}
+          >
             <Text style={styles.resourceTitle}>Take a Note</Text>
             <Text style={styles.resourceSubtitle}>Save your insights</Text>
           </Pressable>

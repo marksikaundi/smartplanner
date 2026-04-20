@@ -11,25 +11,67 @@ export default function ProgramsScreen() {
   const programs = useMemo(
     () => [
       {
-        id: "chemistry",
-        title: "Chemistry",
+        id: "electronic-computing",
+        title: "Electronic Computing",
         subtitle: "10 Chapters",
-        description: "Organic chemistry, reactions, lab safety",
+        description: "Systems, logic, and computing fundamentals",
         color: "#DDF9C8",
       },
       {
-        id: "maths",
-        title: "Maths",
+        id: "engineering-drawing",
+        title: "Engineering Drawing",
         subtitle: "12 Chapters",
-        description: "Algebra, geometry, calculus",
+        description: "Drafting, layouts, and technical sketching",
         color: "#E8F2FF",
       },
       {
-        id: "biology",
-        title: "Biology",
+        id: "advanced-math",
+        title: "Advanced Math",
         subtitle: "9 Chapters",
-        description: "Cells, systems, genetics",
+        description: "Calculus, vectors, and advanced algebra",
         color: "#FFE0E7",
+      },
+      {
+        id: "theory-of-electrical",
+        title: "Theory Of Electrical",
+        subtitle: "8 Chapters",
+        description: "Circuits, power, and electrical systems",
+        color: "#FFEFC0",
+      },
+      {
+        id: "interactive-web",
+        title: "Interactive Web",
+        subtitle: "7 Chapters",
+        description: "UI, UX, and modern web interactions",
+        color: "#E7F8E9",
+      },
+      {
+        id: "programming",
+        title: "Programming",
+        subtitle: "10 Chapters",
+        description: "Problem solving and coding foundations",
+        color: "#F4E7FF",
+      },
+      {
+        id: "advanced-physics",
+        title: "Advanced Physics",
+        subtitle: "9 Chapters",
+        description: "Mechanics, waves, and electromagnetism",
+        color: "#E6EDFF",
+      },
+      {
+        id: "advanced-chemistry",
+        title: "Advanced Chemistry",
+        subtitle: "8 Chapters",
+        description: "Reactions, compounds, and lab practice",
+        color: "#FFE6D6",
+      },
+      {
+        id: "other",
+        title: "Other",
+        subtitle: "Open",
+        description: "Additional programs and materials",
+        color: "#F1F2F6",
       },
     ],
     [],
@@ -108,8 +150,8 @@ export default function ProgramsScreen() {
               style={styles.programAction}
               onPress={() =>
                 router.push({
-                  pathname: "/(tabs)/journey",
-                  params: { programId: program.id },
+                  pathname: "/(tabs)/resources",
+                  params: { programName: program.title },
                 })
               }
             >

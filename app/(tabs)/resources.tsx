@@ -1,7 +1,8 @@
-import { databases, storage } from "@/lib/appwrite";
+import { databases, Query, storage } from "@/lib/appwrite";
 import { APPWRITE_IDS, isConfigured } from "@/lib/appwrite-ids";
 import { Feather } from "@expo/vector-icons";
 import * as Linking from "expo-linking";
+import { useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -16,6 +17,7 @@ type ResourceItem = {
 };
 
 export default function ResourcesScreen() {
+  const { programName } = useLocalSearchParams<{ programName?: string }>();
   const [data, setData] = useState<ResourceItem[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [loadError, setLoadError] = useState<string | null>(null);
@@ -34,9 +36,14 @@ export default function ResourcesScreen() {
       try {
         setIsLoading(true);
         setLoadError(null);
+        const queries = [] as string[];
+        if (programName) {
+          queries.push(Query.equal("programName", String(programName)));
+        }
         const response = await databases.listDocuments(
           APPWRITE_IDS.databaseId,
           APPWRITE_IDS.collections.resources,
+          queries,
         );
         if (isActive) {
           const mapped = response.documents.map((doc) => ({
@@ -67,7 +74,7 @@ export default function ResourcesScreen() {
     return () => {
       isActive = false;
     };
-  }, []);
+  }, [programName]);
 
   return (
     <SafeAreaView style={styles.screen}>
@@ -78,7 +85,9 @@ export default function ResourcesScreen() {
         <View style={styles.header}>
           <Text style={styles.title}>Resources</Text>
           <Text style={styles.subtitle}>
-            Tools to support your study sessions
+            {programName
+              ? `Resources for ${programName}`
+              : "Tools to support your study sessions"}
           </Text>
         </View>
 
@@ -120,7 +129,11 @@ export default function ResourcesScreen() {
           <Text style={styles.emptyText}>{loadError}</Text>
         ) : null}
         {!isLoading && !loadError && data.length === 0 ? (
-          <Text style={styles.emptyText}>No resources uploaded yet.</Text>
+          <Text style={styles.emptyText}>
+            {programName
+              ? `No resources uploaded for ${programName} yet.`
+              : "No resources uploaded yet."}
+          </Text>
         ) : null}
       </ScrollView>
     </SafeAreaView>

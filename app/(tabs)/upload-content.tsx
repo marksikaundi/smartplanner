@@ -10,7 +10,7 @@ import { APPWRITE_IDS, isConfigured } from "@/lib/appwrite-ids";
 import { Feather } from "@expo/vector-icons";
 import * as DocumentPicker from "expo-document-picker";
 import * as FileSystem from "expo-file-system/legacy";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   ActivityIndicator,
   Alert,
@@ -27,10 +27,26 @@ export default function UploadContentScreen() {
   const chunkSize = 5 * 1024 * 1024;
   const categories = ["Materials", "Resources", "Assignments", "Notes"];
   const tags = useMemo(() => ["Engineering", "Humanities", "Education"], []);
+  const defaultPrograms = useMemo(
+    () => [
+      "Electronic Computing",
+      "Engineering Drawing",
+      "Advanced Math",
+      "Theory Of Electrical",
+      "Interactive Web",
+      "Programming",
+      "Advanced Physics",
+      "Advanced Chemistry",
+      "Other",
+    ],
+    [],
+  );
   const [title, setTitle] = useState("");
   const [selectedCategories, setSelectedCategories] = useState<string[]>([
     categories[0],
   ]);
+  const [programs, setPrograms] = useState<string[]>(defaultPrograms);
+  const [selectedProgram, setSelectedProgram] = useState(defaultPrograms[0]);
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [description, setDescription] = useState("");
   const [file, setFile] = useState<
@@ -43,6 +59,45 @@ export default function UploadContentScreen() {
   >();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
+
+  useEffect(() => {
+    let isActive = true;
+
+    const loadPrograms = async () => {
+      if (!isConfigured(APPWRITE_IDS.collections.programs)) {
+        return;
+      }
+
+      try {
+        const response = await databases.listDocuments(
+          APPWRITE_IDS.databaseId,
+          APPWRITE_IDS.collections.programs,
+        );
+        if (!isActive) {
+          return;
+        }
+        const mapped = response.documents
+          .map((doc) => String(doc.title ?? doc.name ?? ""))
+          .filter((value) => Boolean(value));
+        if (mapped.length > 0) {
+          setPrograms(mapped);
+          if (!mapped.includes(selectedProgram)) {
+            setSelectedProgram(mapped[0]);
+          }
+        }
+      } catch {
+        if (isActive) {
+          setPrograms(defaultPrograms);
+        }
+      }
+    };
+
+    loadPrograms();
+
+    return () => {
+      isActive = false;
+    };
+  }, [defaultPrograms, selectedProgram]);
 
   const handlePickFile = async () => {
     const result = await DocumentPicker.getDocumentAsync({
@@ -79,6 +134,11 @@ export default function UploadContentScreen() {
 
     if (!selectedCategories.length) {
       Alert.alert("Missing category", "Select at least one category.");
+      return;
+    }
+
+    if (!selectedProgram) {
+      Alert.alert("Missing program", "Select a program for this upload.");
       return;
     }
 
@@ -205,6 +265,7 @@ export default function UploadContentScreen() {
           description: description.trim(),
           categories: selectedCategories,
           tags: selectedTags,
+          programName: selectedProgram,
           fileId: created.$id,
           fileName: created.name,
           type: file.type ?? "File",
@@ -226,6 +287,7 @@ export default function UploadContentScreen() {
         Alert.alert("Uploaded", "Your content has been submitted.");
         setTitle("");
         setSelectedCategories([categories[0]]);
+        setSelectedProgram(programs[0] ?? "");
         setSelectedTags([]);
         setDescription("");
         setFile(undefined);
@@ -308,6 +370,29 @@ export default function UploadContentScreen() {
                     selectedCategories.includes(item)
                       ? styles.categoryTextActive
                       : null,
+                  ]}
+                >
+                  {item}
+                </Text>
+              </Pressable>
+            ))}
+          </View>
+
+          <Text style={styles.label}>Program</Text>
+          <View style={styles.categoryRow}>
+            {programs.map((item) => (
+              <Pressable
+                key={item}
+                onPress={() => setSelectedProgram(item)}
+                style={[
+                  styles.categoryChip,
+                  selectedProgram === item ? styles.categoryChipActive : null,
+                ]}
+              >
+                <Text
+                  style={[
+                    styles.categoryText,
+                    selectedProgram === item ? styles.categoryTextActive : null,
                   ]}
                 >
                   {item}

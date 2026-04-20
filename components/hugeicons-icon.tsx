@@ -9,9 +9,9 @@ import Svg, {
   Rect,
 } from "react-native-svg";
 
-export type HugeiconsIconData = ReadonlyArray<
+export type HugeiconsIconData = readonly (
   readonly [string, Record<string, string | number>]
->;
+)[];
 
 type HugeiconsIconProps = {
   icon: HugeiconsIconData;

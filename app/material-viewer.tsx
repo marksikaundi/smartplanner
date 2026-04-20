@@ -32,10 +32,8 @@ export default function MaterialViewerScreen() {
       return undefined;
     }
 
-    return storage.getFilePreview(
-      APPWRITE_IDS.storageBucketId,
-      resolvedFileId,
-    ).href;
+    return storage.getFilePreview(APPWRITE_IDS.storageBucketId, resolvedFileId)
+      .href;
   }, [resolvedFileId]);
 
   useEffect(() => {

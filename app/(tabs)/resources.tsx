@@ -1,7 +1,7 @@
 import HugeiconsIcon, {
   type HugeiconsIconData,
 } from "@/components/hugeicons-icon";
-import { databases, Query, storage } from "@/lib/appwrite";
+import { databases, Query } from "@/lib/appwrite";
 import { APPWRITE_IDS, isConfigured } from "@/lib/appwrite-ids";
 import { addRecentOpen } from "@/lib/recent-opens";
 import {
@@ -141,17 +141,11 @@ export default function ResourcesScreen() {
                 subtitle: item.subtitle,
                 category: "Resources",
               });
-              const url = storage.getFileView(
-                APPWRITE_IDS.storageBucketId,
-                item.fileId,
-              ).href;
               router.push({
                 pathname: "/material-viewer",
                 params: {
-                  url,
+                  fileId: item.fileId,
                   title: item.title,
-                  fileName: item.fileName ?? "",
-                  type: item.type ?? "",
                 },
               });
             }}

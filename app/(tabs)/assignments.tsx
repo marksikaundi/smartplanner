@@ -1,5 +1,5 @@
 import HugeiconsIcon from "@/components/hugeicons-icon";
-import { databases, storage } from "@/lib/appwrite";
+import { databases } from "@/lib/appwrite";
 import { APPWRITE_IDS, isConfigured } from "@/lib/appwrite-ids";
 import { addRecentOpen } from "@/lib/recent-opens";
 import { ClipboardIcon } from "@hugeicons/core-free-icons";
@@ -99,17 +99,11 @@ export default function AssignmentsScreen() {
                 subtitle: item.subtitle,
                 category: "Assignments",
               });
-              const url = storage.getFileView(
-                APPWRITE_IDS.storageBucketId,
-                item.fileId,
-              ).href;
               router.push({
                 pathname: "/material-viewer",
                 params: {
-                  url,
+                  fileId: item.fileId,
                   title: item.title,
-                  fileName: item.fileName ?? "",
-                  type: item.type ?? "",
                 },
               });
             }}

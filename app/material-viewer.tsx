@@ -1,3 +1,5 @@
+import { storage } from "@/lib/appwrite";
+import { APPWRITE_IDS } from "@/lib/appwrite-ids";
 import { useLocalSearchParams, useNavigation } from "expo-router";
 import { useEffect, useMemo } from "react";
 import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
@@ -6,19 +8,10 @@ import { WebView } from "react-native-webview";
 
 export default function MaterialViewerScreen() {
   const navigation = useNavigation();
-  const { url, title, fileName, type } = useLocalSearchParams<{
-    url?: string | string[];
+  const { fileId, title } = useLocalSearchParams<{
+    fileId?: string | string[];
     title?: string | string[];
-    fileName?: string | string[];
-    type?: string | string[];
   }>();
-
-  const resolvedUrl = useMemo(() => {
-    if (Array.isArray(url)) {
-      return url[0];
-    }
-    return url;
-  }, [url]);
 
   const resolvedTitle = useMemo(() => {
     if (Array.isArray(title)) {
@@ -27,45 +20,23 @@ export default function MaterialViewerScreen() {
     return title ?? "Material";
   }, [title]);
 
-  const resolvedFileName = useMemo(() => {
-    if (Array.isArray(fileName)) {
-      return fileName[0];
+  const resolvedFileId = useMemo(() => {
+    if (Array.isArray(fileId)) {
+      return fileId[0];
     }
-    return fileName ?? "";
-  }, [fileName]);
-
-  const resolvedType = useMemo(() => {
-    if (Array.isArray(type)) {
-      return type[0];
-    }
-    return type ?? "";
-  }, [type]);
+    return fileId;
+  }, [fileId]);
 
   const viewerUrl = useMemo(() => {
-    if (!resolvedUrl) {
+    if (!resolvedFileId || !APPWRITE_IDS.storageBucketId) {
       return undefined;
     }
 
-    const normalizedName = resolvedFileName.toLowerCase();
-    const normalizedType = resolvedType.toLowerCase();
-    const normalizedUrl = resolvedUrl.toLowerCase();
-    const isOfficeDoc =
-      normalizedType.includes("pdf") ||
-      normalizedType.includes("officedocument") ||
-      normalizedType.includes("msword") ||
-      normalizedType.includes("powerpoint") ||
-      normalizedType.includes("excel") ||
-      /\.(pdf|doc|docx|ppt|pptx|xls|xlsx)$/.test(normalizedName) ||
-      /\.(pdf|doc|docx|ppt|pptx|xls|xlsx)(\?|$)/.test(normalizedUrl);
-
-    if (isOfficeDoc) {
-      return `https://docs.google.com/gview?embedded=true&url=${encodeURIComponent(
-        resolvedUrl,
-      )}`;
-    }
-
-    return resolvedUrl;
-  }, [resolvedFileName, resolvedType, resolvedUrl]);
+    return storage.getFilePreview(
+      APPWRITE_IDS.storageBucketId,
+      resolvedFileId,
+    ).href;
+  }, [resolvedFileId]);
 
   useEffect(() => {
     navigation.setOptions({

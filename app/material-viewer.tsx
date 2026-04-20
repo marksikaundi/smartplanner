@@ -1,6 +1,13 @@
+import * as Linking from "expo-linking";
 import { useLocalSearchParams, useNavigation } from "expo-router";
 import { useEffect, useMemo } from "react";
-import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
+import {
+  ActivityIndicator,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { WebView } from "react-native-webview";
 
@@ -66,8 +73,22 @@ export default function MaterialViewerScreen() {
   }, [resolvedFileName, resolvedType, resolvedUrl]);
 
   useEffect(() => {
-    navigation.setOptions({ title: resolvedTitle });
-  }, [navigation, resolvedTitle]);
+    navigation.setOptions({
+      title: resolvedTitle,
+      headerRight: resolvedUrl
+        ? () => (
+            <Pressable
+              onPress={() => {
+                void Linking.openURL(resolvedUrl);
+              }}
+              style={styles.headerAction}
+            >
+              <Text style={styles.headerActionText}>Download</Text>
+            </Pressable>
+          )
+        : undefined,
+    });
+  }, [navigation, resolvedTitle, resolvedUrl]);
 
   if (!viewerUrl) {
     return (
@@ -129,5 +150,17 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: "#7A7D92",
     textAlign: "center",
+  },
+  headerAction: {
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 12,
+    backgroundColor: "#E8ECFF",
+    marginRight: 12,
+  },
+  headerActionText: {
+    fontSize: 12,
+    fontWeight: "700",
+    color: "#2D2E3A",
   },
 });

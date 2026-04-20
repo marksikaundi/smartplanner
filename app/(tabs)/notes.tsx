@@ -2,48 +2,37 @@ import { databases } from "@/lib/appwrite";
 import { APPWRITE_IDS, isConfigured } from "@/lib/appwrite-ids";
 import { Feather } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function NotesScreen() {
   const router = useRouter();
-  const notes = useMemo(
-    () => [
-      {
-        id: "note-1",
-        title: "Organic chemistry recap",
-        subtitle: "Key reactions and catalysts",
-        date: "Today",
-      },
-      {
-        id: "note-2",
-        title: "Math formulas",
-        subtitle: "Quadratic shortcuts",
-        date: "Yesterday",
-      },
-      {
-        id: "note-3",
-        title: "Lab prep",
-        subtitle: "Safety checklist",
-        date: "Apr 10",
-      },
-    ],
-    [],
-  );
-  const [data, setData] = useState(notes);
+  const [data, setData] = useState<
+    {
+      id: string;
+      title: string;
+      subtitle: string;
+      date: string;
+    }[]
+  >([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [loadError, setLoadError] = useState<string | null>(null);
 
   useEffect(() => {
     let isActive = true;
 
     const loadNotes = async () => {
       if (!isConfigured(APPWRITE_IDS.collections.notes)) {
+        if (isActive) {
+          setLoadError("Notes collection is not configured.");
+        }
         return;
       }
 
       try {
         setIsLoading(true);
+        setLoadError(null);
         const response = await databases.listDocuments(
           APPWRITE_IDS.databaseId,
           APPWRITE_IDS.collections.notes,
@@ -59,7 +48,7 @@ export default function NotesScreen() {
         }
       } catch {
         if (isActive) {
-          setData(notes);
+          setLoadError("Unable to load notes right now.");
         }
       } finally {
         if (isActive) {
@@ -73,7 +62,7 @@ export default function NotesScreen() {
     return () => {
       isActive = false;
     };
-  }, [notes]);
+  }, []);
 
   return (
     <SafeAreaView style={styles.screen}>
@@ -115,6 +104,12 @@ export default function NotesScreen() {
         ))}
         {isLoading ? (
           <Text style={styles.loadingText}>Loading notes...</Text>
+        ) : null}
+        {!isLoading && loadError ? (
+          <Text style={styles.emptyText}>{loadError}</Text>
+        ) : null}
+        {!isLoading && !loadError && data.length === 0 ? (
+          <Text style={styles.emptyText}>No notes created yet.</Text>
         ) : null}
       </ScrollView>
     </SafeAreaView>
@@ -194,5 +189,11 @@ const styles = StyleSheet.create({
     color: "#7A7D92",
     textAlign: "center",
     marginTop: 6,
+  },
+  emptyText: {
+    fontSize: 12,
+    color: "#7A7D92",
+    textAlign: "center",
+    marginTop: 12,
   },
 });

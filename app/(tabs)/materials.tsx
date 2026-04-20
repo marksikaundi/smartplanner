@@ -2,49 +2,38 @@ import { databases, storage } from "@/lib/appwrite";
 import { APPWRITE_IDS, isConfigured } from "@/lib/appwrite-ids";
 import { Feather } from "@expo/vector-icons";
 import * as Linking from "expo-linking";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function MaterialsScreen() {
-  const materials = useMemo(
-    () => [
-      {
-        title: "Lecture Slides",
-        subtitle: "Chemistry · Week 5",
-        type: "PDF",
-      },
-      {
-        title: "Lab Manual",
-        subtitle: "Safety and procedures",
-        type: "DOC",
-      },
-      {
-        title: "Audio Recap",
-        subtitle: "Organic reactions",
-        type: "MP3",
-      },
-      {
-        title: "Worksheet",
-        subtitle: "Practice problems",
-        type: "PDF",
-      },
-    ],
-    [],
-  );
-  const [data, setData] = useState(materials);
+  const [data, setData] = useState<
+    {
+      id: string;
+      title: string;
+      subtitle: string;
+      type: string;
+      fileId?: string;
+      fileName?: string;
+    }[]
+  >([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [loadError, setLoadError] = useState<string | null>(null);
 
   useEffect(() => {
     let isActive = true;
 
     const loadMaterials = async () => {
       if (!isConfigured(APPWRITE_IDS.collections.materials)) {
+        if (isActive) {
+          setLoadError("Materials collection is not configured.");
+        }
         return;
       }
 
       try {
         setIsLoading(true);
+        setLoadError(null);
         const response = await databases.listDocuments(
           APPWRITE_IDS.databaseId,
           APPWRITE_IDS.collections.materials,
@@ -62,7 +51,7 @@ export default function MaterialsScreen() {
         }
       } catch {
         if (isActive) {
-          setData(materials);
+          setLoadError("Unable to load materials right now.");
         }
       } finally {
         if (isActive) {
@@ -76,7 +65,7 @@ export default function MaterialsScreen() {
     return () => {
       isActive = false;
     };
-  }, [materials]);
+  }, []);
 
   return (
     <SafeAreaView style={styles.screen}>
@@ -120,6 +109,12 @@ export default function MaterialsScreen() {
         ))}
         {isLoading ? (
           <Text style={styles.loadingText}>Loading materials...</Text>
+        ) : null}
+        {!isLoading && loadError ? (
+          <Text style={styles.emptyText}>{loadError}</Text>
+        ) : null}
+        {!isLoading && !loadError && data.length === 0 ? (
+          <Text style={styles.emptyText}>No materials uploaded yet.</Text>
         ) : null}
       </ScrollView>
     </SafeAreaView>
@@ -194,5 +189,11 @@ const styles = StyleSheet.create({
     color: "#7A7D92",
     textAlign: "center",
     marginTop: 6,
+  },
+  emptyText: {
+    fontSize: 12,
+    color: "#7A7D92",
+    textAlign: "center",
+    marginTop: 12,
   },
 });

@@ -2,7 +2,7 @@ import { databases, storage } from "@/lib/appwrite";
 import { APPWRITE_IDS, isConfigured } from "@/lib/appwrite-ids";
 import { Feather } from "@expo/vector-icons";
 import * as Linking from "expo-linking";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -16,39 +16,24 @@ type AssignmentItem = {
 };
 
 export default function AssignmentsScreen() {
-  const assignments = useMemo<AssignmentItem[]>(
-    () => [
-      {
-        title: "Organic Chemistry Quiz",
-        subtitle: "Due Apr 22 · 10 questions",
-        status: "Submitted",
-      },
-      {
-        title: "Algebra Worksheet",
-        subtitle: "Due Apr 25 · 12 problems",
-        status: "Pending",
-      },
-      {
-        title: "Lab Report",
-        subtitle: "Due Apr 28 · 6 sections",
-        status: "Draft",
-      },
-    ],
-    [],
-  );
-  const [data, setData] = useState<AssignmentItem[]>(assignments);
+  const [data, setData] = useState<AssignmentItem[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [loadError, setLoadError] = useState<string | null>(null);
 
   useEffect(() => {
     let isActive = true;
 
     const loadAssignments = async () => {
       if (!isConfigured(APPWRITE_IDS.collections.assignments)) {
+        if (isActive) {
+          setLoadError("Assignments collection is not configured.");
+        }
         return;
       }
 
       try {
         setIsLoading(true);
+        setLoadError(null);
         const response = await databases.listDocuments(
           APPWRITE_IDS.databaseId,
           APPWRITE_IDS.collections.assignments,
@@ -56,7 +41,9 @@ export default function AssignmentsScreen() {
         if (isActive) {
           const mapped = response.documents.map((doc) => ({
             title: String(doc.title ?? doc.name ?? "Assignment"),
-            subtitle: String(doc.subtitle ?? doc.details ?? doc.description ?? ""),
+            subtitle: String(
+              doc.subtitle ?? doc.details ?? doc.description ?? "",
+            ),
             status: String(doc.status ?? "Pending"),
             fileId: doc.fileId as string | undefined,
             fileName: String(doc.fileName ?? ""),
@@ -66,7 +53,7 @@ export default function AssignmentsScreen() {
         }
       } catch {
         if (isActive) {
-          setData(assignments);
+          setLoadError("Unable to load assignments right now.");
         }
       } finally {
         if (isActive) {
@@ -80,7 +67,7 @@ export default function AssignmentsScreen() {
     return () => {
       isActive = false;
     };
-  }, [assignments]);
+  }, []);
 
   return (
     <SafeAreaView style={styles.screen}>
@@ -126,6 +113,12 @@ export default function AssignmentsScreen() {
         ))}
         {isLoading ? (
           <Text style={styles.loadingText}>Loading assignments...</Text>
+        ) : null}
+        {!isLoading && loadError ? (
+          <Text style={styles.emptyText}>{loadError}</Text>
+        ) : null}
+        {!isLoading && !loadError && data.length === 0 ? (
+          <Text style={styles.emptyText}>No assignments uploaded yet.</Text>
         ) : null}
       </ScrollView>
     </SafeAreaView>
@@ -200,5 +193,11 @@ const styles = StyleSheet.create({
     color: "#7A7D92",
     textAlign: "center",
     marginTop: 6,
+  },
+  emptyText: {
+    fontSize: 12,
+    color: "#7A7D92",
+    textAlign: "center",
+    marginTop: 12,
   },
 });

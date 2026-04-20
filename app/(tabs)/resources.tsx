@@ -1,12 +1,22 @@
-import { databases } from "@/lib/appwrite";
+import { databases, storage } from "@/lib/appwrite";
 import { APPWRITE_IDS, isConfigured } from "@/lib/appwrite-ids";
 import { Feather } from "@expo/vector-icons";
+import * as Linking from "expo-linking";
 import { useEffect, useMemo, useState } from "react";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+type ResourceItem = {
+  title: string;
+  subtitle: string;
+  icon: string;
+  fileId?: string;
+  fileName?: string;
+  type?: string;
+};
+
 export default function ResourcesScreen() {
-  const resources = useMemo(
+  const resources = useMemo<ResourceItem[]>(
     () => [
       {
         title: "Reference Library",
@@ -31,7 +41,7 @@ export default function ResourcesScreen() {
     ],
     [],
   );
-  const [data, setData] = useState(resources);
+  const [data, setData] = useState<ResourceItem[]>(resources);
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
@@ -51,8 +61,11 @@ export default function ResourcesScreen() {
         if (isActive) {
           const mapped = response.documents.map((doc) => ({
             title: String(doc.title ?? doc.name ?? "Resource"),
-            subtitle: String(doc.subtitle ?? doc.summary ?? ""),
+            subtitle: String(doc.subtitle ?? doc.summary ?? doc.description ?? ""),
             icon: String(doc.icon ?? "book"),
+            fileId: doc.fileId as string | undefined,
+            fileName: String(doc.fileName ?? ""),
+            type: String(doc.type ?? ""),
           }));
           setData(mapped);
         }
@@ -88,7 +101,20 @@ export default function ResourcesScreen() {
         </View>
 
         {data.map((item) => (
-          <Pressable key={item.title} style={styles.card}>
+          <Pressable
+            key={`${item.title}-${item.fileId ?? "default"}`}
+            style={styles.card}
+            onPress={() => {
+              if (!item.fileId || !APPWRITE_IDS.storageBucketId) {
+                return;
+              }
+              const url = storage.getFileView(
+                APPWRITE_IDS.storageBucketId,
+                item.fileId,
+              ).href;
+              void Linking.openURL(url);
+            }}
+          >
             <View style={styles.iconWrap}>
               <Feather name={item.icon} size={16} color="#2D2E3A" />
             </View>
@@ -96,7 +122,13 @@ export default function ResourcesScreen() {
               <Text style={styles.cardTitle}>{item.title}</Text>
               <Text style={styles.cardSubtitle}>{item.subtitle}</Text>
             </View>
-            <Feather name="chevron-right" size={16} color="#9AA0B4" />
+            {item.type ? (
+              <View style={styles.tag}>
+                <Text style={styles.tagText}>{item.type}</Text>
+              </View>
+            ) : (
+              <Feather name="chevron-right" size={16} color="#9AA0B4" />
+            )}
           </Pressable>
         ))}
         {isLoading ? (
@@ -158,6 +190,17 @@ const styles = StyleSheet.create({
     fontSize: 11,
     color: "#6D6F7F",
     marginTop: 3,
+  },
+  tag: {
+    backgroundColor: "#E8ECFF",
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 10,
+  },
+  tagText: {
+    fontSize: 11,
+    fontWeight: "700",
+    color: "#2D2E3A",
   },
   loadingText: {
     fontSize: 12,

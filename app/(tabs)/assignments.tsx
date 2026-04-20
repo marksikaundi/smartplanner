@@ -1,12 +1,22 @@
-import { databases } from "@/lib/appwrite";
+import { databases, storage } from "@/lib/appwrite";
 import { APPWRITE_IDS, isConfigured } from "@/lib/appwrite-ids";
 import { Feather } from "@expo/vector-icons";
+import * as Linking from "expo-linking";
 import { useEffect, useMemo, useState } from "react";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+type AssignmentItem = {
+  title: string;
+  subtitle: string;
+  status: string;
+  fileId?: string;
+  fileName?: string;
+  type?: string;
+};
+
 export default function AssignmentsScreen() {
-  const assignments = useMemo(
+  const assignments = useMemo<AssignmentItem[]>(
     () => [
       {
         title: "Organic Chemistry Quiz",
@@ -26,7 +36,7 @@ export default function AssignmentsScreen() {
     ],
     [],
   );
-  const [data, setData] = useState(assignments);
+  const [data, setData] = useState<AssignmentItem[]>(assignments);
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
@@ -46,8 +56,11 @@ export default function AssignmentsScreen() {
         if (isActive) {
           const mapped = response.documents.map((doc) => ({
             title: String(doc.title ?? doc.name ?? "Assignment"),
-            subtitle: String(doc.subtitle ?? doc.details ?? ""),
+            subtitle: String(doc.subtitle ?? doc.details ?? doc.description ?? ""),
             status: String(doc.status ?? "Pending"),
+            fileId: doc.fileId as string | undefined,
+            fileName: String(doc.fileName ?? ""),
+            type: String(doc.type ?? ""),
           }));
           setData(mapped);
         }
@@ -83,7 +96,20 @@ export default function AssignmentsScreen() {
         </View>
 
         {data.map((item) => (
-          <View key={item.title} style={styles.card}>
+          <Pressable
+            key={`${item.title}-${item.fileId ?? "default"}`}
+            style={styles.card}
+            onPress={() => {
+              if (!item.fileId || !APPWRITE_IDS.storageBucketId) {
+                return;
+              }
+              const url = storage.getFileView(
+                APPWRITE_IDS.storageBucketId,
+                item.fileId,
+              ).href;
+              void Linking.openURL(url);
+            }}
+          >
             <View style={styles.iconWrap}>
               <Feather name="clipboard" size={16} color="#2D2E3A" />
             </View>
@@ -92,9 +118,11 @@ export default function AssignmentsScreen() {
               <Text style={styles.cardSubtitle}>{item.subtitle}</Text>
             </View>
             <Pressable style={styles.statusPill}>
-              <Text style={styles.statusText}>{item.status}</Text>
+              <Text style={styles.statusText}>
+                {item.type ? item.type : item.status}
+              </Text>
             </Pressable>
-          </View>
+          </Pressable>
         ))}
         {isLoading ? (
           <Text style={styles.loadingText}>Loading assignments...</Text>

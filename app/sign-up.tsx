@@ -4,6 +4,7 @@ import { useRouter } from "expo-router";
 import { useMemo, useState } from "react";
 import {
   Alert,
+  Image,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -131,9 +132,14 @@ export default function SignUpScreen() {
           >
             <Feather name="arrow-left" size={18} color="#D8E6E9" />
           </Pressable>
-          <Text style={styles.headerTitle}>
-            Sign up now to access your personal account
-          </Text>
+          <View style={styles.logoWrap}>
+            <Image
+              source={require("@/assets/images/icon.png")}
+              style={styles.logoImage}
+              resizeMode="contain"
+              accessibilityLabel="ICU Study logo"
+            />
+          </View>
           <Text style={styles.headerSubtitle}>
             Sign up to access your account and exclusive features.
           </Text>
@@ -353,10 +359,11 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     paddingHorizontal: 20,
+    paddingTop: 36,
     paddingBottom: 40,
   },
   header: {
-    paddingTop: 12,
+    paddingTop: 8,
     paddingBottom: 24,
   },
   backButton: {
@@ -368,6 +375,15 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     marginBottom: 18,
+  },
+  logoWrap: {
+    alignItems: "center",
+    width: "100%",
+    marginBottom: 18,
+  },
+  logoImage: {
+    width: 72,
+    height: 72,
   },
   headerTitle: {
     color: "#F3FAFB",

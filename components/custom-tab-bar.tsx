@@ -9,7 +9,7 @@ const TAB_CONFIG: Record<
 > = {
   index: { label: "Home", icon: "home" },
   explore: { label: "Explore", icon: "compass" },
-  journey: { label: "Journey", icon: "map" },
+  journey: { label: "Tutor", icon: "help-circle" },
   stats: { label: "Stats", icon: "bar-chart-2" },
   profile: { label: "Profile", icon: "user" },
 };

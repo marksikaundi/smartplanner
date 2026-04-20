@@ -68,9 +68,9 @@ export default function DashboardScreen() {
   >(
     () => [
       {
-        title: "Course Outline",
-        description: "Organized syllabus and milestones",
-        action: "Open",
+        title: "Tutor",
+        description: "Get help with school work",
+        action: "Coming soon",
         color: "#E6EDFF",
         route: "/(tabs)/journey",
       },
@@ -156,8 +156,7 @@ export default function DashboardScreen() {
           .flat()
           .sort(
             (a, b) =>
-              new Date(b.createdAt).getTime() -
-              new Date(a.createdAt).getTime(),
+              new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
           )
           .slice(0, 4);
 

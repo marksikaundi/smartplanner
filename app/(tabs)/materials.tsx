@@ -1,6 +1,7 @@
 import HugeiconsIcon from "@/components/hugeicons-icon";
 import { databases, storage } from "@/lib/appwrite";
 import { APPWRITE_IDS, isConfigured } from "@/lib/appwrite-ids";
+import { addRecentOpen } from "@/lib/recent-opens";
 import { File02Icon } from "@hugeicons/core-free-icons";
 import * as Linking from "expo-linking";
 import { useEffect, useState } from "react";
@@ -89,6 +90,12 @@ export default function MaterialsScreen() {
               if (!item.fileId || !APPWRITE_IDS.storageBucketId) {
                 return;
               }
+              void addRecentOpen({
+                id: item.id,
+                title: item.title,
+                subtitle: item.subtitle,
+                category: "Materials",
+              });
               const url = storage.getFileView(
                 APPWRITE_IDS.storageBucketId,
                 item.fileId,

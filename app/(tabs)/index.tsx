@@ -1,11 +1,22 @@
+import { databases, Query } from "@/lib/appwrite";
+import { APPWRITE_IDS, isConfigured } from "@/lib/appwrite-ids";
 import { Feather } from "@expo/vector-icons";
 import { type Href, useRouter } from "expo-router";
-import { type ComponentProps, useMemo } from "react";
+import { type ComponentProps, useEffect, useMemo, useState } from "react";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 type FeatherIconName = ComponentProps<typeof Feather>["name"];
 type DashboardRoute = Href;
+type RecentUpload = {
+  id: string;
+  title: string;
+  subtitle: string;
+  category: string;
+  route: DashboardRoute;
+  icon: FeatherIconName;
+  createdAt: string;
+};
 
 export default function DashboardScreen() {
   const router = useRouter();
@@ -73,22 +84,103 @@ export default function DashboardScreen() {
     ],
     [],
   );
+  const [recentUploads, setRecentUploads] = useState<RecentUpload[]>([]);
+  const [isLoadingRecent, setIsLoadingRecent] = useState(false);
+  const [recentError, setRecentError] = useState<string | null>(null);
 
-  const todayItems = useMemo(
-    () => [
-      {
-        title: "Chemistry",
-        subtitle: "Lesson 5 · Organic chemistry",
-        action: "Review",
-      },
-      {
-        title: "Maths",
-        subtitle: "Lesson 1 · Algebra",
-        action: "Continue",
-      },
-    ],
-    [],
-  );
+  useEffect(() => {
+    let isActive = true;
+
+    const loadRecentUploads = async () => {
+      const sources = [
+        {
+          key: "materials",
+          label: "Materials",
+          route: "/(tabs)/materials",
+          icon: "file-text" as FeatherIconName,
+        },
+        {
+          key: "resources",
+          label: "Resources",
+          route: "/(tabs)/resources",
+          icon: "folder" as FeatherIconName,
+        },
+        {
+          key: "assignments",
+          label: "Assignments",
+          route: "/(tabs)/assignments",
+          icon: "archive" as FeatherIconName,
+        },
+        {
+          key: "notes",
+          label: "Notes",
+          route: "/(tabs)/notes",
+          icon: "edit-3" as FeatherIconName,
+        },
+      ];
+
+      const configured = sources.filter((source) =>
+        isConfigured(APPWRITE_IDS.collections[source.key]),
+      );
+
+      if (!configured.length) {
+        setRecentUploads([]);
+        return;
+      }
+
+      try {
+        setIsLoadingRecent(true);
+        setRecentError(null);
+        const responses = await Promise.all(
+          configured.map(async (source) => {
+            const response = await databases.listDocuments(
+              APPWRITE_IDS.databaseId,
+              APPWRITE_IDS.collections[source.key],
+              [Query.orderDesc("$createdAt"), Query.limit(4)],
+            );
+            return response.documents.map((doc) => ({
+              id: doc.$id,
+              title: String(doc.title ?? doc.name ?? source.label),
+              subtitle: String(
+                doc.description ?? doc.subtitle ?? doc.summary ?? source.label,
+              ),
+              category: source.label,
+              route: source.route,
+              icon: source.icon,
+              createdAt: String(doc.$createdAt ?? ""),
+            }));
+          }),
+        );
+
+        const merged = responses
+          .flat()
+          .sort(
+            (a, b) =>
+              new Date(b.createdAt).getTime() -
+              new Date(a.createdAt).getTime(),
+          )
+          .slice(0, 4);
+
+        if (isActive) {
+          setRecentUploads(merged);
+        }
+      } catch {
+        if (isActive) {
+          setRecentError("Unable to load recent uploads right now.");
+        }
+      } finally {
+        if (isActive) {
+          setIsLoadingRecent(false);
+        }
+      }
+    };
+
+    loadRecentUploads();
+
+    return () => {
+      isActive = false;
+    };
+  }, []);
 
   return (
     <SafeAreaView style={styles.screen}>
@@ -176,29 +268,40 @@ export default function DashboardScreen() {
         </View>
 
         <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>Today&apos;s Homework</Text>
-          <Pressable onPress={() => router.push("/(tabs)/assignments")}>
+          <Text style={styles.sectionTitle}>Recent uploads</Text>
+          <Pressable onPress={() => router.push("/(tabs)/recent-uploads")}>
             <Text style={styles.sectionLink}>View all</Text>
           </Pressable>
         </View>
         <View style={styles.listCard}>
-          {todayItems.map((item) => (
-            <View key={item.title} style={styles.listItem}>
-              <View style={styles.listIcon}>
-                <Feather name="bookmark" size={16} color="#2D2E3A" />
-              </View>
-              <View style={styles.listContent}>
-                <Text style={styles.listTitle}>{item.title}</Text>
-                <Text style={styles.listSubtitle}>{item.subtitle}</Text>
-              </View>
-              <Pressable
-                style={styles.listAction}
-                onPress={() => router.push("/(tabs)/assignments")}
-              >
-                <Text style={styles.listActionText}>{item.action}</Text>
-              </Pressable>
-            </View>
-          ))}
+          {isLoadingRecent ? (
+            <Text style={styles.listEmptyText}>Loading uploads...</Text>
+          ) : null}
+          {!isLoadingRecent && recentError ? (
+            <Text style={styles.listEmptyText}>{recentError}</Text>
+          ) : null}
+          {!isLoadingRecent && !recentError && recentUploads.length === 0 ? (
+            <Text style={styles.listEmptyText}>No uploads yet.</Text>
+          ) : null}
+          {!isLoadingRecent && !recentError
+            ? recentUploads.map((item) => (
+                <View key={item.id} style={styles.listItem}>
+                  <View style={styles.listIcon}>
+                    <Feather name={item.icon} size={16} color="#2D2E3A" />
+                  </View>
+                  <View style={styles.listContent}>
+                    <Text style={styles.listTitle}>{item.title}</Text>
+                    <Text style={styles.listSubtitle}>{item.subtitle}</Text>
+                  </View>
+                  <Pressable
+                    style={styles.listAction}
+                    onPress={() => router.push(item.route)}
+                  >
+                    <Text style={styles.listActionText}>Open</Text>
+                  </Pressable>
+                </View>
+              ))
+            : null}
         </View>
 
         <View style={styles.sectionHeader}>
@@ -438,6 +541,12 @@ const styles = StyleSheet.create({
     fontSize: 11,
     fontWeight: "600",
     color: "#2D2E3A",
+  },
+  listEmptyText: {
+    fontSize: 12,
+    color: "#7A7D92",
+    textAlign: "center",
+    paddingVertical: 8,
   },
   resourceRow: {
     flexDirection: "row",

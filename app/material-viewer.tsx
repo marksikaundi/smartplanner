@@ -1,13 +1,6 @@
-import * as Linking from "expo-linking";
 import { useLocalSearchParams, useNavigation } from "expo-router";
 import { useEffect, useMemo } from "react";
-import {
-  ActivityIndicator,
-  Pressable,
-  StyleSheet,
-  Text,
-  View,
-} from "react-native";
+import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { WebView } from "react-native-webview";
 
@@ -55,13 +48,15 @@ export default function MaterialViewerScreen() {
 
     const normalizedName = resolvedFileName.toLowerCase();
     const normalizedType = resolvedType.toLowerCase();
+    const normalizedUrl = resolvedUrl.toLowerCase();
     const isOfficeDoc =
       normalizedType.includes("pdf") ||
       normalizedType.includes("officedocument") ||
       normalizedType.includes("msword") ||
       normalizedType.includes("powerpoint") ||
       normalizedType.includes("excel") ||
-      /\.(pdf|doc|docx|ppt|pptx|xls|xlsx)$/.test(normalizedName);
+      /\.(pdf|doc|docx|ppt|pptx|xls|xlsx)$/.test(normalizedName) ||
+      /\.(pdf|doc|docx|ppt|pptx|xls|xlsx)(\?|$)/.test(normalizedUrl);
 
     if (isOfficeDoc) {
       return `https://docs.google.com/gview?embedded=true&url=${encodeURIComponent(
@@ -75,20 +70,9 @@ export default function MaterialViewerScreen() {
   useEffect(() => {
     navigation.setOptions({
       title: resolvedTitle,
-      headerRight: resolvedUrl
-        ? () => (
-            <Pressable
-              onPress={() => {
-                void Linking.openURL(resolvedUrl);
-              }}
-              style={styles.headerAction}
-            >
-              <Text style={styles.headerActionText}>Download</Text>
-            </Pressable>
-          )
-        : undefined,
+      headerRight: undefined,
     });
-  }, [navigation, resolvedTitle, resolvedUrl]);
+  }, [navigation, resolvedTitle]);
 
   if (!viewerUrl) {
     return (
@@ -150,17 +134,5 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: "#7A7D92",
     textAlign: "center",
-  },
-  headerAction: {
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 12,
-    backgroundColor: "#E8ECFF",
-    marginRight: 12,
-  },
-  headerActionText: {
-    fontSize: 12,
-    fontWeight: "700",
-    color: "#2D2E3A",
   },
 });

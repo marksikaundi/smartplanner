@@ -19,8 +19,7 @@ import {
   Notification01Icon,
   UserIcon,
 } from "@hugeicons/core-free-icons";
-import * as Linking from "expo-linking";
-import { useLocalSearchParams } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -52,6 +51,7 @@ const ICON_MAP: Record<string, HugeiconsIconData> = {
 };
 
 export default function ResourcesScreen() {
+  const router = useRouter();
   const { programName } = useLocalSearchParams<{ programName?: string }>();
   const [data, setData] = useState<ResourceItem[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -145,7 +145,15 @@ export default function ResourcesScreen() {
                 APPWRITE_IDS.storageBucketId,
                 item.fileId,
               ).href;
-              void Linking.openURL(url);
+              router.push({
+                pathname: "/material-viewer",
+                params: {
+                  url,
+                  title: item.title,
+                  fileName: item.fileName ?? "",
+                  type: item.type ?? "",
+                },
+              });
             }}
           >
             <View style={styles.iconWrap}>

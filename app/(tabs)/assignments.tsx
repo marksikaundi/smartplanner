@@ -3,7 +3,7 @@ import { databases, storage } from "@/lib/appwrite";
 import { APPWRITE_IDS, isConfigured } from "@/lib/appwrite-ids";
 import { addRecentOpen } from "@/lib/recent-opens";
 import { ClipboardIcon } from "@hugeicons/core-free-icons";
-import * as Linking from "expo-linking";
+import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -18,6 +18,7 @@ type AssignmentItem = {
 };
 
 export default function AssignmentsScreen() {
+  const router = useRouter();
   const [data, setData] = useState<AssignmentItem[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [loadError, setLoadError] = useState<string | null>(null);
@@ -102,7 +103,15 @@ export default function AssignmentsScreen() {
                 APPWRITE_IDS.storageBucketId,
                 item.fileId,
               ).href;
-              void Linking.openURL(url);
+              router.push({
+                pathname: "/material-viewer",
+                params: {
+                  url,
+                  title: item.title,
+                  fileName: item.fileName ?? "",
+                  type: item.type ?? "",
+                },
+              });
             }}
           >
             <View style={styles.iconWrap}>

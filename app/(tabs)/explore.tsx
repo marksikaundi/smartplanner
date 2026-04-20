@@ -1,6 +1,7 @@
+import HugeiconsIcon from "@/components/hugeicons-icon";
 import { databases } from "@/lib/appwrite";
 import { APPWRITE_IDS, isConfigured } from "@/lib/appwrite-ids";
-import { Feather } from "@expo/vector-icons";
+import { ArrowRight01Icon } from "@hugeicons/core-free-icons";
 import { useRouter } from "expo-router";
 import { useEffect, useMemo, useState } from "react";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
@@ -156,7 +157,11 @@ export default function ProgramsScreen() {
               }
             >
               <Text style={styles.programActionText}>Open</Text>
-              <Feather name="arrow-right" size={14} color="#2D2E3A" />
+              <HugeiconsIcon
+                icon={ArrowRight01Icon}
+                size={14}
+                color="#2D2E3A"
+              />
             </Pressable>
           </View>
         ))}

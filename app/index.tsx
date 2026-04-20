@@ -1,5 +1,6 @@
+import HugeiconsIcon from "@/components/hugeicons-icon";
 import { account } from "@/lib/appwrite";
-import { Feather } from "@expo/vector-icons";
+import { EyeIcon, Tick01Icon, ViewOffIcon } from "@hugeicons/core-free-icons";
 import * as Linking from "expo-linking";
 import { useRouter } from "expo-router";
 import { useMemo, useState } from "react";
@@ -219,8 +220,8 @@ export default function LoginScreen() {
                 showPassword ? "Hide password" : "Show password"
               }
             >
-              <Feather
-                name={showPassword ? "eye" : "eye-off"}
+              <HugeiconsIcon
+                icon={showPassword ? EyeIcon : ViewOffIcon}
                 size={18}
                 color="#7D8C90"
               />
@@ -245,7 +246,7 @@ export default function LoginScreen() {
                 ]}
               >
                 {rememberMe ? (
-                  <Feather name="check" size={12} color="#0F2D33" />
+                  <HugeiconsIcon icon={Tick01Icon} size={12} color="#0F2D33" />
                 ) : null}
               </View>
               <Text style={styles.rememberText}>Remember Me</Text>

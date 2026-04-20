@@ -1,16 +1,22 @@
-import { Feather } from "@expo/vector-icons";
+import HugeiconsIcon, {
+  type HugeiconsIconData,
+} from "@/components/hugeicons-icon";
+import {
+  BarChartIcon,
+  CircleIcon,
+  CompassIcon,
+  HelpCircleIcon,
+  Home01Icon,
+} from "@hugeicons/core-free-icons";
 import type { BottomTabBarProps } from "@react-navigation/bottom-tabs";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-const TAB_CONFIG: Record<
-  string,
-  { label: string; icon: keyof typeof Feather.glyphMap }
-> = {
-  index: { label: "Home", icon: "home" },
-  explore: { label: "Explore", icon: "compass" },
-  journey: { label: "Tutor", icon: "help-circle" },
-  stats: { label: "Stats", icon: "bar-chart-2" },
+const TAB_CONFIG: Record<string, { label: string; icon: HugeiconsIconData }> = {
+  index: { label: "Home", icon: Home01Icon },
+  explore: { label: "Explore", icon: CompassIcon },
+  journey: { label: "Tutor", icon: HelpCircleIcon },
+  stats: { label: "Stats", icon: BarChartIcon },
 };
 
 export function CustomTabBar({
@@ -31,7 +37,7 @@ export function CustomTabBar({
           const { options } = descriptors[route.key];
           const config = TAB_CONFIG[route.name] ?? {
             label: options.title ?? route.name,
-            icon: "circle",
+            icon: CircleIcon,
           };
           const isFocused = route.key === activeKey;
 
@@ -58,8 +64,8 @@ export function CustomTabBar({
               <View
                 style={[styles.iconWrap, isFocused ? styles.iconActive : null]}
               >
-                <Feather
-                  name={config.icon}
+                <HugeiconsIcon
+                  icon={config.icon}
                   size={18}
                   color={isFocused ? "#FFFFFF" : "#8A8DA2"}
                 />

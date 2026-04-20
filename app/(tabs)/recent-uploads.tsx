@@ -1,19 +1,25 @@
+import HugeiconsIcon, {
+  type HugeiconsIconData,
+} from "@/components/hugeicons-icon";
 import { databases, Query } from "@/lib/appwrite";
 import { APPWRITE_IDS, isConfigured } from "@/lib/appwrite-ids";
-import { Feather } from "@expo/vector-icons";
+import {
+  ArchiveIcon,
+  Edit03Icon,
+  File02Icon,
+  Folder01Icon,
+} from "@hugeicons/core-free-icons";
 import { useRouter } from "expo-router";
-import { type ComponentProps, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-
-type FeatherIconName = ComponentProps<typeof Feather>["name"];
 
 type UploadItem = {
   id: string;
   title: string;
   subtitle: string;
   category: string;
-  icon: FeatherIconName;
+  icon: HugeiconsIconData;
   route: string;
   createdAt: string;
 };
@@ -26,25 +32,25 @@ export default function RecentUploadsScreen() {
         key: "materials",
         label: "Materials",
         route: "/(tabs)/materials",
-        icon: "file-text" as FeatherIconName,
+        icon: File02Icon,
       },
       {
         key: "resources",
         label: "Resources",
         route: "/(tabs)/resources",
-        icon: "folder" as FeatherIconName,
+        icon: Folder01Icon,
       },
       {
         key: "assignments",
         label: "Assignments",
         route: "/(tabs)/assignments",
-        icon: "archive" as FeatherIconName,
+        icon: ArchiveIcon,
       },
       {
         key: "notes",
         label: "Notes",
         route: "/(tabs)/notes",
-        icon: "edit-3" as FeatherIconName,
+        icon: Edit03Icon,
       },
     ],
     [],
@@ -150,7 +156,7 @@ export default function RecentUploadsScreen() {
                 onPress={() => router.push(item.route)}
               >
                 <View style={styles.iconWrap}>
-                  <Feather name={item.icon} size={16} color="#2D2E3A" />
+                  <HugeiconsIcon icon={item.icon} size={16} color="#2D2E3A" />
                 </View>
                 <View style={styles.info}>
                   <Text style={styles.cardTitle}>{item.title}</Text>

@@ -1,12 +1,25 @@
+import HugeiconsIcon, {
+  type HugeiconsIconData,
+} from "@/components/hugeicons-icon";
 import { databases, Query } from "@/lib/appwrite";
 import { APPWRITE_IDS, isConfigured } from "@/lib/appwrite-ids";
-import { Feather } from "@expo/vector-icons";
+import {
+  ArchiveIcon,
+  ArrowRight01Icon,
+  BookOpen01Icon,
+  Edit03Icon,
+  File02Icon,
+  Folder01Icon,
+  GridIcon,
+  Menu01Icon,
+  Notification01Icon,
+  UserIcon,
+} from "@hugeicons/core-free-icons";
 import { type Href, useRouter } from "expo-router";
-import { type ComponentProps, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-type FeatherIconName = ComponentProps<typeof Feather>["name"];
 type DashboardRoute = Href;
 type RecentUpload = {
   id: string;
@@ -14,7 +27,7 @@ type RecentUpload = {
   subtitle: string;
   category: string;
   route: DashboardRoute;
-  icon: FeatherIconName;
+  icon: HugeiconsIconData;
   createdAt: string;
 };
 
@@ -24,7 +37,7 @@ export default function DashboardScreen() {
     {
       label: string;
       color: string;
-      icon: FeatherIconName;
+      icon: HugeiconsIconData;
       route: DashboardRoute;
     }[]
   >(
@@ -32,25 +45,25 @@ export default function DashboardScreen() {
       {
         label: "Materials",
         color: "#FFE6D6",
-        icon: "book-open",
+        icon: BookOpen01Icon,
         route: "/(tabs)/materials",
       },
       {
         label: "Programs",
         color: "#DDF4FF",
-        icon: "grid",
+        icon: GridIcon,
         route: "/(tabs)/explore",
       },
       {
         label: "Resources",
         color: "#E7F8E9",
-        icon: "folder",
+        icon: Folder01Icon,
         route: "/(tabs)/resources",
       },
       {
         label: "Past Assignments",
         color: "#F4E7FF",
-        icon: "archive",
+        icon: ArchiveIcon,
         route: "/(tabs)/assignments",
       },
     ],
@@ -97,27 +110,32 @@ export default function DashboardScreen() {
           key: "materials",
           label: "Materials",
           route: "/(tabs)/materials",
-          icon: "file-text" as FeatherIconName,
+          icon: File02Icon,
         },
         {
           key: "resources",
           label: "Resources",
           route: "/(tabs)/resources",
-          icon: "folder" as FeatherIconName,
+          icon: Folder01Icon,
         },
         {
           key: "assignments",
           label: "Assignments",
           route: "/(tabs)/assignments",
-          icon: "archive" as FeatherIconName,
+          icon: ArchiveIcon,
         },
         {
           key: "notes",
           label: "Notes",
           route: "/(tabs)/notes",
-          icon: "edit-3" as FeatherIconName,
+          icon: Edit03Icon,
         },
-      ];
+      ] as const satisfies readonly {
+        key: keyof typeof APPWRITE_IDS.collections;
+        label: string;
+        route: DashboardRoute;
+        icon: HugeiconsIconData;
+      }[];
 
       const configured = sources.filter((source) =>
         isConfigured(APPWRITE_IDS.collections[source.key]),
@@ -194,14 +212,18 @@ export default function DashboardScreen() {
             accessibilityRole="button"
             accessibilityLabel="Open profile"
           >
-            <Feather name="user" size={20} color="#2D2E3A" />
+            <HugeiconsIcon icon={UserIcon} size={20} color="#2D2E3A" />
           </Pressable>
           <View style={styles.topBarActions}>
             <Pressable style={styles.iconCircle}>
-              <Feather name="bell" size={18} color="#2D2E3A" />
+              <HugeiconsIcon
+                icon={Notification01Icon}
+                size={18}
+                color="#2D2E3A"
+              />
             </Pressable>
             <Pressable style={styles.iconCircle}>
-              <Feather name="menu" size={18} color="#2D2E3A" />
+              <HugeiconsIcon icon={Menu01Icon} size={18} color="#2D2E3A" />
             </Pressable>
           </View>
         </View>
@@ -219,7 +241,7 @@ export default function DashboardScreen() {
               onPress={() => router.push(item.route)}
             >
               <View style={[styles.quickIcon, { backgroundColor: item.color }]}>
-                <Feather name={item.icon} size={18} color="#2D2E3A" />
+                <HugeiconsIcon icon={item.icon} size={18} color="#2D2E3A" />
               </View>
               <Text style={styles.quickLabel}>{item.label}</Text>
             </Pressable>
@@ -260,7 +282,11 @@ export default function DashboardScreen() {
                 onPress={() => router.push(card.route)}
               >
                 <Text style={styles.programButtonText}>{card.action}</Text>
-                <Feather name="arrow-right" size={14} color="#2D2E3A" />
+                <HugeiconsIcon
+                  icon={ArrowRight01Icon}
+                  size={14}
+                  color="#2D2E3A"
+                />
               </Pressable>
             </View>
           ))}
@@ -286,7 +312,7 @@ export default function DashboardScreen() {
             ? recentUploads.map((item) => (
                 <View key={item.id} style={styles.listItem}>
                   <View style={styles.listIcon}>
-                    <Feather name={item.icon} size={16} color="#2D2E3A" />
+                    <HugeiconsIcon icon={item.icon} size={16} color="#2D2E3A" />
                   </View>
                   <View style={styles.listContent}>
                     <Text style={styles.listTitle}>{item.title}</Text>

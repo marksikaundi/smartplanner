@@ -1,6 +1,7 @@
+import HugeiconsIcon from "@/components/hugeicons-icon";
 import { databases } from "@/lib/appwrite";
 import { APPWRITE_IDS, isConfigured } from "@/lib/appwrite-ids";
-import { Feather } from "@expo/vector-icons";
+import { Add01Icon, Edit02Icon } from "@hugeicons/core-free-icons";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
@@ -76,7 +77,7 @@ export default function NotesScreen() {
             style={styles.addButton}
             onPress={() => router.push("/(tabs)/notes-editor")}
           >
-            <Feather name="plus" size={16} color="#FFFFFF" />
+            <HugeiconsIcon icon={Add01Icon} size={16} color="#FFFFFF" />
             <Text style={styles.addButtonText}>New</Text>
           </Pressable>
         </View>
@@ -93,7 +94,7 @@ export default function NotesScreen() {
             }
           >
             <View style={styles.iconWrap}>
-              <Feather name="edit-2" size={16} color="#2D2E3A" />
+              <HugeiconsIcon icon={Edit02Icon} size={16} color="#2D2E3A" />
             </View>
             <View style={styles.info}>
               <Text style={styles.cardTitle}>{item.title}</Text>

@@ -1,3 +1,4 @@
+import HugeiconsIcon from "@/components/hugeicons-icon";
 import {
   account,
   databases,
@@ -7,9 +8,9 @@ import {
   storage,
 } from "@/lib/appwrite";
 import { APPWRITE_IDS, isConfigured } from "@/lib/appwrite-ids";
-import { Feather } from "@expo/vector-icons";
+import { AttachmentIcon, CloudUploadIcon } from "@hugeicons/core-free-icons";
 import * as DocumentPicker from "expo-document-picker";
-import * as FileSystem from "expo-file-system/legacy";
+import * as FileSystem from "expo-file-system";
 import { useEffect, useMemo, useState } from "react";
 import {
   ActivityIndicator,
@@ -441,7 +442,7 @@ export default function UploadContentScreen() {
           />
 
           <Pressable style={styles.fileButton} onPress={handlePickFile}>
-            <Feather name="paperclip" size={16} color="#2D2E3A" />
+            <HugeiconsIcon icon={AttachmentIcon} size={16} color="#2D2E3A" />
             <Text style={styles.fileButtonText}>
               {file ? file.name : "Attach file"}
             </Text>
@@ -458,7 +459,7 @@ export default function UploadContentScreen() {
             {isSubmitting ? (
               <ActivityIndicator color="#FFFFFF" size="small" />
             ) : (
-              <Feather name="upload" size={16} color="#FFFFFF" />
+              <HugeiconsIcon icon={CloudUploadIcon} size={16} color="#FFFFFF" />
             )}
             <Text style={styles.submitText}>
               {isSubmitting ? "Uploading" : "Upload"}

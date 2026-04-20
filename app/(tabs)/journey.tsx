@@ -1,4 +1,5 @@
-import { Feather } from "@expo/vector-icons";
+import HugeiconsIcon from "@/components/hugeicons-icon";
+import { UserCheck01Icon } from "@hugeicons/core-free-icons";
 import { StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -7,7 +8,7 @@ export default function JourneyScreen() {
     <SafeAreaView style={styles.screen}>
       <View style={styles.content}>
         <View style={styles.iconWrap}>
-          <Feather name="user-check" size={22} color="#2D2E3A" />
+          <HugeiconsIcon icon={UserCheck01Icon} size={22} color="#2D2E3A" />
         </View>
         <Text style={styles.title}>Tutor</Text>
         <Text style={styles.subtitle}>

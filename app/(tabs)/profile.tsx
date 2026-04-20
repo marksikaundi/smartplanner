@@ -1,5 +1,13 @@
+import HugeiconsIcon from "@/components/hugeicons-icon";
 import { account } from "@/lib/appwrite";
-import { Feather } from "@expo/vector-icons";
+import {
+  CloudUploadIcon,
+  File02Icon,
+  HelpCircleIcon,
+  Notification01Icon,
+  Shield01Icon,
+  UserIcon,
+} from "@hugeicons/core-free-icons";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import {
@@ -83,22 +91,26 @@ export default function ProfileScreen() {
         <View style={styles.sectionCard}>
           <Text style={styles.sectionTitle}>Account</Text>
           <View style={styles.rowItem}>
-            <Feather name="user" size={16} color="#2D2E3A" />
+            <HugeiconsIcon icon={UserIcon} size={16} color="#2D2E3A" />
             <Text style={styles.rowLabel}>Personal Details</Text>
           </View>
           <Pressable
             style={styles.rowItem}
             onPress={() => router.push("/(tabs)/upload-content")}
           >
-            <Feather name="upload" size={16} color="#2D2E3A" />
+            <HugeiconsIcon icon={CloudUploadIcon} size={16} color="#2D2E3A" />
             <Text style={styles.rowLabel}>Upload Content</Text>
           </Pressable>
           <View style={styles.rowItem}>
-            <Feather name="shield" size={16} color="#2D2E3A" />
+            <HugeiconsIcon icon={Shield01Icon} size={16} color="#2D2E3A" />
             <Text style={styles.rowLabel}>Security</Text>
           </View>
           <View style={styles.rowItem}>
-            <Feather name="bell" size={16} color="#2D2E3A" />
+            <HugeiconsIcon
+              icon={Notification01Icon}
+              size={16}
+              color="#2D2E3A"
+            />
             <Text style={styles.rowLabel}>Notifications</Text>
           </View>
         </View>
@@ -106,11 +118,11 @@ export default function ProfileScreen() {
         <View style={styles.sectionCard}>
           <Text style={styles.sectionTitle}>Support</Text>
           <View style={styles.rowItem}>
-            <Feather name="help-circle" size={16} color="#2D2E3A" />
+            <HugeiconsIcon icon={HelpCircleIcon} size={16} color="#2D2E3A" />
             <Text style={styles.rowLabel}>Help Center</Text>
           </View>
           <View style={styles.rowItem}>
-            <Feather name="file-text" size={16} color="#2D2E3A" />
+            <HugeiconsIcon icon={File02Icon} size={16} color="#2D2E3A" />
             <Text style={styles.rowLabel}>Terms &amp; Privacy</Text>
           </View>
         </View>

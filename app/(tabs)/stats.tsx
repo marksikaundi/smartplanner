@@ -1,4 +1,10 @@
-import { Feather } from "@expo/vector-icons";
+import HugeiconsIcon from "@/components/hugeicons-icon";
+import {
+  BarChartIcon,
+  Clock01Icon,
+  Tick01Icon,
+  ZapIcon,
+} from "@hugeicons/core-free-icons";
 import { useMemo } from "react";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -6,15 +12,25 @@ import { SafeAreaView } from "react-native-safe-area-context";
 export default function StatsScreen() {
   const highlights = useMemo(
     () => [
-      { label: "Completed", value: "42", color: "#E6EDFF", icon: "check" },
-      { label: "Streak", value: "7 days", color: "#FFECCB", icon: "zap" },
+      {
+        label: "Completed",
+        value: "42",
+        color: "#E6EDFF",
+        icon: Tick01Icon,
+      },
+      { label: "Streak", value: "7 days", color: "#FFECCB", icon: ZapIcon },
       {
         label: "Avg Score",
         value: "86%",
         color: "#E8F8E7",
-        icon: "bar-chart-2",
+        icon: BarChartIcon,
       },
-      { label: "Pending", value: "5", color: "#FFE3EB", icon: "clock" },
+      {
+        label: "Pending",
+        value: "5",
+        color: "#FFE3EB",
+        icon: Clock01Icon,
+      },
     ],
     [],
   );
@@ -37,7 +53,7 @@ export default function StatsScreen() {
               style={[styles.metricCard, { backgroundColor: item.color }]}
             >
               <View style={styles.metricIcon}>
-                <Feather name={item.icon} size={16} color="#2D2E3A" />
+                <HugeiconsIcon icon={item.icon} size={16} color="#2D2E3A" />
               </View>
               <Text style={styles.metricValue}>{item.value}</Text>
               <Text style={styles.metricLabel}>{item.label}</Text>

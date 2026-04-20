@@ -1,6 +1,23 @@
+import HugeiconsIcon, {
+  type HugeiconsIconData,
+} from "@/components/hugeicons-icon";
 import { databases, Query, storage } from "@/lib/appwrite";
 import { APPWRITE_IDS, isConfigured } from "@/lib/appwrite-ids";
-import { Feather } from "@expo/vector-icons";
+import {
+  ArchiveIcon,
+  ArrowRight01Icon,
+  BookOpen01Icon,
+  ClipboardIcon,
+  CloudUploadIcon,
+  Edit02Icon,
+  Edit03Icon,
+  File02Icon,
+  Folder01Icon,
+  GridIcon,
+  HelpCircleIcon,
+  Notification01Icon,
+  UserIcon,
+} from "@hugeicons/core-free-icons";
 import * as Linking from "expo-linking";
 import { useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
@@ -14,6 +31,22 @@ type ResourceItem = {
   fileId?: string;
   fileName?: string;
   type?: string;
+};
+
+const ICON_MAP: Record<string, HugeiconsIconData> = {
+  archive: ArchiveIcon,
+  book: BookOpen01Icon,
+  clipboard: ClipboardIcon,
+  "edit-2": Edit02Icon,
+  "edit-3": Edit03Icon,
+  file: File02Icon,
+  "file-text": File02Icon,
+  folder: Folder01Icon,
+  grid: GridIcon,
+  "help-circle": HelpCircleIcon,
+  upload: CloudUploadIcon,
+  user: UserIcon,
+  bell: Notification01Icon,
 };
 
 export default function ResourcesScreen() {
@@ -107,7 +140,11 @@ export default function ResourcesScreen() {
             }}
           >
             <View style={styles.iconWrap}>
-              <Feather name={item.icon} size={16} color="#2D2E3A" />
+              <HugeiconsIcon
+                icon={ICON_MAP[item.icon] ?? BookOpen01Icon}
+                size={16}
+                color="#2D2E3A"
+              />
             </View>
             <View style={styles.info}>
               <Text style={styles.cardTitle}>{item.title}</Text>
@@ -118,7 +155,11 @@ export default function ResourcesScreen() {
                 <Text style={styles.tagText}>{item.type}</Text>
               </View>
             ) : (
-              <Feather name="chevron-right" size={16} color="#9AA0B4" />
+              <HugeiconsIcon
+                icon={ArrowRight01Icon}
+                size={16}
+                color="#9AA0B4"
+              />
             )}
           </Pressable>
         ))}

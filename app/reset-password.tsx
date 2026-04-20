@@ -1,5 +1,10 @@
+import HugeiconsIcon from "@/components/hugeicons-icon";
 import { account } from "@/lib/appwrite";
-import { Feather } from "@expo/vector-icons";
+import {
+  ArrowLeft01Icon,
+  EyeIcon,
+  ViewOffIcon,
+} from "@hugeicons/core-free-icons";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useMemo, useState } from "react";
 import {
@@ -112,7 +117,7 @@ export default function ResetPasswordScreen() {
             accessibilityLabel="Go back"
             onPress={() => router.back()}
           >
-            <Feather name="arrow-left" size={18} color="#D8E6E9" />
+            <HugeiconsIcon icon={ArrowLeft01Icon} size={18} color="#D8E6E9" />
           </Pressable>
           <Text style={styles.headerTitle}>Reset your password</Text>
           <Text style={styles.headerSubtitle}>
@@ -147,8 +152,8 @@ export default function ResetPasswordScreen() {
                 showPassword ? "Hide password" : "Show password"
               }
             >
-              <Feather
-                name={showPassword ? "eye" : "eye-off"}
+              <HugeiconsIcon
+                icon={showPassword ? EyeIcon : ViewOffIcon}
                 size={18}
                 color="#7D8C90"
               />
@@ -184,8 +189,8 @@ export default function ResetPasswordScreen() {
                 showConfirm ? "Hide password" : "Show password"
               }
             >
-              <Feather
-                name={showConfirm ? "eye" : "eye-off"}
+              <HugeiconsIcon
+                icon={showConfirm ? EyeIcon : ViewOffIcon}
                 size={18}
                 color="#7D8C90"
               />

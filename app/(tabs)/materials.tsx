@@ -1,6 +1,7 @@
+import HugeiconsIcon from "@/components/hugeicons-icon";
 import { databases, storage } from "@/lib/appwrite";
 import { APPWRITE_IDS, isConfigured } from "@/lib/appwrite-ids";
-import { Feather } from "@expo/vector-icons";
+import { File02Icon } from "@hugeicons/core-free-icons";
 import * as Linking from "expo-linking";
 import { useEffect, useState } from "react";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
@@ -96,7 +97,7 @@ export default function MaterialsScreen() {
             }}
           >
             <View style={styles.iconWrap}>
-              <Feather name="file-text" size={16} color="#2D2E3A" />
+              <HugeiconsIcon icon={File02Icon} size={16} color="#2D2E3A" />
             </View>
             <View style={styles.info}>
               <Text style={styles.cardTitle}>{item.title}</Text>

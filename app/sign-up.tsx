@@ -1,5 +1,10 @@
+import HugeiconsIcon from "@/components/hugeicons-icon";
 import { account, ID } from "@/lib/appwrite";
-import { Feather } from "@expo/vector-icons";
+import {
+  ArrowLeft01Icon,
+  EyeIcon,
+  ViewOffIcon,
+} from "@hugeicons/core-free-icons";
 import { useRouter } from "expo-router";
 import { useMemo, useState } from "react";
 import {
@@ -130,7 +135,7 @@ export default function SignUpScreen() {
             accessibilityLabel="Go back"
             onPress={() => router.back()}
           >
-            <Feather name="arrow-left" size={18} color="#D8E6E9" />
+            <HugeiconsIcon icon={ArrowLeft01Icon} size={18} color="#D8E6E9" />
           </Pressable>
           <View style={styles.logoWrap}>
             <Image
@@ -265,8 +270,8 @@ export default function SignUpScreen() {
                 showPassword ? "Hide password" : "Show password"
               }
             >
-              <Feather
-                name={showPassword ? "eye" : "eye-off"}
+              <HugeiconsIcon
+                icon={showPassword ? EyeIcon : ViewOffIcon}
                 size={18}
                 color="#7D8C90"
               />
@@ -305,8 +310,8 @@ export default function SignUpScreen() {
                 showConfirm ? "Hide password" : "Show password"
               }
             >
-              <Feather
-                name={showConfirm ? "eye" : "eye-off"}
+              <HugeiconsIcon
+                icon={showConfirm ? EyeIcon : ViewOffIcon}
                 size={18}
                 color="#7D8C90"
               />

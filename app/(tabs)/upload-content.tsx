@@ -23,6 +23,7 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { Fonts } from "@/constants/theme";
 
 export default function UploadContentScreen() {
   const chunkSize = 5 * 1024 * 1024;
@@ -55,11 +56,27 @@ export default function UploadContentScreen() {
         uri: string;
         name: string;
         type?: string;
+        size?: number;
       }
     | undefined
   >();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
+
+  const formatBytes = (bytes?: number) => {
+    if (!bytes) {
+      return "";
+    }
+    const units = ["B", "KB", "MB", "GB"];
+    const exponent = Math.min(
+      Math.floor(Math.log(bytes) / Math.log(1024)),
+      units.length - 1,
+    );
+    const value = bytes / 1024 ** exponent;
+    return `${value.toFixed(value >= 10 || exponent === 0 ? 0 : 1)} ${
+      units[exponent]
+    }`;
+  };
 
   useEffect(() => {
     let isActive = true;
@@ -115,10 +132,13 @@ export default function UploadContentScreen() {
       return;
     }
 
+    const info = await FileSystem.getInfoAsync(picked.uri);
+
     setFile({
       uri: picked.uri,
       name: picked.name ?? "upload",
       type: picked.mimeType ?? undefined,
+      size: info.exists && "size" in info ? Number(info.size ?? 0) : undefined,
     });
   };
 
@@ -126,169 +146,236 @@ export default function UploadContentScreen() {
     if (!title.trim()) {
       Alert.alert("Missing title", "Add a title before uploading.");
       return;
-    }
+    return (
+      <SafeAreaView style={styles.screen}>
+        <View style={styles.heroBackdrop}>
+          <View style={styles.heroGlowOne} />
+          <View style={styles.heroGlowTwo} />
+        </View>
+        <ScrollView
+          contentContainerStyle={styles.scrollContent}
+          showsVerticalScrollIndicator={false}
+        >
+          <View style={styles.header}>
+            <View style={styles.badge}>
+              <Text style={styles.badgeText}>Upload flow</Text>
+            </View>
+            <Text style={styles.title}>Share learning content</Text>
+            <Text style={styles.subtitle}>
+              Make files easier to find for students and teammates.
+            </Text>
+            <View style={styles.stepsRow}>
+              {[
+                "Pick file",
+                "Add details",
+                "Publish",
+              ].map((step) => (
+                <View key={step} style={styles.stepChip}>
+                  <Text style={styles.stepText}>{step}</Text>
+                </View>
+              ))}
+            </View>
+          </View>
 
-    if (!file) {
-      Alert.alert("Missing file", "Pick a file to upload.");
-      return;
-    }
+          <View style={styles.panel}>
+            <Text style={styles.sectionTitle}>File upload</Text>
+            <Text style={styles.sectionSubtitle}>
+              Choose a file. We support PDFs, slides, archives, and more.
+            </Text>
 
-    if (!selectedCategories.length) {
-      Alert.alert("Missing category", "Select at least one category.");
-      return;
-    }
+            <Pressable style={styles.dropzone} onPress={handlePickFile}>
+              <View style={styles.dropzoneIcon}>
+                <HugeiconsIcon icon={CloudUploadIcon} size={22} color="#0E7490" />
+              </View>
+              <View style={styles.dropzoneText}>
+                <Text style={styles.dropzoneTitle}>
+                  {file ? "Replace your file" : "Tap to choose a file"}
+                </Text>
+                <Text style={styles.dropzoneSubtitle}>
+                  {file
+                    ? "Keep the latest version uploaded"
+                    : "Max 200MB recommended"}
+                </Text>
+              </View>
+            </Pressable>
 
-    if (!selectedProgram) {
-      Alert.alert("Missing program", "Select a program for this upload.");
-      return;
-    }
+            {file ? (
+              <View style={styles.fileCard}>
+                <View style={styles.fileIconWrapper}>
+                  <HugeiconsIcon icon={AttachmentIcon} size={18} color="#1F2A44" />
+                </View>
+                <View style={styles.fileMeta}>
+                  <Text style={styles.fileName}>{file.name}</Text>
+                  <Text style={styles.fileInfo}>
+                    {file.type ?? "File"}
+                    {file.size ? ` • ${formatBytes(file.size)}` : ""}
+                  </Text>
+                </View>
+                <Pressable onPress={() => setFile(undefined)}>
+                  <Text style={styles.removeFile}>Remove</Text>
+                </Pressable>
+              </View>
+            ) : null}
+          </View>
 
-    const primaryCategory = selectedCategories[0];
-    const collectionKey = primaryCategory.toLowerCase();
-    const collectionId =
-      APPWRITE_IDS.collections[
-        collectionKey as keyof typeof APPWRITE_IDS.collections
-      ];
+          <View style={styles.panel}>
+            <Text style={styles.sectionTitle}>Details</Text>
+            <Text style={styles.sectionSubtitle}>
+              The more context you add, the easier it is to discover.
+            </Text>
 
-    if (!collectionId || !isConfigured(collectionId)) {
-      Alert.alert(
-        "Not configured",
-        `Set the ${primaryCategory.toLowerCase()} collection ID in lib/appwrite-ids.ts`,
-      );
-      return;
-    }
+            <Text style={styles.label}>Title</Text>
+            <TextInput
+              value={title}
+              onChangeText={setTitle}
+              placeholder="Organic chemistry notes"
+              placeholderTextColor="#9AA0B4"
+              style={styles.input}
+            />
 
-    if (!APPWRITE_IDS.storageBucketId) {
-      Alert.alert(
-        "Not configured",
-        "Set the storage bucket ID in lib/appwrite-ids.ts",
-      );
-      return;
-    }
+            <Text style={styles.label}>Category</Text>
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={styles.chipRow}
+            >
+              {categories.map((item) => (
+                <Pressable
+                  key={item}
+                  onPress={() => {
+                    setSelectedCategories((current) =>
+                      current.includes(item)
+                        ? current.filter((value) => value !== item)
+                        : [...current, item],
+                    );
+                  }}
+                  style={[
+                    styles.chip,
+                    selectedCategories.includes(item) ? styles.chipActive : null,
+                  ]}
+                >
+                  <Text
+                    style={[
+                      styles.chipText,
+                      selectedCategories.includes(item)
+                        ? styles.chipTextActive
+                        : null,
+                    ]}
+                  >
+                    {item}
+                  </Text>
+                </Pressable>
+              ))}
+            </ScrollView>
 
-    setIsSubmitting(true);
-    const upload = async () => {
-      try {
-        const permissions = [
-          Permission.read(Role.users()),
-          Permission.write(Role.users()),
-        ];
-        setUploadProgress(5);
-        const jwt = await account.createJWT();
-        const fileInfo = await FileSystem.getInfoAsync(file.uri);
-        const totalBytes =
-          fileInfo.exists && "size" in fileInfo
-            ? Number(fileInfo.size ?? 0)
-            : 0;
+            <Text style={styles.label}>Program</Text>
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={styles.chipRow}
+            >
+              {programs.map((item) => (
+                <Pressable
+                  key={item}
+                  onPress={() => setSelectedProgram(item)}
+                  style={[
+                    styles.chip,
+                    selectedProgram === item ? styles.chipActive : null,
+                  ]}
+                >
+                  <Text
+                    style={[
+                      styles.chipText,
+                      selectedProgram === item ? styles.chipTextActive : null,
+                    ]}
+                  >
+                    {item}
+                  </Text>
+                </Pressable>
+              ))}
+            </ScrollView>
 
-        if (!fileInfo.exists || !totalBytes) {
-          throw new Error("Unable to read the selected file.");
-        }
+            <Text style={styles.label}>Tags</Text>
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={styles.chipRow}
+            >
+              {tags.map((item) => (
+                <Pressable
+                  key={item}
+                  onPress={() => {
+                    setSelectedTags((current) =>
+                      current.includes(item)
+                        ? current.filter((value) => value !== item)
+                        : [...current, item],
+                    );
+                  }}
+                  style={[
+                    styles.chip,
+                    selectedTags.includes(item) ? styles.chipActive : null,
+                  ]}
+                >
+                  <Text
+                    style={[
+                      styles.chipText,
+                      selectedTags.includes(item) ? styles.chipTextActive : null,
+                    ]}
+                  >
+                    {item}
+                  </Text>
+                </Pressable>
+              ))}
+            </ScrollView>
 
-        const fileId = ID.unique();
-        let uploadId: string | null = null;
-        let created: any = null;
+            <Text style={styles.label}>Description</Text>
+            <TextInput
+              value={description}
+              onChangeText={setDescription}
+              placeholder="What is inside and who is it for?"
+              placeholderTextColor="#9AA0B4"
+              style={[styles.input, styles.textarea]}
+              multiline
+            />
+          </View>
 
-        for (let start = 0; start < totalBytes; start += chunkSize) {
-          const end = Math.min(start + chunkSize, totalBytes) - 1;
-          const length = end - start + 1;
-          const chunkBase64 = await FileSystem.readAsStringAsync(file.uri, {
-            encoding: FileSystem.EncodingType.Base64,
-            position: start,
-            length,
-          });
+          {isSubmitting ? (
+            <View style={styles.progressWrap}>
+              <ActivityIndicator size="small" color="#0E7490" />
+              <View style={styles.progressTrack}>
+                <View
+                  style={[
+                    styles.progressFill,
+                    { width: `${uploadProgress}%` },
+                  ]}
+                />
+              </View>
+              <Text style={styles.progressText}>
+                Uploading {uploadProgress}%
+              </Text>
+            </View>
+          ) : null}
 
-          const chunkUri = `${FileSystem.cacheDirectory}upload-${fileId}-${start}.chunk`;
-          await FileSystem.writeAsStringAsync(chunkUri, chunkBase64, {
-            encoding: FileSystem.EncodingType.Base64,
-          });
-
-          const headers: Record<string, string> = {
-            "X-Appwrite-Project": APPWRITE_IDS.projectId,
-            "X-Appwrite-JWT": jwt.jwt,
-            "Content-Range": `bytes ${start}-${end}/${totalBytes}`,
-          };
-
-          if (uploadId) {
-            headers["X-Appwrite-Id"] = uploadId;
-          }
-
-          const result = await FileSystem.uploadAsync(
-            `${APPWRITE_IDS.endpoint}/storage/buckets/${
-              APPWRITE_IDS.storageBucketId
-            }/files`,
-            chunkUri,
-            {
-              httpMethod: "POST",
-              headers,
-              uploadType: FileSystem.FileSystemUploadType.MULTIPART,
-              fieldName: "file",
-              mimeType: file.type ?? "application/octet-stream",
-              parameters: {
-                fileId,
-              },
-            },
-          );
-
-          await FileSystem.deleteAsync(chunkUri, { idempotent: true });
-
-          if (result.status < 200 || result.status >= 300) {
-            throw new Error(result.body || "Upload failed");
-          }
-
-          if (!created) {
-            created = JSON.parse(result.body);
-            uploadId = created.$id;
-          }
-
-          const percent = Math.min(
-            70,
-            Math.round(((end + 1) / totalBytes) * 70),
-          );
-          setUploadProgress(percent);
-        }
-
-        if (!created) {
-          throw new Error("Upload did not return a file response.");
-        }
-
-        await storage.updateFile(
-          APPWRITE_IDS.storageBucketId,
-          created.$id,
-          file.name,
-          permissions,
-        );
-
-        setUploadProgress(80);
-
-        const payload: Record<string, string | string[]> = {
-          title: title.trim(),
-          description: description.trim(),
-          categories: selectedCategories,
-          tags: selectedTags,
-          programName: selectedProgram,
-          fileId: created.$id,
-          fileName: file.name,
-          type: file.type ?? "File",
-        };
-
-        if (collectionKey === "notes") {
-          payload.body = description.trim();
-        }
-
-        await databases.createDocument(
-          APPWRITE_IDS.databaseId,
-          collectionId,
-          ID.unique(),
-          payload,
-          permissions,
-        );
-
-        setUploadProgress(100);
-        Alert.alert("Uploaded", "Your content has been submitted.");
-        setTitle("");
-        setSelectedCategories([categories[0]]);
-        setSelectedProgram(programs[0] ?? "");
+          <Pressable
+            style={[
+              styles.submitButton,
+              isSubmitting ? styles.submitButtonDisabled : null,
+            ]}
+            onPress={handleSubmit}
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? (
+              <ActivityIndicator size="small" color="#fff" />
+            ) : (
+              <HugeiconsIcon icon={CloudUploadIcon} size={20} color="#fff" />
+            )}
+            <Text style={styles.submitText}>
+              {isSubmitting ? "Uploading..." : "Publish upload"}
+            </Text>
+          </Pressable>
+        </ScrollView>
+      </SafeAreaView>
+    );
         setSelectedTags([]);
         setDescription("");
         setFile(undefined);
@@ -303,140 +390,268 @@ export default function UploadContentScreen() {
           normalized.includes("backend write error") ||
           normalized.includes("503")
         ) {
-          message =
-            "Appwrite returned a 503 while writing the file. Try again in a moment or upload a smaller file.";
+              flex: 1,
+              backgroundColor: "#F8FAFC",
         } else if (
           normalized.includes("network") ||
-          normalized.includes("offline")
-        ) {
+              padding: 20,
+              paddingBottom: 44,
+            },
+            heroBackdrop: {
+              position: "absolute",
+              top: 0,
+              left: 0,
+              right: 0,
+              height: 280,
+              overflow: "hidden",
+            },
+            heroGlowOne: {
+              position: "absolute",
+              width: 280,
+              height: 280,
+              borderRadius: 140,
+              backgroundColor: "#D1FAE5",
+              top: -120,
+              right: -80,
+              opacity: 0.6,
+            },
+            heroGlowTwo: {
+              position: "absolute",
+              width: 220,
+              height: 220,
+              borderRadius: 110,
+              backgroundColor: "#DBEAFE",
+              top: -60,
+              left: -40,
+              opacity: 0.7,
           message =
             "The upload could not reach Appwrite. Please confirm your connection and retry.";
-        } else if (normalized.includes("<html")) {
+              marginBottom: 24,
           message = "The server returned an unexpected response. Please retry.";
         }
-        Alert.alert("Upload failed", message);
-      } finally {
-        setIsSubmitting(false);
+              fontSize: 30,
+              fontWeight: "700",
+              color: "#0F172A",
+              fontFamily: Fonts.serif,
+              marginBottom: 6,
       }
     };
+              fontSize: 15,
+              color: "#475569",
+              lineHeight: 22,
 
-    void upload();
-  };
-
-  return (
-    <SafeAreaView style={styles.screen}>
-      <ScrollView
-        contentContainerStyle={styles.scrollContent}
-        showsVerticalScrollIndicator={false}
-      >
-        <View style={styles.header}>
-          <Text style={styles.title}>Upload Content</Text>
-          <Text style={styles.subtitle}>
-            Add new materials or resources for learners.
+            badge: {
+              alignSelf: "flex-start",
+              backgroundColor: "#E2E8F0",
+              paddingHorizontal: 12,
+              paddingVertical: 6,
+              borderRadius: 999,
+              marginBottom: 12,
+            },
+            badgeText: {
+              fontSize: 12,
+              fontWeight: "600",
+              color: "#0F172A",
+              letterSpacing: 0.3,
+              textTransform: "uppercase",
+            },
+            stepsRow: {
+              flexDirection: "row",
+              flexWrap: "wrap",
+              gap: 8,
+              marginTop: 16,
+            },
+            stepChip: {
+              backgroundColor: "#F1F5F9",
+              borderRadius: 14,
+              paddingHorizontal: 12,
+              paddingVertical: 6,
+            },
+            stepText: {
+              fontSize: 12,
+              fontWeight: "600",
+              color: "#1E293B",
+            },
+            panel: {
+              backgroundColor: "#FFFFFF",
+              borderRadius: 22,
+              padding: 18,
+              marginBottom: 18,
+              shadowColor: "#0F172A",
+              shadowOpacity: 0.05,
+              shadowOffset: { width: 0, height: 10 },
+              shadowRadius: 18,
+              elevation: 2,
+              borderWidth: 1,
+              borderColor: "#E2E8F0",
+            },
+            sectionTitle: {
+              fontSize: 18,
+              fontWeight: "700",
+              color: "#0F172A",
+              marginBottom: 6,
+            },
+            sectionSubtitle: {
+              fontSize: 13,
+              color: "#64748B",
+              marginBottom: 16,
           </Text>
         </View>
-
-        <View style={styles.card}>
-          <Text style={styles.label}>Title</Text>
-          <TextInput
-            value={title}
+              fontSize: 12,
+              textTransform: "uppercase",
+              letterSpacing: 0.8,
+              color: "#64748B",
+              fontWeight: "600",
+              marginBottom: 8,
+              marginTop: 8,
             onChangeText={setTitle}
             placeholder="Organic chemistry notes"
-            placeholderTextColor="#9AA0B4"
-            style={styles.input}
-          />
-
-          <Text style={styles.label}>Category</Text>
-          <View style={styles.categoryRow}>
-            {categories.map((item) => (
-              <Pressable
+              backgroundColor: "#F8FAFC",
+              borderRadius: 16,
+              paddingHorizontal: 14,
+              paddingVertical: 12,
+              fontSize: 15,
+              color: "#0F172A",
+              borderWidth: 1,
+              borderColor: "#E2E8F0",
                 key={item}
                 onPress={() => {
                   setSelectedCategories((current) =>
                     current.includes(item)
                       ? current.filter((value) => value !== item)
-                      : [...current, item],
-                  );
-                }}
-                style={[
-                  styles.categoryChip,
-                  selectedCategories.includes(item)
-                    ? styles.categoryChipActive
-                    : null,
-                ]}
-              >
-                <Text
-                  style={[
-                    styles.categoryText,
-                    selectedCategories.includes(item)
-                      ? styles.categoryTextActive
-                      : null,
-                  ]}
-                >
-                  {item}
-                </Text>
-              </Pressable>
-            ))}
-          </View>
-
-          <Text style={styles.label}>Program</Text>
-          <View style={styles.categoryRow}>
-            {programs.map((item) => (
-              <Pressable
-                key={item}
-                onPress={() => setSelectedProgram(item)}
-                style={[
-                  styles.categoryChip,
-                  selectedProgram === item ? styles.categoryChipActive : null,
-                ]}
-              >
-                <Text
-                  style={[
-                    styles.categoryText,
-                    selectedProgram === item ? styles.categoryTextActive : null,
-                  ]}
-                >
-                  {item}
-                </Text>
-              </Pressable>
-            ))}
-          </View>
-
-          <Text style={styles.label}>Tags</Text>
-          <View style={styles.categoryRow}>
-            {tags.map((item) => (
-              <Pressable
-                key={item}
-                onPress={() => {
-                  setSelectedTags((current) =>
-                    current.includes(item)
-                      ? current.filter((value) => value !== item)
-                      : [...current, item],
-                  );
-                }}
-                style={[
-                  styles.tagChip,
-                  selectedTags.includes(item) ? styles.tagChipActive : null,
-                ]}
-              >
-                <Text
-                  style={[
-                    styles.tagText,
-                    selectedTags.includes(item) ? styles.tagTextActive : null,
-                  ]}
-                >
-                  {item}
-                </Text>
-              </Pressable>
-            ))}
-          </View>
-
-          <Text style={styles.label}>Description</Text>
-          <TextInput
-            value={description}
-            onChangeText={setDescription}
-            placeholder="Brief summary of the content"
-            placeholderTextColor="#9AA0B4"
+            chipRow: {
+              paddingBottom: 6,
+              gap: 10,
+            },
+            chip: {
+              backgroundColor: "#F8FAFC",
+              paddingHorizontal: 14,
+              paddingVertical: 8,
+              borderRadius: 999,
+              borderWidth: 1,
+              borderColor: "#E2E8F0",
+            },
+            chipActive: {
+              backgroundColor: "#0E7490",
+              borderColor: "#0E7490",
+            },
+            chipText: {
+              fontSize: 13,
+              color: "#475569",
+              fontWeight: "600",
+            },
+            chipTextActive: {
+              color: "#fff",
+            },
+            dropzone: {
+              flexDirection: "row",
+              alignItems: "center",
+              padding: 16,
+              borderRadius: 18,
+              borderWidth: 1,
+              borderColor: "#BFDBFE",
+              backgroundColor: "#EFF6FF",
+            },
+            dropzoneIcon: {
+              width: 44,
+              height: 44,
+              borderRadius: 16,
+              backgroundColor: "#E0F2FE",
+              alignItems: "center",
+              justifyContent: "center",
+            },
+            dropzoneText: {
+              marginLeft: 12,
+              flex: 1,
+            },
+            dropzoneTitle: {
+              fontSize: 15,
+              fontWeight: "600",
+              color: "#0F172A",
+            },
+            dropzoneSubtitle: {
+              fontSize: 12,
+              color: "#475569",
+              marginTop: 4,
+            },
+            fileCard: {
+              marginTop: 14,
+              flexDirection: "row",
+              alignItems: "center",
+              padding: 12,
+              borderRadius: 16,
+              backgroundColor: "#F8FAFC",
+              borderWidth: 1,
+              borderColor: "#E2E8F0",
+            },
+            fileIconWrapper: {
+              width: 36,
+              height: 36,
+              borderRadius: 12,
+              backgroundColor: "#E2E8F0",
+              alignItems: "center",
+              justifyContent: "center",
+            },
+            fileMeta: {
+              flex: 1,
+              marginLeft: 10,
+            },
+            fileName: {
+              fontSize: 14,
+              fontWeight: "600",
+              color: "#0F172A",
+            },
+            fileInfo: {
+              fontSize: 12,
+              color: "#64748B",
+              marginTop: 2,
+            },
+            removeFile: {
+              fontSize: 12,
+              fontWeight: "600",
+              color: "#DC2626",
+            },
+            progressWrap: {
+              backgroundColor: "#FFFFFF",
+              borderRadius: 18,
+              padding: 14,
+              borderWidth: 1,
+              borderColor: "#E2E8F0",
+              marginBottom: 16,
+            },
+            progressTrack: {
+              height: 8,
+              borderRadius: 999,
+              backgroundColor: "#E2E8F0",
+              marginTop: 10,
+              overflow: "hidden",
+            },
+            progressFill: {
+              height: "100%",
+              backgroundColor: "#0E7490",
+            },
+            progressText: {
+              marginTop: 8,
+              fontSize: 12,
+              color: "#475569",
+            },
+            submitButton: {
+              backgroundColor: "#0F766E",
+              borderRadius: 18,
+              paddingVertical: 16,
+              alignItems: "center",
+              flexDirection: "row",
+              justifyContent: "center",
+              gap: 10,
+            },
+            submitButtonDisabled: {
+              opacity: 0.7,
+            },
+            submitText: {
+              fontSize: 16,
+              fontWeight: "600",
+              color: "#fff",
+            },
             style={[styles.input, styles.textarea]}
             multiline
           />

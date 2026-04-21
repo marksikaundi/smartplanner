@@ -398,7 +398,7 @@ export default function Home() {
                       />
                     </div>
                     <div className="flex flex-1 flex-col gap-2 p-4">
-                      <h3 className="text-sm font-semibold text-zinc-900 line-clamp-2">
+                      <h3 className="text-sm font-semibold text-zinc-900">
                         {item.title}
                       </h3>
                       <p className="text-xs uppercase tracking-[0.2em] text-[var(--muted)]">

@@ -255,7 +255,7 @@ export default function UploadContentScreen() {
         await storage.updateFile(
           APPWRITE_IDS.storageBucketId,
           created.$id,
-          created.name,
+          file.name,
           permissions,
         );
 
@@ -268,7 +268,7 @@ export default function UploadContentScreen() {
           tags: selectedTags,
           programName: selectedProgram,
           fileId: created.$id,
-          fileName: created.name,
+          fileName: file.name,
           type: file.type ?? "File",
         };
 

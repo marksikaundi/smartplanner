@@ -103,6 +103,7 @@ export default function MaterialsScreen() {
                   fileId: item.fileId,
                   title: item.title,
                   fileName: item.fileName,
+                  mimeType: item.type,
                 },
               });
             }}

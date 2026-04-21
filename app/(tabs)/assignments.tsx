@@ -105,6 +105,7 @@ export default function AssignmentsScreen() {
                   fileId: item.fileId,
                   title: item.title,
                   fileName: item.fileName,
+                  mimeType: item.type,
                 },
               });
             }}

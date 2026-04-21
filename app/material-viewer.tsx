@@ -7,6 +7,7 @@ import * as Linking from "expo-linking";
 import { useLocalSearchParams, useNavigation } from "expo-router";
 import * as WebBrowser from "expo-web-browser";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import Pdf from "react-native-pdf";
 import {
   ActivityIndicator,
   Platform,
@@ -19,10 +20,11 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function MaterialViewerScreen() {
   const navigation = useNavigation();
-  const { fileId, title, fileName } = useLocalSearchParams<{
+  const { fileId, title, fileName, mimeType } = useLocalSearchParams<{
     fileId?: string | string[];
     title?: string | string[];
     fileName?: string | string[];
+    mimeType?: string | string[];
   }>();
 
   const resolvedTitle = useMemo(() => {
@@ -46,13 +48,65 @@ export default function MaterialViewerScreen() {
     return fileName ?? "";
   }, [fileName]);
 
+  const resolvedMimeType = useMemo(() => {
+    if (Array.isArray(mimeType)) {
+      return mimeType[0];
+    }
+    return mimeType ?? "";
+  }, [mimeType]);
+
+  const mimeExtension = useMemo(() => {
+    const normalized = resolvedMimeType.toLowerCase();
+    if (!normalized) {
+      return "";
+    }
+    if (normalized.includes("pdf")) {
+      return "pdf";
+    }
+    if (normalized.includes("word") || normalized.includes("docx")) {
+      return "docx";
+    }
+    if (normalized.includes("msword")) {
+      return "doc";
+    }
+    if (normalized.includes("presentation") || normalized.includes("pptx")) {
+      return "pptx";
+    }
+    if (normalized.includes("powerpoint")) {
+      return "ppt";
+    }
+    if (normalized.includes("spreadsheet") || normalized.includes("xlsx")) {
+      return "xlsx";
+    }
+    if (normalized.includes("excel")) {
+      return "xls";
+    }
+    if (normalized.includes("png")) {
+      return "png";
+    }
+    if (normalized.includes("jpeg") || normalized.includes("jpg")) {
+      return "jpg";
+    }
+    if (normalized.includes("gif")) {
+      return "gif";
+    }
+    if (normalized.includes("webp")) {
+      return "webp";
+    }
+    return "";
+  }, [resolvedMimeType]);
+
   const fileExtension = useMemo(() => {
     const parts = resolvedFileName.split(".");
     if (parts.length < 2) {
-      return "";
+      return mimeExtension;
     }
-    return parts[parts.length - 1]?.toLowerCase() ?? "";
-  }, [resolvedFileName]);
+    const extension = parts[parts.length - 1]?.toLowerCase() ?? "";
+    if (!extension || extension === "chunk") {
+      return mimeExtension;
+    }
+    return extension;
+  }, [mimeExtension, resolvedFileName]);
 
   const isImage = useMemo(
     () => ["jpg", "jpeg", "png", "gif", "webp"].includes(fileExtension),
@@ -156,12 +210,22 @@ export default function MaterialViewerScreen() {
       return;
     }
 
-    const openUri =
-      Platform.OS === "android"
-        ? await FileSystem.getContentUriAsync(localUri)
-        : localUri;
+    try {
+      const openUri =
+        Platform.OS === "android"
+          ? await FileSystem.getContentUriAsync(localUri)
+          : localUri;
 
-    await Linking.openURL(openUri);
+      const canOpen = await Linking.canOpenURL(openUri);
+      if (!canOpen) {
+        setDownloadError("No app is available to open this file.");
+        return;
+      }
+
+      await Linking.openURL(openUri);
+    } catch {
+      setDownloadError("Unable to open this file on your device.");
+    }
   }, [localUri]);
 
   const downloadForOffline = useCallback(async () => {
@@ -206,15 +270,59 @@ export default function MaterialViewerScreen() {
 
   return (
     <SafeAreaView style={styles.screen}>
+      {isPdf ? (
+        <View style={styles.pdfContainer}>
+          <Pdf
+            source={{ uri: viewerUrl }}
+            style={styles.pdf}
+            trustAllCerts={false}
+          />
+          <View style={styles.pdfActionBar}>
+            {localUri ? (
+              <Pressable style={styles.primaryButton} onPress={openLocalFile}>
+                <Text style={styles.primaryButtonText}>Open file</Text>
+              </Pressable>
+            ) : (
+              <Pressable
+                style={
+                  isDownloading
+                    ? [styles.primaryButton, styles.primaryButtonDisabled]
+                    : styles.primaryButton
+                }
+                onPress={downloadForOffline}
+                disabled={isDownloading}
+              >
+                {isDownloading ? (
+                  <View style={styles.buttonLoading}>
+                    <ActivityIndicator size="small" color="#FFFFFF" />
+                    <Text style={styles.primaryButtonText}>
+                      Downloading...
+                    </Text>
+                  </View>
+                ) : (
+                  <Text style={styles.primaryButtonText}>
+                    Download for offline
+                  </Text>
+                )}
+              </Pressable>
+            )}
+            <Pressable style={styles.secondaryButton} onPress={openExternally}>
+              <Text style={styles.secondaryButtonText}>Open in browser</Text>
+            </Pressable>
+          </View>
+        </View>
+      ) : (
       <View style={styles.previewState}>
         <View style={styles.iconBubble}>
           <HugeiconsIcon icon={File02Icon} size={28} color="#2D2E3A" />
         </View>
         <Text style={styles.emptyTitle}>{resolvedTitle}</Text>
         <Text style={styles.emptySubtitle}>
-          {resolvedFileName || fileExtension
-            ? resolvedFileName || fileExtension.toUpperCase()
-            : "Document"}
+          {resolvedFileName && !resolvedFileName.includes(".chunk")
+            ? resolvedFileName
+            : fileExtension
+              ? fileExtension.toUpperCase()
+              : "Document"}
         </Text>
         {localUri ? (
           <View style={styles.statusPill}>
@@ -255,6 +363,7 @@ export default function MaterialViewerScreen() {
           </Pressable>
         </View>
       </View>
+      )}
     </SafeAreaView>
   );
 }
@@ -270,6 +379,19 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     paddingHorizontal: 24,
     gap: 10,
+  },
+  pdfContainer: {
+    flex: 1,
+    backgroundColor: "#FFFFFF",
+  },
+  pdf: {
+    flex: 1,
+    backgroundColor: "#FFFFFF",
+  },
+  pdfActionBar: {
+    padding: 16,
+    gap: 10,
+    backgroundColor: "#F4F3F9",
   },
   iconBubble: {
     width: 72,

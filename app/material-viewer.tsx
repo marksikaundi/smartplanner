@@ -58,8 +58,7 @@ export default function MaterialViewerScreen() {
   const isPdf = useMemo(() => fileExtension === "pdf", [fileExtension]);
 
   const isOfficeDoc = useMemo(
-    () =>
-      ["doc", "docx", "ppt", "pptx", "xls", "xlsx"].includes(fileExtension),
+    () => ["doc", "docx", "ppt", "pptx", "xls", "xlsx"].includes(fileExtension),
     [fileExtension],
   );
 

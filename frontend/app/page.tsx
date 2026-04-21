@@ -18,15 +18,14 @@ type LibraryItem = {
 };
 
 const UPLOAD_ENDPOINT = "https://httpbin.org/post";
-const LIBRARY_ENDPOINT =
-  "https://jsonplaceholder.typicode.com/photos?_limit=8";
+const LIBRARY_ENDPOINT = "https://jsonplaceholder.typicode.com/photos?_limit=8";
 
 const formatBytes = (value: number) => {
   if (!value) return "0 B";
   const units = ["B", "KB", "MB", "GB"];
   const index = Math.min(
     Math.floor(Math.log(value) / Math.log(1024)),
-    units.length - 1
+    units.length - 1,
   );
   const size = value / Math.pow(1024, index);
   return `${size.toFixed(size >= 10 || index === 0 ? 0 : 1)} ${units[index]}`;
@@ -65,7 +64,7 @@ export default function Home() {
             title: item.title,
             preview: item.url,
             source: "Public placeholder feed",
-          }))
+          })),
         );
       } catch (err) {
         if (err instanceof Error && err.name === "AbortError") return;
@@ -81,12 +80,12 @@ export default function Home() {
 
   const totalUploaded = useMemo(
     () => uploads.filter((item) => item.status === "uploaded").length,
-    [uploads]
+    [uploads],
   );
 
   const totalBytes = useMemo(
     () => uploads.reduce((sum, item) => sum + item.size, 0),
-    [uploads]
+    [uploads],
   );
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -135,8 +134,8 @@ export default function Home() {
         prev.map((item) =>
           newUploads.some((upload) => upload.id === item.id)
             ? { ...item, status: "uploaded" }
-            : item
-        )
+            : item,
+        ),
       );
       setSelectedFiles([]);
       setNotes("");
@@ -146,8 +145,8 @@ export default function Home() {
         prev.map((item) =>
           newUploads.some((upload) => upload.id === item.id)
             ? { ...item, status: "failed" }
-            : item
-        )
+            : item,
+        ),
       );
       setError("Upload failed. Check the endpoint and try again.");
     } finally {
@@ -327,8 +326,8 @@ export default function Home() {
                             item.status === "uploaded"
                               ? "bg-emerald-100 text-emerald-700"
                               : item.status === "failed"
-                              ? "bg-rose-100 text-rose-700"
-                              : "bg-amber-100 text-amber-700"
+                                ? "bg-rose-100 text-rose-700"
+                                : "bg-amber-100 text-amber-700"
                           }`}
                         >
                           {item.status}

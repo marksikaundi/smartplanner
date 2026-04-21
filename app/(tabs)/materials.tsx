@@ -102,6 +102,7 @@ export default function MaterialsScreen() {
                 params: {
                   fileId: item.fileId,
                   title: item.title,
+                  fileName: item.fileName,
                 },
               });
             }}

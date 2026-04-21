@@ -146,6 +146,7 @@ export default function ResourcesScreen() {
                 params: {
                   fileId: item.fileId,
                   title: item.title,
+                  fileName: item.fileName,
                 },
               });
             }}

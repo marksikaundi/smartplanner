@@ -104,6 +104,7 @@ export default function AssignmentsScreen() {
                 params: {
                   fileId: item.fileId,
                   title: item.title,
+                  fileName: item.fileName,
                 },
               });
             }}

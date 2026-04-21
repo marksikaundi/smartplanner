@@ -1,15 +1,21 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #f6f2ec;
+  --foreground: #141312;
+  --card: #ffffff;
+  --muted: #5f5b56;
+  --accent: #ff6b3d;
+  --accent-strong: #1f6bff;
+  --stroke: rgba(20, 19, 18, 0.08);
+  --shadow: 0 18px 50px rgba(15, 12, 8, 0.12);
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--app-font-sans);
+  --font-mono: var(--app-font-mono);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -22,5 +28,84 @@
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans), "Trebuchet MS", "Segoe UI", sans-serif;
+}
+
+.page-shell {
+  background-image: radial-gradient(
+      900px 500px at 85% -10%,
+      rgba(255, 107, 61, 0.2),
+      transparent 60%
+    ),
+    radial-gradient(
+      700px 420px at 0% 15%,
+      rgba(31, 107, 255, 0.18),
+      transparent 55%
+    ),
+    linear-gradient(120deg, #f6f2ec 0%, #fbfaf7 40%, #f3efe8 100%);
+  min-height: 100vh;
+}
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.78);
+  border: 1px solid var(--stroke);
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(16px);
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border-radius: 999px;
+  border: 1px solid rgba(20, 19, 18, 0.1);
+  background: rgba(255, 255, 255, 0.7);
+  padding: 6px 14px;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.upload-area {
+  border: 1px dashed rgba(20, 19, 18, 0.25);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.7);
+  transition: border-color 200ms ease, transform 200ms ease, box-shadow 200ms ease;
+}
+
+.upload-area:hover {
+  border-color: var(--accent);
+  transform: translateY(-1px);
+  box-shadow: 0 12px 30px rgba(255, 107, 61, 0.2);
+}
+
+.fade-up {
+  animation: floatIn 600ms ease both;
+}
+
+.stagger > * {
+  animation: floatIn 700ms ease both;
+}
+
+.stagger > *:nth-child(2) {
+  animation-delay: 80ms;
+}
+
+.stagger > *:nth-child(3) {
+  animation-delay: 140ms;
+}
+
+.stagger > *:nth-child(4) {
+  animation-delay: 200ms;
+}
+
+@keyframes floatIn {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }

@@ -15,8 +15,8 @@ import {
   Text,
   View,
 } from "react-native";
-import Pdf from "react-native-pdf";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { WebView } from "react-native-webview";
 
 export default function MaterialViewerScreen() {
   const navigation = useNavigation();
@@ -272,10 +272,15 @@ export default function MaterialViewerScreen() {
     <SafeAreaView style={styles.screen}>
       {isPdf ? (
         <View style={styles.pdfContainer}>
-          <Pdf
+          <WebView
             source={{ uri: viewerUrl }}
             style={styles.pdf}
-            trustAllCerts={false}
+            startInLoadingState
+            renderLoading={() => (
+              <View style={styles.pdfLoading}>
+                <ActivityIndicator size="large" color="#2D2E3A" />
+              </View>
+            )}
           />
           <View style={styles.pdfActionBar}>
             {localUri ? (
@@ -384,6 +389,12 @@ const styles = StyleSheet.create({
   },
   pdf: {
     flex: 1,
+    backgroundColor: "#FFFFFF",
+  },
+  pdfLoading: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
     backgroundColor: "#FFFFFF",
   },
   pdfActionBar: {

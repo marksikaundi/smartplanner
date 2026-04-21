@@ -84,7 +84,7 @@ export default function ProfileScreen() {
           </View>
           <Text style={styles.title}>{accountInfo.name || "Your Profile"}</Text>
           <Text style={styles.subtitle}>
-            {accountInfo.email || "Signed in"}
+            {accountInfo.email || "Guest mode"}
           </Text>
         </View>
 
@@ -127,9 +127,11 @@ export default function ProfileScreen() {
           </View>
         </View>
 
-        <Pressable style={styles.signOutButton} onPress={handleSignOut}>
-          <Text style={styles.signOutText}>Sign Out</Text>
-        </Pressable>
+        {accountInfo.email ? (
+          <Pressable style={styles.signOutButton} onPress={handleSignOut}>
+            <Text style={styles.signOutText}>Sign Out</Text>
+          </Pressable>
+        ) : null}
       </ScrollView>
     </SafeAreaView>
   );

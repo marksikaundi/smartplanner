@@ -1,6 +1,4 @@
 import HugeiconsIcon from "@/components/hugeicons-icon";
-import { storage } from "@/lib/appwrite";
-import { APPWRITE_IDS } from "@/lib/appwrite-ids";
 import { File02Icon } from "@hugeicons/core-free-icons";
 import * as FileSystem from "expo-file-system";
 import * as Linking from "expo-linking";
@@ -20,12 +18,14 @@ import { WebView } from "react-native-webview";
 
 export default function MaterialViewerScreen() {
   const navigation = useNavigation();
-  const { fileId, title, fileName, mimeType } = useLocalSearchParams<{
-    fileId?: string | string[];
-    title?: string | string[];
-    fileName?: string | string[];
-    mimeType?: string | string[];
-  }>();
+  const { fileUrl, fileKey, title, fileName, mimeType } =
+    useLocalSearchParams<{
+      fileUrl?: string | string[];
+      fileKey?: string | string[];
+      title?: string | string[];
+      fileName?: string | string[];
+      mimeType?: string | string[];
+    }>();
 
   const resolvedTitle = useMemo(() => {
     if (Array.isArray(title)) {
@@ -34,12 +34,19 @@ export default function MaterialViewerScreen() {
     return title ?? "Material";
   }, [title]);
 
-  const resolvedFileId = useMemo(() => {
-    if (Array.isArray(fileId)) {
-      return fileId[0];
+  const resolvedFileUrl = useMemo(() => {
+    if (Array.isArray(fileUrl)) {
+      return fileUrl[0];
     }
-    return fileId;
-  }, [fileId]);
+    return fileUrl;
+  }, [fileUrl]);
+
+  const resolvedFileKey = useMemo(() => {
+    if (Array.isArray(fileKey)) {
+      return fileKey[0];
+    }
+    return fileKey;
+  }, [fileKey]);
 
   const resolvedFileName = useMemo(() => {
     if (Array.isArray(fileName)) {
@@ -120,22 +127,15 @@ export default function MaterialViewerScreen() {
     [fileExtension],
   );
 
-  const viewerUrl = useMemo(() => {
-    if (!resolvedFileId || !APPWRITE_IDS.storageBucketId) {
-      return undefined;
-    }
+  const viewerUrl = useMemo(
+    () => resolvedFileUrl ?? undefined,
+    [resolvedFileUrl],
+  );
 
-    return storage.getFileView(APPWRITE_IDS.storageBucketId, resolvedFileId)
-      .href;
-  }, [resolvedFileId]);
-
-  const downloadUrl = useMemo(() => {
-    if (!resolvedFileId || !APPWRITE_IDS.storageBucketId) {
-      return undefined;
-    }
-    return storage.getFileDownload(APPWRITE_IDS.storageBucketId, resolvedFileId)
-      .href;
-  }, [resolvedFileId]);
+  const downloadUrl = useMemo(
+    () => resolvedFileUrl ?? undefined,
+    [resolvedFileUrl],
+  );
 
   const localDirectory = useMemo(() => {
     const baseDirectory =
@@ -147,19 +147,19 @@ export default function MaterialViewerScreen() {
   }, []);
 
   const localFileUri = useMemo(() => {
-    if (!localDirectory || !resolvedFileId) {
+    if (!localDirectory || !resolvedFileKey) {
       return undefined;
     }
     const rawName = resolvedFileName.trim() || resolvedTitle.trim();
     const baseName = rawName
       ? rawName.replace(/[^a-zA-Z0-9._-]+/g, "-")
-      : resolvedFileId;
+      : resolvedFileKey;
     const suffix = fileExtension ? `.${fileExtension}` : "";
-    return `${localDirectory}${resolvedFileId}-${baseName}${suffix}`;
+    return `${localDirectory}${resolvedFileKey}-${baseName}${suffix}`;
   }, [
     fileExtension,
     localDirectory,
-    resolvedFileId,
+    resolvedFileKey,
     resolvedFileName,
     resolvedTitle,
   ]);

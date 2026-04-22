@@ -16,7 +16,8 @@ export default function MaterialsScreen() {
       title: string;
       subtitle: string;
       type: string;
-      fileId?: string;
+      fileUrl?: string;
+      fileKey?: string;
       fileName?: string;
     }[]
   >([]);
@@ -47,7 +48,8 @@ export default function MaterialsScreen() {
             title: String(doc.title ?? doc.name ?? "Material"),
             subtitle: String(doc.description ?? doc.subtitle ?? ""),
             type: String(doc.type ?? doc.format ?? "PDF"),
-            fileId: doc.fileId as string | undefined,
+            fileUrl: doc.fileUrl as string | undefined,
+            fileKey: doc.fileKey as string | undefined,
             fileName: String(doc.fileName ?? ""),
           }));
           setData(mapped);
@@ -88,7 +90,7 @@ export default function MaterialsScreen() {
             key={item.id ?? item.title}
             style={styles.card}
             onPress={() => {
-              if (!item.fileId || !APPWRITE_IDS.storageBucketId) {
+              if (!item.fileUrl) {
                 return;
               }
               void addRecentOpen({
@@ -100,7 +102,8 @@ export default function MaterialsScreen() {
               router.push({
                 pathname: "/material-viewer",
                 params: {
-                  fileId: item.fileId,
+                  fileUrl: item.fileUrl,
+                  fileKey: item.fileKey,
                   title: item.title,
                   fileName: item.fileName,
                   mimeType: item.type,

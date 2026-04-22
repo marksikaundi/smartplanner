@@ -12,7 +12,8 @@ type AssignmentItem = {
   title: string;
   subtitle: string;
   status: string;
-  fileId?: string;
+  fileUrl?: string;
+  fileKey?: string;
   fileName?: string;
   type?: string;
 };
@@ -48,7 +49,8 @@ export default function AssignmentsScreen() {
               doc.subtitle ?? doc.details ?? doc.description ?? "",
             ),
             status: String(doc.status ?? "Pending"),
-            fileId: doc.fileId as string | undefined,
+            fileUrl: doc.fileUrl as string | undefined,
+            fileKey: doc.fileKey as string | undefined,
             fileName: String(doc.fileName ?? ""),
             type: String(doc.type ?? ""),
           }));
@@ -87,14 +89,14 @@ export default function AssignmentsScreen() {
 
         {data.map((item) => (
           <Pressable
-            key={`${item.title}-${item.fileId ?? "default"}`}
+            key={`${item.title}-${item.fileKey ?? "default"}`}
             style={styles.card}
             onPress={() => {
-              if (!item.fileId || !APPWRITE_IDS.storageBucketId) {
+              if (!item.fileUrl) {
                 return;
               }
               void addRecentOpen({
-                id: item.fileId ?? item.title,
+                id: item.fileKey ?? item.title,
                 title: item.title,
                 subtitle: item.subtitle,
                 category: "Assignments",
@@ -102,7 +104,8 @@ export default function AssignmentsScreen() {
               router.push({
                 pathname: "/material-viewer",
                 params: {
-                  fileId: item.fileId,
+                  fileUrl: item.fileUrl,
+                  fileKey: item.fileKey,
                   title: item.title,
                   fileName: item.fileName,
                   mimeType: item.type,

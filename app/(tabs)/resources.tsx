@@ -29,7 +29,8 @@ type ResourceItem = {
   title: string;
   subtitle: string;
   icon: string;
-  fileId?: string;
+  fileUrl?: string;
+  fileKey?: string;
   fileName?: string;
   type?: string;
 };
@@ -88,7 +89,8 @@ export default function ResourcesScreen() {
               doc.subtitle ?? doc.summary ?? doc.description ?? "",
             ),
             icon: String(doc.icon ?? "book"),
-            fileId: doc.fileId as string | undefined,
+            fileUrl: doc.fileUrl as string | undefined,
+            fileKey: doc.fileKey as string | undefined,
             fileName: String(doc.fileName ?? ""),
             type: String(doc.type ?? ""),
           }));
@@ -129,10 +131,10 @@ export default function ResourcesScreen() {
 
         {data.map((item) => (
           <Pressable
-            key={`${item.title}-${item.fileId ?? "default"}`}
+            key={`${item.title}-${item.fileKey ?? "default"}`}
             style={styles.card}
             onPress={() => {
-              if (!item.fileId || !APPWRITE_IDS.storageBucketId) {
+              if (!item.fileUrl) {
                 return;
               }
               void addRecentOpen({
@@ -144,7 +146,8 @@ export default function ResourcesScreen() {
               router.push({
                 pathname: "/material-viewer",
                 params: {
-                  fileId: item.fileId,
+                  fileUrl: item.fileUrl,
+                  fileKey: item.fileKey,
                   title: item.title,
                   fileName: item.fileName,
                   mimeType: item.type,

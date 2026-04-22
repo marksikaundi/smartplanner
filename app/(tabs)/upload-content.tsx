@@ -407,7 +407,10 @@ export default function UploadContentScreen() {
                 (Date.now() - uploadStartRef.current) / 1000;
               if (elapsedSeconds > 0) {
                 const speed = progress.totalLoaded / elapsedSeconds;
-                const remaining = Math.max(totalBytes - progress.totalLoaded, 0);
+                const remaining = Math.max(
+                  totalBytes - progress.totalLoaded,
+                  0,
+                );
                 setUploadSpeed(speed);
                 setUploadEtaSeconds(remaining / speed);
               }

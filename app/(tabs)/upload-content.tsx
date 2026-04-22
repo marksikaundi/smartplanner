@@ -392,135 +392,36 @@ export default function UploadContentScreen() {
           Permission.write(Role.users()),
         ];
         setUploadProgress(5);
-        const jwt = await account.createJWT();
-
-        const totalBytes = file.size ?? 0;
+        const uploadFile = await buildUploadFile(file);
+        const totalBytes = uploadFile.size ?? file.size ?? 0;
         if (!totalBytes) {
           throw new Error("Unable to read the selected file.");
         }
 
-        const fileId = ID.unique();
-        let uploadId: string | null = null;
-        let created: any = null;
-
-        for (let start = 0; start < totalBytes; start += chunkSize) {
-          const end = Math.min(start + chunkSize, totalBytes) - 1;
-          const length = end - start + 1;
-
-          const headers: Record<string, string> = {
-            "X-Appwrite-Project": APPWRITE_IDS.projectId,
-            "X-Appwrite-JWT": jwt.jwt,
-            "Content-Range": `bytes ${start}-${end}/${totalBytes}`,
-          };
-
-          if (uploadId) {
-            headers["X-Appwrite-Id"] = uploadId;
-          }
-
-          if (Platform.OS === "web") {
-            if (!file.webFile) {
-              throw new Error("Web upload requires a browser file.");
+        const uploadedFiles = await uploadFiles("documents", {
+          files: [uploadFile],
+          onUploadProgress: (progress) => {
+            setUploadProgress(Math.min(90, Math.round(progress.totalProgress)));
+            if (uploadStartRef.current) {
+              const elapsedSeconds =
+                (Date.now() - uploadStartRef.current) / 1000;
+              if (elapsedSeconds > 0) {
+                const speed = progress.totalLoaded / elapsedSeconds;
+                const remaining = Math.max(totalBytes - progress.totalLoaded, 0);
+                setUploadSpeed(speed);
+                setUploadEtaSeconds(remaining / speed);
+              }
             }
-            const chunk = file.webFile.slice(start, end + 1);
-            const formData = new FormData();
-            formData.append("file", chunk, file.name);
-            formData.append("fileId", fileId);
+          },
+        });
 
-            const response = await fetch(
-              `${APPWRITE_IDS.endpoint}/storage/buckets/${
-                APPWRITE_IDS.storageBucketId
-              }/files`,
-              {
-                method: "POST",
-                headers,
-                body: formData,
-              },
-            );
-
-            if (!response.ok) {
-              const body = await response.text();
-              throw new Error(body || "Upload failed");
-            }
-
-            if (!created) {
-              created = await response.json();
-              uploadId = created.$id;
-            }
-          } else {
-            if (!file.uri) {
-              throw new Error("Missing file URI for upload.");
-            }
-
-            const chunkBase64 = await FileSystem.readAsStringAsync(file.uri, {
-              encoding: FileSystem.EncodingType.Base64,
-              position: start,
-              length,
-            });
-
-            const chunkUri = `${FileSystem.cacheDirectory}upload-${fileId}-${start}.chunk`;
-            await FileSystem.writeAsStringAsync(chunkUri, chunkBase64, {
-              encoding: FileSystem.EncodingType.Base64,
-            });
-
-            const result = await FileSystem.uploadAsync(
-              `${APPWRITE_IDS.endpoint}/storage/buckets/${
-                APPWRITE_IDS.storageBucketId
-              }/files`,
-              chunkUri,
-              {
-                httpMethod: "POST",
-                headers,
-                uploadType: FileSystem.FileSystemUploadType.MULTIPART,
-                fieldName: "file",
-                mimeType: file.type ?? "application/octet-stream",
-                parameters: {
-                  fileId,
-                },
-              },
-            );
-
-            await FileSystem.deleteAsync(chunkUri, { idempotent: true });
-
-            if (result.status < 200 || result.status >= 300) {
-              throw new Error(result.body || "Upload failed");
-            }
-
-            if (!created) {
-              created = JSON.parse(result.body);
-              uploadId = created.$id;
-            }
-          }
-
-          const percent = Math.min(
-            70,
-            Math.round(((end + 1) / totalBytes) * 70),
-          );
-          setUploadProgress(percent);
-
-          if (uploadStartRef.current) {
-            const elapsedSeconds = (Date.now() - uploadStartRef.current) / 1000;
-            if (elapsedSeconds > 0) {
-              const uploadedBytes = end + 1;
-              const speed = uploadedBytes / elapsedSeconds;
-              const remaining = Math.max(totalBytes - uploadedBytes, 0);
-              setUploadSpeed(speed);
-              setUploadEtaSeconds(remaining / speed);
-            }
-          }
+        const uploaded = uploadedFiles[0];
+        if (!uploaded) {
+          throw new Error("UploadThing did not return a file response.");
         }
 
-        if (!created) {
-          throw new Error("Upload did not return a file response.");
-        }
-
-        await storage.updateFile(
-          APPWRITE_IDS.storageBucketId,
-          created.$id,
-          file.name,
-          permissions,
-        );
-
-        setUploadProgress(80);
+        setUploadProgress(95);
+        const fileUrl = uploaded.ufsUrl || uploaded.url;
 
         const payload: Record<string, string | string[]> = {
           title: title.trim(),
@@ -528,7 +429,8 @@ export default function UploadContentScreen() {
           categories: selectedCategories,
           tags: selectedTags,
           programName: selectedProgram,
-          fileId: created.$id,
+          fileUrl,
+          fileKey: uploaded.key,
           fileName: file.name,
           type: file.type ?? "File",
         };
@@ -546,11 +448,13 @@ export default function UploadContentScreen() {
         );
 
         const updatedRecents = await addRecentUpload({
-          id: created.$id,
+          id: uploaded.key,
           title: title.trim(),
           category: primaryCategory,
           program: selectedProgram,
           fileName: file.name,
+          fileUrl,
+          fileKey: uploaded.key,
           mimeType: file.type ?? "",
         });
         setRecentUploads(updatedRecents);
@@ -577,13 +481,13 @@ export default function UploadContentScreen() {
           normalized.includes("503")
         ) {
           message =
-            "Appwrite returned a 503 while writing the file. Try again in a moment or upload a smaller file.";
+            "UploadThing returned a 503 while writing the file. Try again in a moment or upload a smaller file.";
         } else if (
           normalized.includes("network") ||
           normalized.includes("offline")
         ) {
           message =
-            "The upload could not reach Appwrite. Please confirm your connection and retry.";
+            "The upload could not reach UploadThing. Please confirm your connection and retry.";
         } else if (normalized.includes("<html")) {
           message = "The server returned an unexpected response. Please retry.";
         }
@@ -898,13 +802,14 @@ export default function UploadContentScreen() {
                   key={`${item.id}-${item.uploadedAt}`}
                   style={styles.recentRow}
                   onPress={() => {
-                    if (!item.id || !APPWRITE_IDS.storageBucketId) {
+                    if (!item.fileUrl) {
                       return;
                     }
                     router.push({
                       pathname: "/material-viewer",
                       params: {
-                        fileId: item.id,
+                        fileUrl: item.fileUrl,
+                        fileKey: item.fileKey,
                         title: item.title,
                         fileName: item.fileName,
                         mimeType: item.mimeType ?? "",

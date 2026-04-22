@@ -7,7 +7,6 @@ import {
   getRecentUploads,
   type RecentUploadItem,
 } from "@/lib/recent-uploads";
-import { uploadFiles } from "@/lib/uploadthing";
 import {
   AttachmentIcon,
   CloudUploadIcon,

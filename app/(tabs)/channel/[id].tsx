@@ -1,5 +1,5 @@
 import HugeiconsIcon from "@/components/hugeicons-icon";
-import { databases } from "@/lib/appwrite";
+import { databases, ID, Query } from "@/lib/appwrite";
 import { APPWRITE_IDS, isConfigured } from "@/lib/appwrite-ids";
 import { UserGroupIcon, UserSharingIcon } from "@hugeicons/core-free-icons";
 import { useLocalSearchParams, useRouter } from "expo-router";
@@ -10,6 +10,7 @@ import {
   ScrollView,
   StyleSheet,
   Text,
+  TextInput,
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -21,12 +22,22 @@ type ChannelDetail = {
   members: number;
 };
 
+type ChannelMessage = {
+  id: string;
+  text: string;
+  createdAt: string;
+  senderName: string;
+};
+
 export default function ChannelDetailScreen() {
   const router = useRouter();
   const { id } = useLocalSearchParams<{ id?: string }>();
   const [channel, setChannel] = useState<ChannelDetail | null>(null);
+  const [messages, setMessages] = useState<ChannelMessage[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [isSending, setIsSending] = useState(false);
   const [loadError, setLoadError] = useState<string | null>(null);
+  const [messageText, setMessageText] = useState("");
 
   useEffect(() => {
     let isActive = true;
@@ -68,6 +79,39 @@ export default function ChannelDetailScreen() {
             members: Number.isFinite(members) ? members : 0,
           });
         }
+
+        if (isConfigured(APPWRITE_IDS.collections.channelMessages)) {
+          const messagesResponse = await databases.listDocuments(
+            APPWRITE_IDS.databaseId,
+            APPWRITE_IDS.collections.channelMessages,
+            [
+              Query.equal("channelId", String(id)),
+              Query.orderDesc("$createdAt"),
+              Query.limit(60),
+            ],
+          );
+          if (isActive) {
+            const mapped = messagesResponse.documents
+              .map((doc) => ({
+                id: String(doc.$id),
+                text: String(doc.text ?? doc.message ?? doc.body ?? ""),
+                createdAt: String(doc.$createdAt ?? ""),
+                senderName: String(doc.senderName ?? doc.sender ?? "You"),
+              }))
+              .reverse();
+            setMessages(mapped);
+          }
+        }
+
+        const unreadCount = Number(response.unreadCount ?? response.unread ?? 0);
+        if (Number.isFinite(unreadCount) && unreadCount > 0) {
+          await databases.updateDocument(
+            APPWRITE_IDS.databaseId,
+            APPWRITE_IDS.collections.channels,
+            String(id),
+            { unreadCount: 0 },
+          );
+        }
       } catch {
         if (isActive) {
           setLoadError("Unable to load channel details right now.");
@@ -85,6 +129,57 @@ export default function ChannelDetailScreen() {
       isActive = false;
     };
   }, [id]);
+
+  const handleSend = async () => {
+    const trimmed = messageText.trim();
+    if (!trimmed || !id || !channel) {
+      return;
+    }
+
+    if (!isConfigured(APPWRITE_IDS.collections.channelMessages)) {
+      setLoadError("Channel messages collection is not configured.");
+      return;
+    }
+
+    try {
+      setIsSending(true);
+      const created = await databases.createDocument(
+        APPWRITE_IDS.databaseId,
+        APPWRITE_IDS.collections.channelMessages,
+        ID.unique(),
+        {
+          channelId: String(id),
+          text: trimmed,
+          senderName: "You",
+        },
+      );
+      setMessages((current) => [
+        ...current,
+        {
+          id: String(created.$id),
+          text: trimmed,
+          createdAt: String(created.$createdAt ?? new Date().toISOString()),
+          senderName: "You",
+        },
+      ]);
+      setMessageText("");
+
+      await databases.updateDocument(
+        APPWRITE_IDS.databaseId,
+        APPWRITE_IDS.collections.channels,
+        String(id),
+        {
+          lastMessage: trimmed,
+          lastMessageAt: created.$createdAt,
+          unreadCount: 0,
+        },
+      );
+    } catch {
+      setLoadError("Unable to send message right now.");
+    } finally {
+      setIsSending(false);
+    }
+  };
 
   return (
     <SafeAreaView style={styles.screen}>
@@ -117,6 +212,43 @@ export default function ChannelDetailScreen() {
             </Pressable>
           </View>
         ) : null}
+
+        <View style={styles.messagesCard}>
+          <Text style={styles.sectionTitle}>Messages</Text>
+          {messages.length === 0 ? (
+            <Text style={styles.helperText}>
+              No messages yet. Start the conversation.
+            </Text>
+          ) : null}
+          {messages.map((message) => (
+            <View key={message.id} style={styles.messageRow}>
+              <View style={styles.messageBubble}>
+                <Text style={styles.messageSender}>{message.senderName}</Text>
+                <Text style={styles.messageText}>{message.text}</Text>
+              </View>
+            </View>
+          ))}
+        </View>
+
+        <View style={styles.composerCard}>
+          <TextInput
+            value={messageText}
+            onChangeText={setMessageText}
+            placeholder="Write a message"
+            placeholderTextColor="#9AA0B6"
+            style={styles.input}
+          />
+          <Pressable
+            style={[styles.sendButton, isSending ? styles.sendButtonBusy : null]}
+            onPress={handleSend}
+          >
+            {isSending ? (
+              <ActivityIndicator size="small" color="#FFFFFF" />
+            ) : (
+              <Text style={styles.sendText}>Send</Text>
+            )}
+          </Pressable>
+        </View>
       </ScrollView>
     </SafeAreaView>
   );
@@ -134,6 +266,12 @@ const styles = StyleSheet.create({
     gap: 16,
   },
   card: {
+    backgroundColor: "#FFFFFF",
+    borderRadius: 18,
+    padding: 18,
+    gap: 10,
+  },
+  messagesCard: {
     backgroundColor: "#FFFFFF",
     borderRadius: 18,
     padding: 18,
@@ -171,6 +309,60 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   inviteText: {
+    color: "#FFFFFF",
+    fontSize: 13,
+    fontWeight: "700",
+  },
+  sectionTitle: {
+    fontSize: 14,
+    fontWeight: "700",
+    color: "#1F2937",
+  },
+  messageRow: {
+    flexDirection: "row",
+  },
+  messageBubble: {
+    backgroundColor: "#F4F5F8",
+    borderRadius: 14,
+    padding: 12,
+    maxWidth: "85%",
+    gap: 4,
+  },
+  messageSender: {
+    fontSize: 10,
+    color: "#667085",
+    fontWeight: "600",
+  },
+  messageText: {
+    fontSize: 13,
+    color: "#1F2937",
+  },
+  composerCard: {
+    backgroundColor: "#FFFFFF",
+    borderRadius: 18,
+    padding: 14,
+    gap: 10,
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: "#E6E4EF",
+    borderRadius: 12,
+    paddingHorizontal: 12,
+    paddingVertical: 12,
+    fontSize: 14,
+    color: "#2D2E3A",
+    backgroundColor: "#F9F8FD",
+  },
+  sendButton: {
+    backgroundColor: "#1FAF75",
+    borderRadius: 14,
+    paddingVertical: 12,
+    alignItems: "center",
+  },
+  sendButtonBusy: {
+    opacity: 0.7,
+  },
+  sendText: {
     color: "#FFFFFF",
     fontSize: 13,
     fontWeight: "700",

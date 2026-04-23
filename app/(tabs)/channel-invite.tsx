@@ -159,6 +159,17 @@ export default function ChannelInviteScreen() {
           {!isLoading && loadError ? (
             <Text style={styles.helperText}>{loadError}</Text>
           ) : null}
+          {!isLoading && !loadError && channels.length === 0 ? (
+            <View style={styles.emptyState}>
+              <Text style={styles.helperText}>No channels yet.</Text>
+              <Pressable
+                style={styles.emptyButton}
+                onPress={() => router.push("/(tabs)/channel-create")}
+              >
+                <Text style={styles.emptyButtonText}>Create a channel</Text>
+              </Pressable>
+            </View>
+          ) : null}
 
           <Text style={styles.label}>Email address</Text>
           <TextInput
@@ -263,5 +274,21 @@ const styles = StyleSheet.create({
   helperText: {
     fontSize: 12,
     color: "#7A7D92",
+  },
+  emptyState: {
+    gap: 8,
+    paddingVertical: 6,
+  },
+  emptyButton: {
+    alignSelf: "flex-start",
+    backgroundColor: "#1FAF75",
+    borderRadius: 12,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+  },
+  emptyButtonText: {
+    color: "#FFFFFF",
+    fontSize: 12,
+    fontWeight: "700",
   },
 });

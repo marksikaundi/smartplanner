@@ -3,7 +3,7 @@ import { createUploadthing, type FileRouter } from "uploadthing/server";
 const f = createUploadthing();
 
 export const uploadRouter = {
-  documents: f({ blob: { maxFileSize: "200MB" } })
+  documents: f({ blob: { maxFileSize: "256MB" } })
     .middleware(() => ({ uploadedAt: new Date().toISOString() }))
     .onUploadComplete(({ file, metadata }) => ({
       uploadedAt: metadata.uploadedAt,

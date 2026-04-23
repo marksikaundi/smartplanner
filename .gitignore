@@ -33,7 +33,7 @@ yarn-error.*
 # local env files
 .env*.local
 .env
-/frontend/node_modules
+/appwrite/functions/uploadthing/.env
 # typescript
 *.tsbuildinfo
 

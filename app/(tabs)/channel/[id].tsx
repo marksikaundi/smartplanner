@@ -1,5 +1,5 @@
 import HugeiconsIcon from "@/components/hugeicons-icon";
-import { databases, ID, Query } from "@/lib/appwrite";
+import { account, client, databases, ID, Query } from "@/lib/appwrite";
 import { APPWRITE_IDS, isConfigured } from "@/lib/appwrite-ids";
 import { UserGroupIcon, UserSharingIcon } from "@hugeicons/core-free-icons";
 import { useLocalSearchParams, useRouter } from "expo-router";
@@ -27,6 +27,13 @@ type ChannelMessage = {
   text: string;
   createdAt: string;
   senderName: string;
+  senderId: string | null;
+};
+
+type ChannelMember = {
+  id: string;
+  lastReadAt: string | null;
+  unreadCount: number;
 };
 
 export default function ChannelDetailScreen() {
@@ -38,6 +45,31 @@ export default function ChannelDetailScreen() {
   const [isSending, setIsSending] = useState(false);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [messageText, setMessageText] = useState("");
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+  const [memberRecord, setMemberRecord] = useState<ChannelMember | null>(null);
+
+  useEffect(() => {
+    let isActive = true;
+
+    const loadCurrentUser = async () => {
+      try {
+        const user = await account.get();
+        if (isActive) {
+          setCurrentUserId(String(user.$id));
+        }
+      } catch {
+        if (isActive) {
+          setCurrentUserId(null);
+        }
+      }
+    };
+
+    loadCurrentUser();
+
+    return () => {
+      isActive = false;
+    };
+  }, []);
 
   useEffect(() => {
     let isActive = true;
@@ -97,22 +129,61 @@ export default function ChannelDetailScreen() {
                 text: String(doc.text ?? doc.message ?? doc.body ?? ""),
                 createdAt: String(doc.$createdAt ?? ""),
                 senderName: String(doc.senderName ?? doc.sender ?? "You"),
+                senderId: doc.senderId ? String(doc.senderId) : null,
               }))
               .reverse();
             setMessages(mapped);
           }
         }
 
-        const unreadCount = Number(
-          response.unreadCount ?? response.unread ?? 0,
-        );
-        if (Number.isFinite(unreadCount) && unreadCount > 0) {
+        if (
+          currentUserId &&
+          isConfigured(APPWRITE_IDS.collections.channelMembers)
+        ) {
+          const memberResponse = await databases.listDocuments(
+            APPWRITE_IDS.databaseId,
+            APPWRITE_IDS.collections.channelMembers,
+            [
+              Query.equal("channelId", String(id)),
+              Query.equal("userId", currentUserId),
+              Query.limit(1),
+            ],
+          );
+          let memberDoc = memberResponse.documents[0];
+          if (!memberDoc) {
+            memberDoc = await databases.createDocument(
+              APPWRITE_IDS.databaseId,
+              APPWRITE_IDS.collections.channelMembers,
+              ID.unique(),
+              {
+                channelId: String(id),
+                userId: currentUserId,
+                unreadCount: 0,
+                lastReadAt: new Date().toISOString(),
+              },
+            );
+          }
+
+          const member: ChannelMember = {
+            id: String(memberDoc.$id),
+            lastReadAt: memberDoc.lastReadAt
+              ? String(memberDoc.lastReadAt)
+              : null,
+            unreadCount: Number(memberDoc.unreadCount ?? 0) || 0,
+          };
+          if (isActive) {
+            setMemberRecord(member);
+          }
+
           await databases.updateDocument(
             APPWRITE_IDS.databaseId,
-            APPWRITE_IDS.collections.channels,
-            String(id),
-            { unreadCount: 0 },
+            APPWRITE_IDS.collections.channelMembers,
+            member.id,
+            { unreadCount: 0, lastReadAt: new Date().toISOString() },
           );
+          if (isActive) {
+            setMemberRecord({ ...member, unreadCount: 0 });
+          }
         }
       } catch {
         if (isActive) {
@@ -130,7 +201,7 @@ export default function ChannelDetailScreen() {
     return () => {
       isActive = false;
     };
-  }, [id]);
+  }, [currentUserId, id]);
 
   const handleSend = async () => {
     const trimmed = messageText.trim();
@@ -153,6 +224,7 @@ export default function ChannelDetailScreen() {
           channelId: String(id),
           text: trimmed,
           senderName: "You",
+          senderId: currentUserId,
         },
       );
       setMessages((current) => [
@@ -162,6 +234,7 @@ export default function ChannelDetailScreen() {
           text: trimmed,
           createdAt: String(created.$createdAt ?? new Date().toISOString()),
           senderName: "You",
+          senderId: currentUserId,
         },
       ]);
       setMessageText("");
@@ -173,15 +246,103 @@ export default function ChannelDetailScreen() {
         {
           lastMessage: trimmed,
           lastMessageAt: created.$createdAt,
-          unreadCount: 0,
         },
       );
+
+      if (
+        memberRecord &&
+        isConfigured(APPWRITE_IDS.collections.channelMembers)
+      ) {
+        await databases.updateDocument(
+          APPWRITE_IDS.databaseId,
+          APPWRITE_IDS.collections.channelMembers,
+          memberRecord.id,
+          {
+            unreadCount: 0,
+            lastReadAt: new Date().toISOString(),
+          },
+        );
+        setMemberRecord({
+          ...memberRecord,
+          unreadCount: 0,
+          lastReadAt: new Date().toISOString(),
+        });
+      }
     } catch {
       setLoadError("Unable to send message right now.");
     } finally {
       setIsSending(false);
     }
   };
+
+  useEffect(() => {
+    if (!id || !isConfigured(APPWRITE_IDS.collections.channelMessages)) {
+      return;
+    }
+
+    const subscription = client.subscribe(
+      `databases.${APPWRITE_IDS.databaseId}.collections.${APPWRITE_IDS.collections.channelMessages}.documents`,
+      async (event) => {
+        if (!event.events.some((item) => item.includes(".create"))) {
+          return;
+        }
+
+        const payload = event.payload as {
+          channelId?: string;
+          text?: string;
+          senderName?: string;
+          senderId?: string;
+          $id?: string;
+          $createdAt?: string;
+        };
+        if (String(payload.channelId ?? "") !== String(id)) {
+          return;
+        }
+
+        if (payload.senderId && payload.senderId === currentUserId) {
+          return;
+        }
+
+        const messageId = String(payload.$id ?? "");
+        if (!messageId) {
+          return;
+        }
+
+        const message: ChannelMessage = {
+          id: messageId,
+          text: String(payload.text ?? ""),
+          createdAt: String(payload.$createdAt ?? new Date().toISOString()),
+          senderName: String(payload.senderName ?? ""),
+          senderId: payload.senderId ? String(payload.senderId) : null,
+        };
+        setMessages((current) => [...current, message]);
+
+        if (
+          memberRecord &&
+          isConfigured(APPWRITE_IDS.collections.channelMembers)
+        ) {
+          await databases.updateDocument(
+            APPWRITE_IDS.databaseId,
+            APPWRITE_IDS.collections.channelMembers,
+            memberRecord.id,
+            {
+              unreadCount: 0,
+              lastReadAt: message.createdAt,
+            },
+          );
+          setMemberRecord({
+            ...memberRecord,
+            unreadCount: 0,
+            lastReadAt: message.createdAt,
+          });
+        }
+      },
+    );
+
+    return () => {
+      subscription();
+    };
+  }, [currentUserId, id, memberRecord]);
 
   return (
     <SafeAreaView style={styles.screen}>

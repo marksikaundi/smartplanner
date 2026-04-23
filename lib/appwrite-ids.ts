@@ -13,6 +13,7 @@ export const APPWRITE_IDS = {
     channels: "channels",
     channelInvites: "channelInvites",
     channelMessages: "channelMessages",
+    channelMembers: "channelMembers",
   },
 } as const;
 

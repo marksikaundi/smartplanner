@@ -1,5 +1,5 @@
 import HugeiconsIcon from "@/components/hugeicons-icon";
-import { databases, Query } from "@/lib/appwrite";
+import { account, client, databases, ID, Query } from "@/lib/appwrite";
 import { APPWRITE_IDS, isConfigured } from "@/lib/appwrite-ids";
 import {
   Add01Icon,
@@ -31,6 +31,13 @@ type ChannelMessage = {
   text: string;
 };
 
+type ChannelMember = {
+  id: string;
+  channelId: string;
+  unreadCount: number;
+  lastReadAt: string | null;
+};
+
 const CHANNEL_COLORS = ["#E6EDFF", "#E7F8E9", "#FFF1D6", "#F4E7FF", "#FCE7F6"];
 
 export default function JourneyScreen() {
@@ -52,6 +59,33 @@ export default function JourneyScreen() {
   const [channels, setChannels] = useState<ChannelItem[]>([]);
   const [isLoadingChannels, setIsLoadingChannels] = useState(false);
   const [channelError, setChannelError] = useState<string | null>(null);
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+  const [membersByChannel, setMembersByChannel] = useState<
+    Record<string, ChannelMember>
+  >({});
+
+  useEffect(() => {
+    let isActive = true;
+
+    const loadCurrentUser = async () => {
+      try {
+        const user = await account.get();
+        if (isActive) {
+          setCurrentUserId(String(user.$id));
+        }
+      } catch {
+        if (isActive) {
+          setCurrentUserId(null);
+        }
+      }
+    };
+
+    loadCurrentUser();
+
+    return () => {
+      isActive = false;
+    };
+  }, []);
 
   useEffect(() => {
     let isActive = true;
@@ -97,6 +131,47 @@ export default function JourneyScreen() {
             } satisfies ChannelItem;
           });
           let merged = mapped;
+
+          if (
+            currentUserId &&
+            isConfigured(APPWRITE_IDS.collections.channelMembers) &&
+            mapped.length > 0
+          ) {
+            const channelIds = mapped.map((channel) => channel.id);
+            const membersResponse = await databases.listDocuments(
+              APPWRITE_IDS.databaseId,
+              APPWRITE_IDS.collections.channelMembers,
+              [
+                Query.equal("userId", currentUserId),
+                Query.equal("channelId", channelIds),
+                Query.limit(80),
+              ],
+            );
+            const membersMap: Record<string, ChannelMember> = {};
+            membersResponse.documents.forEach((doc) => {
+              const channelId = String(doc.channelId ?? "");
+              if (!channelId) {
+                return;
+              }
+              const unreadCount = Number(doc.unreadCount ?? doc.unread ?? 0);
+              membersMap[channelId] = {
+                id: String(doc.$id),
+                channelId,
+                unreadCount: Number.isFinite(unreadCount) ? unreadCount : 0,
+                lastReadAt: doc.lastReadAt
+                  ? String(doc.lastReadAt)
+                  : null,
+              };
+            });
+            setMembersByChannel(membersMap);
+            merged = merged.map((channel) => {
+              const member = membersMap[channel.id];
+              if (!member) {
+                return channel;
+              }
+              return { ...channel, unread: member.unreadCount };
+            });
+          }
 
           if (
             isConfigured(APPWRITE_IDS.collections.channelMessages) &&
@@ -149,7 +224,114 @@ export default function JourneyScreen() {
     return () => {
       isActive = false;
     };
-  }, []);
+  }, [currentUserId]);
+
+  useEffect(() => {
+    if (!currentUserId || !isConfigured(APPWRITE_IDS.collections.channelMessages)) {
+      return;
+    }
+
+    const subscription = client.subscribe(
+      `databases.${APPWRITE_IDS.databaseId}.collections.${APPWRITE_IDS.collections.channelMessages}.documents`,
+      async (event) => {
+        if (!event.events.some((item) => item.includes(".create"))) {
+          return;
+        }
+
+        const payload = event.payload as {
+          channelId?: string;
+          senderId?: string;
+        };
+        const channelId = String(payload?.channelId ?? "");
+        if (!channelId) {
+          return;
+        }
+
+        if (payload?.senderId && payload.senderId !== currentUserId) {
+          const member = membersByChannel[channelId];
+          if (
+            member &&
+            isConfigured(APPWRITE_IDS.collections.channelMembers)
+          ) {
+            const updatedUnread = member.unreadCount + 1;
+            setMembersByChannel((current) => ({
+              ...current,
+              [channelId]: { ...member, unreadCount: updatedUnread },
+            }));
+            await databases.updateDocument(
+              APPWRITE_IDS.databaseId,
+              APPWRITE_IDS.collections.channelMembers,
+              member.id,
+              { unreadCount: updatedUnread },
+            );
+          } else if (isConfigured(APPWRITE_IDS.collections.channelMembers)) {
+            const created = await databases.createDocument(
+              APPWRITE_IDS.databaseId,
+              APPWRITE_IDS.collections.channelMembers,
+              ID.unique(),
+              {
+                channelId,
+                userId: currentUserId,
+                unreadCount: 1,
+              },
+            );
+            setMembersByChannel((current) => ({
+              ...current,
+              [channelId]: {
+                id: String(created.$id),
+                channelId,
+                unreadCount: 1,
+                lastReadAt: null,
+              },
+            }));
+          }
+        }
+
+        const channelIds = channels.map((channel) => channel.id);
+        if (channelIds.includes(channelId)) {
+          await new Promise((resolve) => setTimeout(resolve, 0));
+          const response = await databases.listDocuments(
+            APPWRITE_IDS.databaseId,
+            APPWRITE_IDS.collections.channels,
+            [Query.orderDesc("$createdAt"), Query.limit(20)],
+          );
+          const mapped = response.documents.map((doc, index) => {
+            const memberCountRaw =
+              doc.membersCount ??
+              doc.memberCount ??
+              (Array.isArray(doc.members) ? doc.members.length : 0);
+            const members = Number(memberCountRaw);
+            return {
+              id: String(doc.$id),
+              name: String(doc.name ?? doc.title ?? "Channel"),
+              members: Number.isFinite(members) ? members : 0,
+              lastMessage: String(
+                doc.lastMessage ?? doc.lastMessageText ?? doc.description ?? "",
+              ),
+              unread: 0,
+              color: String(
+                doc.color ?? CHANNEL_COLORS[index % CHANNEL_COLORS.length],
+              ),
+            } satisfies ChannelItem;
+          });
+
+          setChannels((current) =>
+            mapped.map((channel) => {
+              const member = membersByChannel[channel.id];
+              if (!member) {
+                return channel;
+              }
+              return { ...channel, unread: member.unreadCount };
+            }),
+          );
+        }
+      },
+    );
+
+    return () => {
+      subscription();
+    };
+  }, [channels, currentUserId, membersByChannel]);
 
   return (
     <SafeAreaView style={styles.screen}>

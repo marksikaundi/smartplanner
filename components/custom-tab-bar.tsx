@@ -15,7 +15,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 const TAB_CONFIG: Record<string, { label: string; icon: HugeiconsIconData }> = {
   index: { label: "Home", icon: Home01Icon },
   explore: { label: "Explore", icon: CompassIcon },
-  journey: { label: "Tutor", icon: BubbleChatIcon },
+  journey: { label: "Chat", icon: BubbleChatIcon },
   stats: { label: "Stats", icon: BarChartIcon },
 };
 

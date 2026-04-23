@@ -81,7 +81,7 @@ export default function DashboardScreen() {
   >(
     () => [
       {
-        title: "Tutor",
+        title: "Chat",
         description: "Get help with school work",
         action: "Coming soon",
         color: "#E6EDFF",

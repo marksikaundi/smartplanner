@@ -3,9 +3,9 @@ import HugeiconsIcon, {
 } from "@/components/hugeicons-icon";
 import {
   BarChartIcon,
+  BubbleChatIcon,
   CircleIcon,
   CompassIcon,
-  HelpCircleIcon,
   Home01Icon,
 } from "@hugeicons/core-free-icons";
 import type { BottomTabBarProps } from "@react-navigation/bottom-tabs";
@@ -15,7 +15,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 const TAB_CONFIG: Record<string, { label: string; icon: HugeiconsIconData }> = {
   index: { label: "Home", icon: Home01Icon },
   explore: { label: "Explore", icon: CompassIcon },
-  journey: { label: "Tutor", icon: HelpCircleIcon },
+  journey: { label: "Tutor", icon: BubbleChatIcon },
   stats: { label: "Stats", icon: BarChartIcon },
 };
 

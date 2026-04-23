@@ -1,25 +1,127 @@
 import HugeiconsIcon from "@/components/hugeicons-icon";
+import { databases, Query } from "@/lib/appwrite";
+import { APPWRITE_IDS, isConfigured } from "@/lib/appwrite-ids";
 import {
+  Add01Icon,
   AiMicIcon,
   BellDotIcon,
   BubbleChatIcon,
   More01Icon,
   PlayIcon,
   Sun01Icon,
+  UserGroupIcon,
+  UserSharingIcon,
 } from "@hugeicons/core-free-icons";
-import { ScrollView, StyleSheet, Text, View } from "react-native";
+import { useRouter } from "expo-router";
+import { useEffect, useState } from "react";
+import {
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+type ChannelItem = {
+  id: string;
+  name: string;
+  members: number;
+  lastMessage: string;
+  unread: number;
+  color: string;
+};
+
+const CHANNEL_COLORS = [
+  "#E6EDFF",
+  "#E7F8E9",
+  "#FFF1D6",
+  "#F4E7FF",
+  "#FCE7F6",
+];
+
 export default function JourneyScreen() {
+  const router = useRouter();
   const filters = ["All", "Unread", "Groups", "Favorite", "Others"];
   const waveBars = [6, 14, 10, 18, 12, 20, 14, 22, 16, 24, 18, 14, 20, 12];
   const avatars = [
     { name: "Emery Saris", initials: "ES", color: "#F6B97B", badge: 5 },
     { name: "Justin Dokidis", initials: "JD", color: "#C9C1F6" },
     { name: "Erin Arcand", initials: "EA", color: "#9AE7C1" },
-    { name: "Aspen Botosh", initials: "AB", color: "#E7C3A4", status: "Typing" },
+    {
+      name: "Aspen Botosh",
+      initials: "AB",
+      color: "#E7C3A4",
+      status: "Typing",
+    },
     { name: "Zaire Workman", initials: "ZW", color: "#F1A9B6" },
   ];
+  const [channels, setChannels] = useState<ChannelItem[]>([]);
+  const [isLoadingChannels, setIsLoadingChannels] = useState(false);
+  const [channelError, setChannelError] = useState<string | null>(null);
+
+  useEffect(() => {
+    let isActive = true;
+
+    const loadChannels = async () => {
+      if (!isConfigured(APPWRITE_IDS.collections.channels)) {
+        if (isActive) {
+          setChannelError("Channels collection is not configured.");
+        }
+        return;
+      }
+
+      try {
+        setIsLoadingChannels(true);
+        setChannelError(null);
+        const response = await databases.listDocuments(
+          APPWRITE_IDS.databaseId,
+          APPWRITE_IDS.collections.channels,
+          [Query.orderDesc("$createdAt"), Query.limit(20)],
+        );
+
+        if (isActive) {
+          const mapped = response.documents.map((doc, index) => {
+            const memberCountRaw =
+              doc.membersCount ??
+              doc.memberCount ??
+              (Array.isArray(doc.members) ? doc.members.length : 0);
+            const unreadCountRaw = doc.unreadCount ?? doc.unread ?? 0;
+            const members = Number(memberCountRaw);
+            const unread = Number(unreadCountRaw);
+
+            return {
+              id: String(doc.$id),
+              name: String(doc.name ?? doc.title ?? "Channel"),
+              members: Number.isFinite(members) ? members : 0,
+              lastMessage: String(
+                doc.lastMessage ?? doc.lastMessageText ?? doc.description ?? "",
+              ),
+              unread: Number.isFinite(unread) ? unread : 0,
+              color: String(
+                doc.color ?? CHANNEL_COLORS[index % CHANNEL_COLORS.length],
+              ),
+            } satisfies ChannelItem;
+          });
+          setChannels(mapped);
+        }
+      } catch {
+        if (isActive) {
+          setChannelError("Unable to load channels right now.");
+        }
+      } finally {
+        if (isActive) {
+          setIsLoadingChannels(false);
+        }
+      }
+    };
+
+    loadChannels();
+
+    return () => {
+      isActive = false;
+    };
+  }, []);
 
   return (
     <SafeAreaView style={styles.screen}>
@@ -59,7 +161,10 @@ export default function JourneyScreen() {
             return (
               <View
                 key={label}
-                style={[styles.filterChip, isActive ? styles.filterChipActive : null]}
+                style={[
+                  styles.filterChip,
+                  isActive ? styles.filterChipActive : null,
+                ]}
               >
                 <Text
                   style={[
@@ -122,7 +227,9 @@ export default function JourneyScreen() {
         >
           {avatars.map((person) => (
             <View key={person.name} style={styles.avatarItem}>
-              <View style={[styles.avatarCircle, { backgroundColor: person.color }]}> 
+              <View
+                style={[styles.avatarCircle, { backgroundColor: person.color }]}
+              >
                 <Text style={styles.avatarInitials}>{person.initials}</Text>
                 {person.badge ? (
                   <View style={styles.avatarBadge}>
@@ -145,6 +252,90 @@ export default function JourneyScreen() {
         <View style={styles.sectionHeader}>
           <Text style={styles.sectionTitle}>Channels</Text>
         </View>
+
+        <View style={styles.channelActions}>
+          <Pressable
+            style={[styles.channelActionButton, styles.channelPrimary]}
+            onPress={() => router.push("/(tabs)/channel-create")}
+          >
+            <HugeiconsIcon icon={Add01Icon} size={14} color="#FFFFFF" />
+            <Text style={styles.channelPrimaryText}>Create</Text>
+          </Pressable>
+          <Pressable
+            style={styles.channelActionButton}
+            onPress={() => router.push("/(tabs)/channel-invite")}
+          >
+            <HugeiconsIcon icon={UserSharingIcon} size={14} color="#1FAF75" />
+            <Text style={styles.channelActionText}>Invite</Text>
+          </Pressable>
+        </View>
+
+        <View style={styles.channelList}>
+          {channels.map((channel) => (
+            <Pressable
+              key={channel.id}
+              style={styles.channelCard}
+              onPress={() =>
+                router.push({
+                  pathname: "/(tabs)/channel/[id]",
+                  params: { id: channel.id },
+                })
+              }
+            >
+              <View
+                style={[styles.channelIcon, { backgroundColor: channel.color }]}
+              >
+                <HugeiconsIcon icon={UserGroupIcon} size={16} color="#1F2937" />
+              </View>
+              <View style={styles.channelInfo}>
+                <Text style={styles.channelName}>{channel.name}</Text>
+                <Text style={styles.channelMeta}>
+                  {channel.members} members
+                  {channel.lastMessage ? ` · ${channel.lastMessage}` : ""}
+                </Text>
+              </View>
+              {channel.unread ? (
+                <View style={styles.channelBadge}>
+                  <Text style={styles.channelBadgeText}>{channel.unread}</Text>
+                </View>
+              ) : null}
+            </Pressable>
+          ))}
+        </View>
+        {isLoadingChannels ? (
+          <Text style={styles.loadingText}>Loading channels...</Text>
+        ) : null}
+        {!isLoadingChannels && channelError ? (
+          <Text style={styles.emptyText}>{channelError}</Text>
+        ) : null}
+        {!isLoadingChannels && !channelError && channels.length === 0 ? (
+          <View style={styles.emptyStateCard}>
+            <Text style={styles.emptyTitle}>No channels yet</Text>
+            <Text style={styles.emptySubtitle}>
+              Create your first channel or invite classmates to get started.
+            </Text>
+            <View style={styles.emptyActions}>
+              <Pressable
+                style={[styles.channelActionButton, styles.channelPrimary]}
+                onPress={() => router.push("/(tabs)/channel-create")}
+              >
+                <HugeiconsIcon icon={Add01Icon} size={14} color="#FFFFFF" />
+                <Text style={styles.channelPrimaryText}>Create</Text>
+              </Pressable>
+              <Pressable
+                style={styles.channelActionButton}
+                onPress={() => router.push("/(tabs)/channel-invite")}
+              >
+                <HugeiconsIcon
+                  icon={UserSharingIcon}
+                  size={14}
+                  color="#1FAF75"
+                />
+                <Text style={styles.channelActionText}>Invite</Text>
+              </Pressable>
+            </View>
+          </View>
+        ) : null}
       </ScrollView>
     </SafeAreaView>
   );
@@ -416,5 +607,121 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     color: "#2D2E3A",
     textAlign: "center",
+  },
+  channelActions: {
+    flexDirection: "row",
+    gap: 10,
+  },
+  channelActionButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    borderRadius: 16,
+    backgroundColor: "#FFFFFF",
+    borderWidth: 1,
+    borderColor: "#E6E7EE",
+  },
+  channelPrimary: {
+    backgroundColor: "#1FAF75",
+    borderColor: "#1FAF75",
+  },
+  channelPrimaryText: {
+    fontSize: 12,
+    fontWeight: "700",
+    color: "#FFFFFF",
+  },
+  channelActionText: {
+    fontSize: 12,
+    fontWeight: "700",
+    color: "#1FAF75",
+  },
+  channelList: {
+    gap: 12,
+  },
+  channelCard: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 12,
+    padding: 14,
+    borderRadius: 18,
+    backgroundColor: "#FFFFFF",
+    shadowColor: "#000",
+    shadowOpacity: 0.06,
+    shadowOffset: { width: 0, height: 8 },
+    shadowRadius: 16,
+    elevation: 3,
+  },
+  channelIcon: {
+    width: 44,
+    height: 44,
+    borderRadius: 14,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  channelInfo: {
+    flex: 1,
+    gap: 4,
+  },
+  channelName: {
+    fontSize: 14,
+    fontWeight: "700",
+    color: "#1F2937",
+  },
+  channelMeta: {
+    fontSize: 11,
+    color: "#667085",
+  },
+  channelBadge: {
+    minWidth: 22,
+    height: 22,
+    borderRadius: 11,
+    backgroundColor: "#F04438",
+    alignItems: "center",
+    justifyContent: "center",
+    paddingHorizontal: 6,
+  },
+  channelBadgeText: {
+    fontSize: 10,
+    fontWeight: "700",
+    color: "#FFFFFF",
+  },
+  loadingText: {
+    fontSize: 12,
+    color: "#7A7D92",
+    textAlign: "center",
+    marginTop: 6,
+  },
+  emptyText: {
+    fontSize: 12,
+    color: "#7A7D92",
+    textAlign: "center",
+    marginTop: 12,
+  },
+  emptyStateCard: {
+    backgroundColor: "#FFFFFF",
+    borderRadius: 18,
+    padding: 18,
+    gap: 8,
+    shadowColor: "#000",
+    shadowOpacity: 0.06,
+    shadowOffset: { width: 0, height: 8 },
+    shadowRadius: 16,
+    elevation: 3,
+  },
+  emptyTitle: {
+    fontSize: 16,
+    fontWeight: "700",
+    color: "#1F2937",
+  },
+  emptySubtitle: {
+    fontSize: 12,
+    color: "#7A7D92",
+  },
+  emptyActions: {
+    flexDirection: "row",
+    gap: 10,
+    paddingTop: 6,
   },
 });

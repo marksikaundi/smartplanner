@@ -10,6 +10,8 @@ export const APPWRITE_IDS = {
     assignments: "assignments",
     notes: "notes",
     resources: "resources",
+    channels: "channels",
+    channelInvites: "channelInvites",
   },
 } as const;
 

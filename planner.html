@@ -26,15 +26,32 @@
     <div class="dashboard-app">
       <aside class="dashboard-sidebar">
         <div class="sidebar-top">
-          <div class="logo-dot">SP</div>
-          <a href="index.html" class="landing-link">Back</a>
+          <div class="logo-dot"><i class="fa-solid fa-plus"></i></div>
+          <div class="sidebar-top-icons">
+            <button type="button" class="icon-btn" aria-label="Notifications">
+              <i class="fa-regular fa-bell"></i>
+            </button>
+            <button type="button" class="icon-btn" aria-label="Settings">
+              <i class="fa-regular fa-circle-dot"></i>
+            </button>
+          </div>
         </div>
 
         <div class="sidebar-search-wrap">
-          <input type="text" class="form-control sidebar-search" placeholder="Search..." />
+          <div class="search-shell">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input type="text" class="form-control sidebar-search" placeholder="Search..." />
+            <button type="button" class="search-edit-btn" aria-label="Edit">
+              <i class="fa-solid fa-pen"></i>
+            </button>
+          </div>
         </div>
 
         <nav class="sidebar-nav">
+          <a class="sidebar-item sidebar-item-muted" href="#">
+            <i class="fa-regular fa-square-plus"></i>
+            <span>Add Task</span>
+          </a>
           <a id="todayBtn" class="sidebar-item active" data-view="today" href="planner.html?view=today">
             <i class="fa-solid fa-calendar-day"></i>
             <span>Today</span>
@@ -55,12 +72,19 @@
             <i class="fa-solid fa-pen-ruler"></i>
             <span>Design</span>
           </a>
+          <a class="sidebar-item" data-view="planning" href="planner.html?view=inbox">
+            <i class="fa-regular fa-folder-open"></i>
+            <span>Planning</span>
+          </a>
         </nav>
 
         <div class="sidebar-bottom">
-          <div class="small text-white-50 mb-2">Selected Date</div>
-          <div class="sidebar-date-chip">
-            <span id="sidebarSelectedDateLabel">—</span>
+          <div class="sidebar-user">
+            <div class="user-avatar">MJ</div>
+            <div>
+              <div class="small fw-semibold text-white">Michelle John</div>
+              <div class="small text-white-50"><span id="sidebarSelectedDateLabel">—</span></div>
+            </div>
           </div>
         </div>
       </aside>
@@ -74,21 +98,30 @@
           <div class="dashboard-actions">
             <input type="date" id="datePicker" class="d-none" />
             <input type="text" id="sidebarDatePicker" class="form-control form-control-sm date-input" />
-            <button id="sidebarTodayBtn" class="btn btn-light btn-sm" type="button">Today</button>
-            <span class="badge text-bg-primary" id="taskCountBadge">0 tasks</span>
+            <button id="sidebarTodayBtn" class="icon-btn-light" type="button" aria-label="Today">
+              <i class="fa-regular fa-moon"></i>
+            </button>
+            <button type="button" class="btn btn-danger btn-sm add-task-pill">
+              <i class="fa-solid fa-circle-plus me-1"></i>
+              Add Task
+            </button>
+            <span class="badge text-bg-primary d-none" id="taskCountBadge">0 tasks</span>
           </div>
         </div>
 
         <section class="stats-grid">
           <article class="stat-card">
+            <div class="stat-icon"><i class="fa-regular fa-calendar"></i></div>
             <div class="stat-number" id="totalTasksStat">0</div>
             <div class="stat-label">Total Tasks</div>
           </article>
           <article class="stat-card">
+            <div class="stat-icon"><i class="fa-regular fa-square-check"></i></div>
             <div class="stat-number" id="completedTasksStat">0</div>
             <div class="stat-label">Tasks Completed</div>
           </article>
           <article class="stat-card">
+            <div class="stat-icon"><i class="fa-solid fa-trophy"></i></div>
             <div class="stat-number" id="progressStat">0%</div>
             <div class="stat-label">Task Progress</div>
           </article>

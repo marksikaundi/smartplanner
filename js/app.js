@@ -65,6 +65,13 @@ function formatSubheading(isoDate) {
   return d.toLocaleDateString();
 }
 
+function formatTaskMeta(isoDate, timeText) {
+  const date = parseISODateLocal(isoDate);
+  const datePart = date.toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric" });
+  if (timeText) return `${datePart} · ${timeText}`;
+  return `${datePart} · 30 m`;
+}
+
 document.addEventListener("DOMContentLoaded", () => {
   const datePicker = document.getElementById("datePicker");
   const todayBtn = document.getElementById("todayBtn");
@@ -282,29 +289,21 @@ document.addEventListener("DOMContentLoaded", () => {
         titleRow.className = "d-flex align-items-center gap-2";
 
         const titleSpan = document.createElement("span");
+        titleSpan.className = "fw-semibold";
         titleSpan.textContent = task.title;
 
         const categoryBadge = document.createElement("span");
         categoryBadge.className = "badge bg-secondary badge-category";
-        categoryBadge.textContent = task.category || "General";
+        categoryBadge.textContent = `# ${task.category || "General"}`;
 
         titleRow.appendChild(titleSpan);
         titleRow.appendChild(categoryBadge);
         content.appendChild(titleRow);
 
-        if (task.time) {
-          const timeSpan = document.createElement("span");
-          timeSpan.className = "text-secondary task-time d-inline-block";
-          timeSpan.textContent = task.time;
-          content.appendChild(timeSpan);
-        }
-
-        if (!isDateScopedView()) {
-          const dateSpan = document.createElement("span");
-          dateSpan.className = "text-secondary d-inline-block ms-2";
-          dateSpan.textContent = formatReadableDate(task.__date);
-          content.appendChild(dateSpan);
-        }
+        const meta = document.createElement("div");
+        meta.className = "text-secondary small d-flex align-items-center gap-1";
+        meta.innerHTML = `<i class="fa-regular fa-calendar"></i><span>${formatTaskMeta(task.__date, task.time)}</span>`;
+        content.appendChild(meta);
 
         left.appendChild(checkbox);
         left.appendChild(content);

@@ -88,10 +88,18 @@ document.addEventListener("DOMContentLoaded", () => {
   const taskCountBadge = document.getElementById("taskCountBadge");
   const filterButtons = document.querySelectorAll("[data-filter]");
   const viewButtons = document.querySelectorAll(".sidebar-item[data-view]");
+  const openAddTaskModalLink = document.getElementById("openAddTaskModalLink");
   const sidebarDatePicker = document.getElementById("sidebarDatePicker");
   const sidebarSelectedDateLabel = document.getElementById("sidebarSelectedDateLabel");
   const themeToggleBtn = document.getElementById("themeToggleBtn");
   const quickAddTaskBtn = document.getElementById("quickAddTaskBtn");
+  const modalTaskForm = document.getElementById("modalTaskForm");
+  const modalTaskTitle = document.getElementById("modalTaskTitle");
+  const modalTaskDate = document.getElementById("modalTaskDate");
+  const modalTaskTime = document.getElementById("modalTaskTime");
+  const modalTaskCategory = document.getElementById("modalTaskCategory");
+  const modalTaskPlacement = document.getElementById("modalTaskPlacement");
+  const addTaskModalEl = document.getElementById("addTaskModal");
   const focusTaskText = document.getElementById("focusTaskText");
   const focusInfo = document.getElementById("focusInfo");
   const totalTasksStat = document.getElementById("totalTasksStat");
@@ -103,6 +111,7 @@ document.addEventListener("DOMContentLoaded", () => {
   let currentFilter = "all";
   let currentView = "today";
   const hasSidebarDatepicker = !!sidebarDatePicker && typeof window.$ === "function";
+  const addTaskModal = addTaskModalEl && window.bootstrap ? new window.bootstrap.Modal(addTaskModalEl) : null;
 
   function isValidISODate(value) {
     return /^\d{4}-\d{2}-\d{2}$/.test(value);
@@ -137,6 +146,38 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!hasSidebarDatepicker) return;
     // bootstrap-datepicker expects yyyy-mm-dd when `format` is set.
     window.$(sidebarDatePicker).datepicker("update", currentDate);
+  }
+
+  function getTomorrowISO() {
+    const d = parseISODateLocal(getTodayISO());
+    d.setDate(d.getDate() + 1);
+    return toISODateLocal(d);
+  }
+
+  function openAddTaskModal() {
+    if (!addTaskModal || !modalTaskTitle || !modalTaskDate) return;
+    modalTaskTitle.value = "";
+    modalTaskDate.value = currentDate || getTodayISO();
+    if (modalTaskTime) modalTaskTime.value = "";
+    if (modalTaskCategory) modalTaskCategory.value = "Planning";
+    if (modalTaskPlacement) modalTaskPlacement.value = currentView || "today";
+    addTaskModal.show();
+    setTimeout(() => modalTaskTitle.focus(), 100);
+  }
+
+  function createTask({ title, time, category, dateISO }) {
+    const tasks = getTasksForDate(dateISO);
+    const newTask = {
+      id: generateId(),
+      title,
+      time,
+      category,
+      completed: false,
+      focus: false,
+      createdAt: Date.now(),
+    };
+    tasks.push(newTask);
+    setTasksForDate(dateISO, tasks);
   }
 
   function applyTheme(theme) {
@@ -369,20 +410,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const time = taskTimeInput.value || "";
     const category = taskCategorySelect.value || "General";
-
-    const tasks = getTasksForDate(currentDate);
-    const newTask = {
-      id: generateId(),
-      title,
-      time,
-      category,
-      completed: false,
-      focus: false,
-      createdAt: Date.now(),
-    };
-
-    tasks.push(newTask);
-    setTasksForDate(currentDate, tasks);
+    createTask({ title, time, category, dateISO: currentDate });
     taskTitleInput.value = "";
     renderTasks();
   }
@@ -443,13 +471,45 @@ document.addEventListener("DOMContentLoaded", () => {
 
   if (quickAddTaskBtn) {
     quickAddTaskBtn.addEventListener("click", () => {
-      const hasTitle = taskTitleInput.value.trim().length > 0;
-      if (!hasTitle) {
-        taskTitleInput.focus();
-        taskTitleInput.setAttribute("placeholder", "Enter task title first...");
-        return;
+      openAddTaskModal();
+    });
+  }
+
+  if (openAddTaskModalLink) {
+    openAddTaskModalLink.addEventListener("click", (e) => {
+      e.preventDefault();
+      openAddTaskModal();
+    });
+  }
+
+  if (modalTaskForm) {
+    modalTaskForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const title = modalTaskTitle?.value.trim() || "";
+      if (!title) return;
+
+      const placement = modalTaskPlacement?.value || "today";
+      let dateISO = modalTaskDate?.value || currentDate || getTodayISO();
+      let category = modalTaskCategory?.value || "Planning";
+      const time = modalTaskTime?.value || "";
+
+      if (placement === "upcoming" && dateISO <= getTodayISO()) {
+        dateISO = getTomorrowISO();
       }
-      addTask();
+      if (placement === "meetings") category = "Meetings";
+      if (placement === "design") category = "Design";
+
+      createTask({ title, time, category, dateISO });
+
+      currentDate = dateISO;
+      currentView = placement === "planning" ? "inbox" : placement;
+      if (!ALLOWED_VIEWS.has(currentView)) currentView = "today";
+      datePicker.value = currentDate;
+      syncSidebarPickerFromCurrentDate();
+      updateHeader();
+      syncUrl();
+      renderTasks();
+      addTaskModal?.hide();
     });
   }
 

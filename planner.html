@@ -38,7 +38,7 @@
         </div>
 
         <nav class="sidebar-nav">
-          <a class="sidebar-item sidebar-item-muted" href="#">
+          <a id="openAddTaskModalLink" class="sidebar-item sidebar-item-muted" href="#">
             <i class="fa-regular fa-square-plus"></i>
             <span>Add Task</span>
           </a>
@@ -155,6 +155,62 @@
           </div>
         </section>
       </main>
+    </div>
+
+    <div class="modal fade" id="addTaskModal" tabindex="-1" aria-labelledby="addTaskModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="addTaskModalLabel">Add Task</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <form id="modalTaskForm">
+            <div class="modal-body">
+              <div class="mb-3">
+                <label for="modalTaskTitle" class="form-label">Task title</label>
+                <input id="modalTaskTitle" type="text" class="form-control" placeholder="e.g. Prepare project proposal" required />
+              </div>
+
+              <div class="row g-2">
+                <div class="col-sm-6">
+                  <label for="modalTaskDate" class="form-label">Date</label>
+                  <input id="modalTaskDate" type="date" class="form-control" />
+                </div>
+                <div class="col-sm-6">
+                  <label for="modalTaskTime" class="form-label">Time</label>
+                  <input id="modalTaskTime" type="time" class="form-control" />
+                </div>
+              </div>
+
+              <div class="row g-2 mt-1">
+                <div class="col-sm-6">
+                  <label for="modalTaskCategory" class="form-label">Category</label>
+                  <select id="modalTaskCategory" class="form-select">
+                    <option value="Meetings">Meetings</option>
+                    <option value="Design">Design</option>
+                    <option value="Planning">Planning</option>
+                    <option value="Personal">Personal</option>
+                  </select>
+                </div>
+                <div class="col-sm-6">
+                  <label for="modalTaskPlacement" class="form-label">Show in</label>
+                  <select id="modalTaskPlacement" class="form-select">
+                    <option value="today">Today</option>
+                    <option value="inbox">Inbox</option>
+                    <option value="upcoming">Upcoming</option>
+                    <option value="meetings">Meetings</option>
+                    <option value="design">Design</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+              <button type="submit" class="btn btn-danger">Save Task</button>
+            </div>
+          </form>
+        </div>
+      </div>
     </div>
 
     <script

@@ -1,4 +1,4 @@
-import { Listing } from "@/src/types/models";
+import { Listing } from "@/types/models";
 
 export const categories = [
   "Phones",

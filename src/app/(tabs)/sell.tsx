@@ -4,10 +4,10 @@ import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { ScrollView, Text, View } from "react-native";
 import { z } from "zod";
-import { AppButton } from "@/src/components/ui/button";
-import { AppInput } from "@/src/components/ui/input";
-import { createListing } from "@/src/services/listings";
-import { pickImages, uploadToUploadthing } from "@/src/services/uploads";
+import { AppButton } from "@/components/ui/button";
+import { AppInput } from "@/components/ui/input";
+import { createListing } from "@/services/listings";
+import { pickImages, uploadToUploadthing } from "@/services/uploads";
 
 const schema = z.object({
   title: z.string().min(3),

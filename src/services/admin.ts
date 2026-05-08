@@ -1,4 +1,4 @@
-import { supabase } from "@/src/lib/supabase";
+import { supabase } from "@/lib/supabase";
 
 export const fetchOpenReports = async () => {
   const { data, error } = await supabase.from("reports").select("*").eq("status", "open");

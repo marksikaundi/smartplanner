@@ -2,12 +2,12 @@ import { useQuery } from "@tanstack/react-query";
 import { router } from "expo-router";
 import { useState } from "react";
 import { ScrollView, Text, View } from "react-native";
-import { AppButton } from "@/src/components/ui/button";
-import { AppInput } from "@/src/components/ui/input";
-import { ListingCard } from "@/src/components/ui/listing-card";
-import { fetchListings } from "@/src/services/listings";
-import { saveSearch } from "@/src/services/marketplace";
-import { useAuthStore } from "@/src/state/auth-store";
+import { AppButton } from "@/components/ui/button";
+import { AppInput } from "@/components/ui/input";
+import { ListingCard } from "@/components/ui/listing-card";
+import { fetchListings } from "@/services/listings";
+import { saveSearch } from "@/services/marketplace";
+import { useAuthStore } from "@/state/auth-store";
 
 export default function SearchScreen() {
   const [q, setQ] = useState("");

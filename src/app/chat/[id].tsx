@@ -3,7 +3,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
 import { KeyboardAvoidingView, Platform, Pressable, Text, View } from "react-native";
-import { AppInput } from "@/src/components/ui/input";
+import { AppInput } from "@/components/ui/input";
 import {
   fetchMessages,
   markConversationSeen,
@@ -11,8 +11,8 @@ import {
   setTyping,
   subscribeToConversation,
   subscribeToTyping,
-} from "@/src/services/chat";
-import { useAuthStore } from "@/src/state/auth-store";
+} from "@/services/chat";
+import { useAuthStore } from "@/state/auth-store";
 
 export default function ChatScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();

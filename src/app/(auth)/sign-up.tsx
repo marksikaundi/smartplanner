@@ -2,9 +2,9 @@ import { useRouter } from "expo-router";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { Text, View } from "react-native";
-import { AppButton } from "@/src/components/ui/button";
-import { AppInput } from "@/src/components/ui/input";
-import { signUpWithEmail } from "@/src/services/auth";
+import { AppButton } from "@/components/ui/button";
+import { AppInput } from "@/components/ui/input";
+import { signUpWithEmail } from "@/services/auth";
 
 type FormData = { username: string; email: string; password: string };
 

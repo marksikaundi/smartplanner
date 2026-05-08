@@ -1,6 +1,6 @@
 import { Image } from "expo-image";
 import { Pressable, Text, View } from "react-native";
-import { Listing } from "@/src/types/models";
+import { Listing } from "@/types/models";
 
 type Props = {
   listing: Listing;

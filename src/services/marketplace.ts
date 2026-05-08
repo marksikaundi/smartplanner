@@ -1,6 +1,6 @@
 import { Platform } from "react-native";
-import { isExpoGo } from "@/src/lib/expo-environment";
-import { supabase } from "@/src/lib/supabase";
+import { isExpoGo } from "@/lib/expo-environment";
+import { supabase } from "@/lib/supabase";
 
 export const saveSearch = async (userId: string, query: string, category?: string) => {
   const { error } = await supabase.from("saved_searches").insert({

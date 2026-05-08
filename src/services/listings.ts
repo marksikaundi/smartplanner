@@ -1,6 +1,6 @@
-import { supabase } from "@/src/lib/supabase";
-import { listingsMock } from "@/src/services/mock";
-import { Listing } from "@/src/types/models";
+import { supabase } from "@/lib/supabase";
+import { listingsMock } from "@/services/mock";
+import { Listing } from "@/types/models";
 
 export const fetchListings = async (query?: string) => {
   const q = query?.trim();

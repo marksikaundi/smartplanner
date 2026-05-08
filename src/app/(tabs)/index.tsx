@@ -2,10 +2,10 @@ import { useQuery } from "@tanstack/react-query";
 import { router } from "expo-router";
 import { FlashList } from "@shopify/flash-list";
 import { ScrollView, Text, View } from "react-native";
-import { ListingCard } from "@/src/components/ui/listing-card";
-import { SkeletonCard } from "@/src/components/ui/skeleton-card";
-import { categories } from "@/src/services/mock";
-import { fetchListings } from "@/src/services/listings";
+import { ListingCard } from "@/components/ui/listing-card";
+import { SkeletonCard } from "@/components/ui/skeleton-card";
+import { categories } from "@/services/mock";
+import { fetchListings } from "@/services/listings";
 
 export default function HomeScreen() {
   const { data, isLoading } = useQuery({ queryKey: ["listings"], queryFn: () => fetchListings() });

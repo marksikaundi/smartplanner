@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { Listing } from "@/src/types/models";
+import { Listing } from "@/types/models";
 
 type MarketState = {
   savedIds: string[];

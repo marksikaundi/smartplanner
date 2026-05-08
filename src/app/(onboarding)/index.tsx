@@ -1,8 +1,8 @@
 import { useRouter } from "expo-router";
 import { MotiView } from "moti";
 import { Text, View } from "react-native";
-import { AppButton } from "@/src/components/ui/button";
-import { useAuthStore } from "@/src/state/auth-store";
+import { AppButton } from "@/components/ui/button";
+import { useAuthStore } from "@/state/auth-store";
 
 export default function OnboardingScreen() {
   const router = useRouter();

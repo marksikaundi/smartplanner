@@ -1,7 +1,13 @@
 import { Ionicons } from "@expo/vector-icons";
-import { Tabs } from "expo-router";
+import { Redirect, Tabs } from "expo-router";
+import { useAuthStore } from "@/state/auth-store";
 
 export default function TabsLayout() {
+  const { userId, isGuest, onboardingDone } = useAuthStore();
+
+  if (!userId && !isGuest) return <Redirect href="/(auth)/sign-in" />;
+  if (!onboardingDone) return <Redirect href="/(onboarding)" />;
+
   return (
     <Tabs screenOptions={{ headerShown: false, tabBarStyle: { height: 66, paddingTop: 8 } }}>
       <Tabs.Screen name="index" options={{ title: "Home", tabBarIcon: ({ color }) => <Ionicons name="home" size={20} color={color} /> }} />

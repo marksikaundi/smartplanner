@@ -1,6 +1,6 @@
 import * as ImageManipulator from "expo-image-manipulator";
 import * as ImagePicker from "expo-image-picker";
-import { env } from "@/src/config/env";
+import { env } from "@/config/env";
 
 export const pickImages = async () => {
   const result = await ImagePicker.launchImageLibraryAsync({

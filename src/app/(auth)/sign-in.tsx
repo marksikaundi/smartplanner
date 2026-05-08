@@ -4,10 +4,10 @@ import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { Text, View } from "react-native";
 import { z } from "zod";
-import { AppButton } from "@/src/components/ui/button";
-import { AppInput } from "@/src/components/ui/input";
-import { signInWithEmail, signInWithGoogle } from "@/src/services/auth";
-import { useAuthStore } from "@/src/state/auth-store";
+import { AppButton } from "@/components/ui/button";
+import { AppInput } from "@/components/ui/input";
+import { signInWithEmail, signInWithGoogle } from "@/services/auth";
+import { useAuthStore } from "@/state/auth-store";
 
 const schema = z.object({
   email: z.string().email(),

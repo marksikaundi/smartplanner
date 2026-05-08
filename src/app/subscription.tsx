@@ -1,12 +1,16 @@
+import { Redirect } from "expo-router";
 import { useState } from "react";
 import { Text, View } from "react-native";
-import { AppButton } from "@/src/components/ui/button";
-import { createFeaturedListingPayment, subscribeSellerPlan } from "@/src/services/billing";
-import { useAuthStore } from "@/src/state/auth-store";
+import { AppButton } from "@/components/ui/button";
+import { createFeaturedListingPayment, subscribeSellerPlan } from "@/services/billing";
+import { useAuthStore } from "@/state/auth-store";
 
 export default function SubscriptionScreen() {
-  const { userId } = useAuthStore();
+  const { userId, isGuest, onboardingDone } = useAuthStore();
   const [status, setStatus] = useState<string | null>(null);
+
+  if (!userId && !isGuest) return <Redirect href="/(auth)/sign-in" />;
+  if (!onboardingDone) return <Redirect href="/(onboarding)" />;
 
   return (
     <View className="flex-1 gap-3 bg-zinc-50 px-4 pt-16 dark:bg-black">

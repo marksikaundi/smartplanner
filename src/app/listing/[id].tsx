@@ -2,8 +2,8 @@ import { useQuery } from "@tanstack/react-query";
 import { Image } from "expo-image";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { ScrollView, Text, View } from "react-native";
-import { AppButton } from "@/src/components/ui/button";
-import { fetchListingById } from "@/src/services/listings";
+import { AppButton } from "@/components/ui/button";
+import { fetchListingById } from "@/services/listings";
 
 export default function ListingDetailsScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();

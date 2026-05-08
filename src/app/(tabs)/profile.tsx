@@ -1,10 +1,10 @@
 import { Alert, Text, View } from "react-native";
 import { Link } from "expo-router";
-import { AppButton } from "@/src/components/ui/button";
-import { isExpoGo } from "@/src/lib/expo-environment";
-import { registerPushToken, computeTrustScore } from "@/src/services/marketplace";
-import { signOut as supabaseSignOut } from "@/src/services/auth";
-import { useAuthStore } from "@/src/state/auth-store";
+import { AppButton } from "@/components/ui/button";
+import { isExpoGo } from "@/lib/expo-environment";
+import { registerPushToken, computeTrustScore } from "@/services/marketplace";
+import { signOut as supabaseSignOut } from "@/services/auth";
+import { useAuthStore } from "@/state/auth-store";
 
 export default function ProfileScreen() {
   const { username, signOut, userId } = useAuthStore();

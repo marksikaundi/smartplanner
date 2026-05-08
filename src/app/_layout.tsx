@@ -2,13 +2,12 @@ import { DarkTheme, DefaultTheme, ThemeProvider } from "@react-navigation/native
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import "react-native-reanimated";
-import "../global.css";
+import "../../global.css";
 import { useColorScheme } from "@/hooks/use-color-scheme";
-import { useAuthRedirect } from "@/src/hooks/use-auth-redirect";
-import { AppProvider } from "@/src/providers/app-provider";
+import { AppProvider } from "@/providers/app-provider";
 import { useEffect } from "react";
-import { supabase } from "@/src/lib/supabase";
-import { useAuthStore } from "@/src/state/auth-store";
+import { supabase } from "@/lib/supabase";
+import { useAuthStore } from "@/state/auth-store";
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
@@ -30,8 +29,6 @@ export default function RootLayout() {
       sub.data.subscription.unsubscribe();
     };
   }, [hydrateFromSession, setAuth, signOut]);
-
-  useAuthRedirect();
 
   return (
     <AppProvider>

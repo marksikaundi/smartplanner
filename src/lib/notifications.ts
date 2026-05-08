@@ -1,4 +1,4 @@
-import { isExpoGo } from "@/src/lib/expo-environment";
+import { isExpoGo } from "@/lib/expo-environment";
 
 /** Safe to call from app root: no-ops in Expo Go (avoids loading expo-notifications there). */
 export async function configurePushNotificationHandler(): Promise<void> {

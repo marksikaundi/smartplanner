@@ -1,10 +1,16 @@
 import { useQuery } from "@tanstack/react-query";
+import { Redirect } from "expo-router";
 import { ScrollView, Text, View } from "react-native";
-import { AppButton } from "@/src/components/ui/button";
-import { fetchOpenReports, moderateReport } from "@/src/services/admin";
+import { AppButton } from "@/components/ui/button";
+import { fetchOpenReports, moderateReport } from "@/services/admin";
+import { useAuthStore } from "@/state/auth-store";
 
 export default function AdminModerationScreen() {
+  const { userId, isGuest, onboardingDone } = useAuthStore();
   const { data, refetch } = useQuery({ queryKey: ["admin-reports"], queryFn: fetchOpenReports });
+
+  if (!userId && !isGuest) return <Redirect href="/(auth)/sign-in" />;
+  if (!onboardingDone) return <Redirect href="/(onboarding)" />;
 
   return (
     <ScrollView className="flex-1 bg-zinc-50 px-4 pt-16 dark:bg-black">

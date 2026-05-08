@@ -1,6 +1,7 @@
-import { Text, View } from "react-native";
+import { Alert, Text, View } from "react-native";
 import { Link } from "expo-router";
 import { AppButton } from "@/src/components/ui/button";
+import { isExpoGo } from "@/src/lib/expo-environment";
 import { registerPushToken, computeTrustScore } from "@/src/services/marketplace";
 import { signOut as supabaseSignOut } from "@/src/services/auth";
 import { useAuthStore } from "@/src/state/auth-store";
@@ -30,8 +31,21 @@ export default function ProfileScreen() {
         <AppButton
           label="Enable push notifications"
           variant="secondary"
-          onPress={() => {
-            if (userId) registerPushToken(userId);
+          onPress={async () => {
+            if (!userId) return;
+            if (isExpoGo()) {
+              Alert.alert(
+                "Push not available in Expo Go",
+                "Remote push was removed from Expo Go (SDK 53+). Create a development build to register a device token.",
+              );
+              return;
+            }
+            const token = await registerPushToken(userId);
+            if (token) {
+              Alert.alert("Notifications", "Push token saved.");
+            } else {
+              Alert.alert("Notifications", "Permission was not granted or token could not be obtained.");
+            }
           }}
         />
         <Link href="/subscription" className="text-sm text-zinc-700 dark:text-zinc-200">

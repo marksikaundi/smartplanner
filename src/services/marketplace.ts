@@ -1,5 +1,5 @@
-import * as Notifications from "expo-notifications";
 import { Platform } from "react-native";
+import { isExpoGo } from "@/src/lib/expo-environment";
 import { supabase } from "@/src/lib/supabase";
 
 export const saveSearch = async (userId: string, query: string, category?: string) => {
@@ -11,7 +11,17 @@ export const saveSearch = async (userId: string, query: string, category?: strin
   if (error) throw error;
 };
 
-export const registerPushToken = async (userId: string) => {
+export const registerPushToken = async (userId: string): Promise<string | null> => {
+  if (isExpoGo()) {
+    return null;
+  }
+  let Notifications: typeof import("expo-notifications");
+  try {
+    Notifications = await import("expo-notifications");
+  } catch {
+    return null;
+  }
+
   const { status: existing } = await Notifications.getPermissionsAsync();
   let finalStatus = existing;
   if (existing !== "granted") {

@@ -31,9 +31,11 @@ Campus-focused marketplace app built with Expo Router, TypeScript, NativeWind, Z
 
 1. Copy `.env.example` to `.env`.
 2. Add:
-   - `EXPO_PUBLIC_SUPABASE_URL`
-   - `EXPO_PUBLIC_SUPABASE_ANON_KEY`
-   - `EXPO_PUBLIC_UPLOADTHING_TOKEN`
+   - `EXPO_PUBLIC_SUPABASE_URL` — your project URL (`https://<ref>.supabase.co`), not an API key.
+   - `EXPO_PUBLIC_SUPABASE_ANON_KEY` — the **publishable** key (`sb_publishable_...`) from Supabase Dashboard → API Keys, or the legacy **anon** JWT if you still use that. **Never** put the **secret** key (`sb_secret_...`) in the mobile app or in any `EXPO_PUBLIC_*` variable.
+   - `EXPO_PUBLIC_UPLOADTHING_TOKEN` — optional; only if you use Uploadthing from the client.
+
+See [Supabase API keys](https://supabase.com/docs/guides/api/api-keys) for publishable vs secret keys.
 
 ## Run Locally
 

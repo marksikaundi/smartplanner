@@ -1,9 +1,13 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { PropsWithChildren, useState } from "react";
+import { PropsWithChildren, useEffect, useState } from "react";
 import { SafeAreaProvider } from "react-native-safe-area-context";
-import "@/src/lib/notifications";
+import { configurePushNotificationHandler } from "@/src/lib/notifications";
 
 export const AppProvider = ({ children }: PropsWithChildren) => {
+  useEffect(() => {
+    void configurePushNotificationHandler();
+  }, []);
+
   const [client] = useState(
     () =>
       new QueryClient({

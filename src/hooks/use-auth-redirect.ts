@@ -1,15 +1,20 @@
-import { useSegments, useRouter } from "expo-router";
+import { useRootNavigationState, useRouter, useSegments } from "expo-router";
 import { useEffect } from "react";
 import { useAuthStore } from "@/src/state/auth-store";
 
 export const useAuthRedirect = () => {
   const router = useRouter();
   const segments = useSegments();
+  const navigationState = useRootNavigationState();
   const { userId, isGuest, onboardingDone } = useAuthStore();
 
   useEffect(() => {
-    const inAuth = segments[0] === "(auth)";
-    const inOnboarding = segments[0] === "(onboarding)";
+    // Avoid router.replace before the root Stack has mounted (Expo Router requirement).
+    if (!navigationState?.key) return;
+
+    const root = segments[0];
+    const inAuth = root === "(auth)";
+    const inOnboarding = root === "(onboarding)";
 
     if (!userId && !isGuest && !inAuth) {
       router.replace("/(auth)/sign-in");
@@ -24,5 +29,5 @@ export const useAuthRedirect = () => {
     if ((userId || isGuest) && onboardingDone && (inAuth || inOnboarding)) {
       router.replace("/(tabs)");
     }
-  }, [userId, isGuest, onboardingDone, segments, router]);
+  }, [userId, isGuest, onboardingDone, segments, router, navigationState?.key]);
 };

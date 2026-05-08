@@ -1,0 +1,200 @@
+body {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+.card {
+  border-radius: 1rem;
+}
+
+.list-group-item {
+  background-color: #050505;
+  border-color: #2b2b2b;
+}
+
+.list-group-item.completed {
+  opacity: 0.6;
+  text-decoration: line-through;
+}
+
+.task-time {
+  min-width: 3.5rem;
+}
+
+.badge-category {
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.planner-calendar-header {
+  background: linear-gradient(135deg, rgba(13, 110, 253, 0.22), rgba(25, 135, 84, 0.14));
+}
+
+.calendar-weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 6px;
+  margin-bottom: 6px;
+  padding: 0 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-size: 0.68rem;
+  font-weight: 600;
+}
+
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 6px;
+  padding: 2px 4px 8px;
+}
+
+.calendar-day {
+  position: relative;
+  min-height: 2.35rem;
+  border-radius: 0.7rem;
+  border: 1px solid #2b2b2b;
+  background: #050505;
+  padding: 0.45rem 0.45rem 0.35rem;
+  cursor: pointer;
+  transition:
+    transform 120ms ease,
+    border-color 120ms ease,
+    background-color 120ms ease,
+    box-shadow 120ms ease;
+}
+
+.calendar-day:hover {
+  transform: translateY(-1px);
+  border-color: #6c757d;
+}
+
+.calendar-day.out-month {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.calendar-day.selected {
+  border-color: #0d6efd;
+  box-shadow: 0 0 0 2px rgba(13, 110, 253, 0.22);
+}
+
+.calendar-day.has-tasks {
+  border-color: rgba(25, 135, 84, 0.75);
+}
+
+.calendar-day-number {
+  font-weight: 650;
+  font-size: 0.85rem;
+  line-height: 1;
+}
+
+.calendar-count-badge {
+  position: absolute;
+  right: 6px;
+  bottom: 6px;
+  font-size: 0.7rem;
+  padding: 0.15rem 0.45rem;
+  border-radius: 999px;
+  background: rgba(13, 110, 253, 0.18);
+  border: 1px solid rgba(13, 110, 253, 0.35);
+  color: #bfe0ff;
+}
+
+.calendar-count-badge--done {
+  background: rgba(25, 135, 84, 0.18);
+  border-color: rgba(25, 135, 84, 0.45);
+  color: #bff4d0;
+}
+
+.calendar-day-number.now {
+  color: #e9f3ff;
+}
+
+.week-day-card {
+  background-color: #050505;
+  border-radius: 0.75rem;
+  border: 1px solid #2b2b2b;
+  padding: 0.45rem 0.25rem;
+  cursor: default;
+}
+
+.week-day-card .day-name {
+  font-size: 0.7rem;
+}
+
+.week-day-card .day-number {
+  font-size: 0.8rem;
+}
+
+.week-day-card-today {
+  border-color: #0d6efd;
+}
+
+.week-day-card-has-tasks {
+  border-color: #198754;
+}
+
+.week-day-card-count {
+  font-size: 0.65rem;
+}
+
+.datepicker {
+  background-color: #050505;
+  color: #e9ecef;
+  border: 1px solid #2b2b2b;
+  border-radius: 0.75rem;
+  padding: 0.5rem;
+}
+
+.datepicker table {
+  width: 100%;
+}
+
+.datepicker thead tr th {
+  color: #adb5bd;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.datepicker td,
+.datepicker th {
+  text-align: center;
+}
+
+.datepicker td.day {
+  color: #ced4da;
+  border-radius: 0.5rem;
+}
+
+.datepicker td.day:hover {
+  background-color: rgba(13, 110, 253, 0.2);
+}
+
+.datepicker td.today {
+  color: #bfe0ff;
+  font-weight: 650;
+}
+
+.datepicker td.active,
+.datepicker td.active:hover {
+  background-color: rgba(13, 110, 253, 0.55);
+  color: #fff;
+}
+
+@media (max-width: 767px) {
+  nav .navbar-brand {
+    font-size: 1rem;
+  }
+
+  #taskForm .form-label {
+    font-size: 0.7rem;
+  }
+
+  .calendar-day {
+    min-height: 2.0rem;
+    padding: 0.35rem 0.35rem 0.25rem;
+  }
+}
+

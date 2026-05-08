@@ -339,6 +339,9 @@ body {
 }
 
 .dashboard-page .sidebar-item {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
   background: transparent;
   color: #ddd5ff;
   border: 0;
@@ -346,6 +349,14 @@ body {
   border-radius: 8px;
   text-align: left;
   font-size: 0.92rem;
+  text-decoration: none;
+}
+
+.dashboard-page .sidebar-item i {
+  width: 1rem;
+  text-align: center;
+  font-size: 0.9rem;
+  opacity: 0.95;
 }
 
 .dashboard-page .sidebar-item:hover,

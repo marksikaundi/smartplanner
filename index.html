@@ -3,115 +3,291 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Smart Planner - Landing</title>
+    <meta
+      name="description"
+      content="Smart Planner — a free, local-first daily task dashboard. Plan by date, track progress, and set one focus task. No sign-up."
+    />
+    <title>Smart Planner — Daily tasks, clear focus</title>
     <link
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
       rel="stylesheet"
       integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
       crossorigin="anonymous"
     />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
     <link rel="stylesheet" href="css/style.css" />
   </head>
-  <body class="bg-dark text-light">
-    <nav class="navbar navbar-expand-lg navbar-dark app-navbar border-bottom border-secondary">
-      <div class="container">
-        <a class="navbar-brand fw-semibold" href="index.html">Smart Planner</a>
-        <a href="planner.html" class="btn btn-primary btn-sm">Open Planner</a>
+  <body class="landing-page">
+    <header class="landing-header">
+      <nav class="landing-nav container">
+        <a class="landing-brand" href="index.html">
+          <span class="landing-brand-mark" aria-hidden="true"><i class="fa-solid fa-calendar-check"></i></span>
+          <span class="landing-brand-text">Smart Planner</span>
+        </a>
+        <div class="landing-nav-actions">
+          <a class="landing-nav-link" href="#features">Features</a>
+          <a class="landing-nav-link" href="#workflow">How it works</a>
+          <a href="planner.html" class="btn landing-btn-primary">Open Planner</a>
+        </div>
+        <button
+          class="landing-menu-toggle d-lg-none"
+          type="button"
+          aria-expanded="false"
+          aria-controls="landingMobileNav"
+        >
+          <i class="fa-solid fa-bars" aria-hidden="true"></i>
+          <span class="visually-hidden">Menu</span>
+        </button>
+      </nav>
+      <div id="landingMobileNav" class="landing-mobile-nav d-lg-none container">
+        <a class="landing-nav-link" href="#features">Features</a>
+        <a class="landing-nav-link" href="#workflow">How it works</a>
+        <a href="planner.html" class="btn landing-btn-primary w-100 mt-2">Open Planner</a>
       </div>
-    </nav>
+    </header>
 
     <main>
-      <section class="landing-hero py-5 py-lg-6">
-        <div class="container py-4">
-          <div class="row align-items-center g-4">
-            <div class="col-lg-7">
-              <span class="badge rounded-pill text-bg-primary mb-3">Daily planning made simple</span>
-              <h1 class="display-5 fw-bold mb-3 hero-title">Organize your day with clarity and focus</h1>
-              <p class="text-secondary fs-5 mb-4 hero-subtitle">
-                Smart Planner helps you capture tasks, plan by date, and keep track of progress without
-                any sign-up or setup.
+      <section class="landing-hero">
+        <div class="container">
+          <div class="row align-items-center g-4 g-xl-5 py-5 py-lg-6">
+            <div class="col-lg-6">
+              <p class="landing-eyebrow"><i class="fa-solid fa-bolt me-2" aria-hidden="true"></i>Local-first · No account</p>
+              <h1 class="landing-title">
+                Plan your day in one calm <span class="landing-title-accent">dashboard</span>
+              </h1>
+              <p class="landing-lead">
+                Capture tasks with times and categories, jump between Today, Inbox, and Upcoming, and
+                watch your progress update in real time. Everything stays in your browser—private and
+                instant.
               </p>
-              <div class="d-flex flex-wrap gap-2">
-                <a href="planner.html" class="btn btn-primary btn-lg">Start Planning</a>
-                <a href="#features" class="btn btn-outline-light btn-lg">See Features</a>
+              <div class="landing-cta-group">
+                <a href="planner.html" class="btn landing-btn-primary btn-lg landing-btn-pill">
+                  <i class="fa-solid fa-arrow-right-to-bracket me-2" aria-hidden="true"></i>Start planning
+                </a>
+                <a href="#features" class="btn landing-btn-ghost btn-lg landing-btn-pill">See what you get</a>
+              </div>
+              <ul class="landing-trust-list">
+                <li><i class="fa-solid fa-shield-halved" aria-hidden="true"></i>Stored on your device</li>
+                <li><i class="fa-solid fa-gauge-high" aria-hidden="true"></i>Fast, lightweight UI</li>
+                <li><i class="fa-solid fa-sun" aria-hidden="true"></i>Light &amp; dark ready in the app</li>
+              </ul>
+            </div>
+            <div class="col-lg-6">
+              <div class="landing-preview" aria-hidden="true">
+                <div class="landing-preview-glow"></div>
+                <div class="landing-preview-shell">
+                  <div class="landing-preview-sidebar">
+                    <div class="landing-preview-side-top">
+                      <span class="landing-preview-dot"><i class="fa-solid fa-plus"></i></span>
+                      <span class="landing-preview-dots"><span></span><span></span></span>
+                    </div>
+                    <div class="landing-preview-nav">
+                      <span class="active"><i class="fa-solid fa-calendar-day"></i> Today</span>
+                      <span><i class="fa-solid fa-inbox"></i> Inbox</span>
+                      <span><i class="fa-regular fa-clock"></i> Upcoming</span>
+                      <span><i class="fa-solid fa-users"></i> Meetings</span>
+                    </div>
+                  </div>
+                  <div class="landing-preview-main">
+                    <div class="landing-preview-header">
+                      <div>
+                        <div class="landing-preview-heading">My Tasks Dashboard</div>
+                        <div class="landing-preview-sub">Today</div>
+                      </div>
+                      <span class="landing-preview-pill">Add Task</span>
+                    </div>
+                    <div class="landing-preview-stats">
+                      <div><strong>12</strong><span>Total</span></div>
+                      <div><strong>5</strong><span>Done</span></div>
+                      <div><strong>42%</strong><span>Progress</span></div>
+                    </div>
+                    <div class="landing-preview-row">
+                      <span class="landing-preview-check"><i class="fa-regular fa-circle"></i></span>
+                      <div class="landing-preview-task">
+                        <span class="landing-preview-task-title">Team standup</span>
+                        <span class="landing-preview-meta">09:30 · Meetings</span>
+                      </div>
+                      <span class="landing-preview-badge focus">Focus</span>
+                    </div>
+                    <div class="landing-preview-row done">
+                      <span class="landing-preview-check"><i class="fa-regular fa-circle-check"></i></span>
+                      <div class="landing-preview-task">
+                        <span class="landing-preview-task-title">Review design v2</span>
+                        <span class="landing-preview-meta">11:00 · Design</span>
+                      </div>
+                      <span class="landing-preview-badge">Design</span>
+                    </div>
+                    <div class="landing-preview-row">
+                      <span class="landing-preview-check"><i class="fa-regular fa-circle"></i></span>
+                      <div class="landing-preview-task">
+                        <span class="landing-preview-task-title">Plan sprint goals</span>
+                        <span class="landing-preview-meta">14:30 · Planning</span>
+                      </div>
+                      <span class="landing-preview-badge">Planning</span>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="features" class="landing-section">
+        <div class="container">
+          <div class="landing-section-head">
+            <h2 class="landing-section-title">Everything the app is built for</h2>
+            <p class="landing-section-desc">
+              The planner mirrors a real day: pick a date, add work in context, filter noise, and keep one
+              priority visible.
+            </p>
+          </div>
+          <div class="row g-3 g-md-4">
+            <div class="col-md-6 col-xl-4">
+              <article class="landing-card">
+                <div class="landing-card-icon coral"><i class="fa-solid fa-calendar-days" aria-hidden="true"></i></div>
+                <h3 class="landing-card-title">Date-first planning</h3>
+                <p class="landing-card-text">
+                  Choose any day from the calendar, see what belongs there, and add tasks with optional
+                  times so your schedule reads like a timeline.
+                </p>
+              </article>
+            </div>
+            <div class="col-md-6 col-xl-4">
+              <article class="landing-card">
+                <div class="landing-card-icon violet"><i class="fa-solid fa-layer-group" aria-hidden="true"></i></div>
+                <h3 class="landing-card-title">Views that match your headspace</h3>
+                <p class="landing-card-text">
+                  Move between Today, Inbox, Upcoming, Meetings, and Design-style groupings so you are not
+                  scrolling one endless list.
+                </p>
+              </article>
+            </div>
+            <div class="col-md-6 col-xl-4">
+              <article class="landing-card">
+                <div class="landing-card-icon mint"><i class="fa-solid fa-bullseye" aria-hidden="true"></i></div>
+                <h3 class="landing-card-title">One focus task</h3>
+                <p class="landing-card-text">
+                  Use the Focus action on any task so your priority stays visible while you work through the rest.
+                </p>
+              </article>
+            </div>
+            <div class="col-md-6 col-xl-4">
+              <article class="landing-card">
+                <div class="landing-card-icon amber"><i class="fa-solid fa-chart-pie" aria-hidden="true"></i></div>
+                <h3 class="landing-card-title">Progress at a glance</h3>
+                <p class="landing-card-text">
+                  Totals, completed count, and a simple progress percentage keep momentum honest without
+                  extra analytics noise.
+                </p>
+              </article>
+            </div>
+            <div class="col-md-6 col-xl-4">
+              <article class="landing-card">
+                <div class="landing-card-icon sky"><i class="fa-solid fa-filter" aria-hidden="true"></i></div>
+                <h3 class="landing-card-title">Filter All · Pending · Done</h3>
+                <p class="landing-card-text">
+                  Quickly switch perspectives when you want to clear the deck or celebrate what is already
+                  finished.
+                </p>
+              </article>
+            </div>
+            <div class="col-md-6 col-xl-4">
+              <article class="landing-card">
+                <div class="landing-card-icon slate"><i class="fa-solid fa-database" aria-hidden="true"></i></div>
+                <h3 class="landing-card-title">Private by default</h3>
+                <p class="landing-card-text">
+                  Tasks live in your browser’s storage. No sign-up, no servers for your to-dos—open the
+                  page and go.
+                </p>
+              </article>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="workflow" class="landing-section landing-section--alt">
+        <div class="container">
+          <div class="row align-items-center g-4 g-lg-5">
             <div class="col-lg-5">
-              <div class="card bg-black border-secondary shadow-lg landing-stat-card">
-                <div class="card-body p-4">
-                  <h5 class="mb-3">What you can do</h5>
-                  <ul class="list-unstyled mb-0 small text-secondary">
-                    <li class="mb-2">- Add tasks by date and time</li>
-                    <li class="mb-2">- Track completed vs pending</li>
-                    <li class="mb-2">- Pick a daily focus task</li>
-                    <li>- Everything saved locally in your browser</li>
-                  </ul>
-                </div>
-              </div>
+              <h2 class="landing-section-title text-start mb-3">How it works</h2>
+              <p class="landing-section-desc text-start mb-0">
+                Three steps from landing to a structured day—no onboarding deck required.
+              </p>
+            </div>
+            <div class="col-lg-7">
+              <ol class="landing-steps">
+                <li>
+                  <span class="landing-step-num">1</span>
+                  <div>
+                    <strong>Open the planner</strong>
+                    <span class="landing-step-desc">Pick today or any date from the picker—your dashboard updates instantly.</span>
+                  </div>
+                </li>
+                <li>
+                  <span class="landing-step-num">2</span>
+                  <div>
+                    <strong>Add tasks with context</strong>
+                    <span class="landing-step-desc">Title, time, and category (Meetings, Design, Planning, Personal) keep items scannable.</span>
+                  </div>
+                </li>
+                <li>
+                  <span class="landing-step-num">3</span>
+                  <div>
+                    <strong>Complete, filter, focus</strong>
+                    <span class="landing-step-desc">Check things off, use filters, and set a focus task so priorities stay obvious.</span>
+                  </div>
+                </li>
+              </ol>
             </div>
           </div>
         </div>
       </section>
 
-      <section id="features" class="py-5 soft-divider">
+      <section class="landing-section landing-cta-band">
         <div class="container">
-          <div class="text-center mb-4">
-            <h2 class="fw-semibold section-heading">All your planning info in one place</h2>
-            <p class="text-secondary mb-0">A simple workflow that is fast and clean.</p>
-          </div>
-          <div class="row g-3 g-lg-4">
-            <div class="col-md-4">
-              <div class="card bg-black border-secondary h-100 feature-card">
-                <div class="card-body">
-                  <h5>Calendar Picker</h5>
-                  <p class="text-secondary small mb-0">
-                    Select any date quickly with a polished Bootstrap calendar widget.
-                  </p>
-                </div>
-              </div>
-            </div>
-            <div class="col-md-4">
-              <div class="card bg-black border-secondary h-100 feature-card">
-                <div class="card-body">
-                  <h5>Task Management</h5>
-                  <p class="text-secondary small mb-0">
-                    Add, complete, filter, and remove tasks while keeping your day organized.
-                  </p>
-                </div>
-              </div>
-            </div>
-            <div class="col-md-4">
-              <div class="card bg-black border-secondary h-100 feature-card">
-                <div class="card-body">
-                  <h5>Local First</h5>
-                  <p class="text-secondary small mb-0">
-                    No database or auth required. Your tasks stay in localStorage on your device.
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section class="py-5 soft-divider">
-        <div class="container">
-          <div class="card bg-black border-secondary text-center p-4 p-lg-5">
-            <h3 class="mb-2">Ready to plan your day?</h3>
-            <p class="text-secondary mb-4">Open the planner and start adding tasks now.</p>
+          <div class="landing-cta-panel">
             <div>
-              <a href="planner.html" class="btn btn-primary btn-lg px-4">Go to Planner</a>
+              <h2 class="landing-cta-title mb-2">Ready for a clearer today?</h2>
+              <p class="landing-cta-desc mb-0">
+                Jump into the same dashboard you saw above—your data stays on this device.
+              </p>
+            </div>
+            <div class="landing-cta-panel-actions">
+              <a href="planner.html" class="btn landing-btn-primary btn-lg landing-btn-pill px-4">Open Smart Planner</a>
             </div>
           </div>
         </div>
       </section>
     </main>
 
+    <footer class="landing-footer">
+      <div class="container d-flex flex-column flex-sm-row align-items-center justify-content-between gap-2 py-4">
+        <span class="landing-footer-brand"><span class="landing-brand-mark landing-brand-mark--sm"><i class="fa-solid fa-calendar-check"></i></span> Smart Planner</span>
+        <span class="landing-footer-note">Local-first task dashboard</span>
+      </div>
+    </footer>
+
     <script
       src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
       integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
       crossorigin="anonymous"
     ></script>
+    <script>
+      (function () {
+        var toggle = document.querySelector(".landing-menu-toggle");
+        var mobile = document.getElementById("landingMobileNav");
+        if (!toggle || !mobile) return;
+        toggle.addEventListener("click", function () {
+          var open = mobile.classList.toggle("is-open");
+          toggle.setAttribute("aria-expanded", open ? "true" : "false");
+        });
+      })();
+    </script>
   </body>
 </html>
-

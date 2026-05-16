@@ -1489,6 +1489,45 @@ body {
   display: none;
 }
 
+.dashboard-page .task-timer-row {
+  max-width: 100%;
+}
+
+.dashboard-page .task-timer-icon {
+  color: #94a3b8;
+  font-size: 0.8rem;
+  opacity: 0.95;
+}
+
+.dashboard-page .task-timer-display {
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  color: #64748b;
+  min-width: 3.5rem;
+}
+
+.dashboard-page .task-timer-display--active {
+  color: #ea580c;
+}
+
+.dashboard-page .task-timer-btn {
+  font-size: 0.72rem !important;
+  padding: 0.15rem 0.5rem !important;
+  line-height: 1.3;
+}
+
+.dashboard-page.dark-mode .task-timer-display {
+  color: #a8b5cf;
+}
+
+.dashboard-page.dark-mode .task-timer-display--active {
+  color: #fdba74;
+}
+
+.dashboard-page.dark-mode .task-timer-icon {
+  color: #7c8aad;
+}
+
 .dashboard-page .form-check-input {
   border-radius: 999px;
 }

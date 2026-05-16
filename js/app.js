@@ -2,6 +2,7 @@
 
 const STORAGE_KEY = "smartPlannerTasks";
 const THEME_STORAGE_KEY = "smartPlannerTheme";
+const ACTIVE_TIMER_KEY = "smartPlannerActiveTimer";
 const ALLOWED_VIEWS = new Set(["today", "inbox", "upcoming", "meetings", "design"]);
 
 function getTodayISO() {
@@ -31,7 +32,16 @@ function loadAllTasks() {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return {};
     const parsed = JSON.parse(raw);
-    return typeof parsed === "object" && parsed !== null ? parsed : {};
+    if (typeof parsed !== "object" || parsed === null) return {};
+    Object.keys(parsed).forEach((dateISO) => {
+      const list = parsed[dateISO];
+      if (!Array.isArray(list)) return;
+      parsed[dateISO] = list.map((task) => ({
+        ...task,
+        loggedSeconds: typeof task.loggedSeconds === "number" && !Number.isNaN(task.loggedSeconds) ? task.loggedSeconds : 0,
+      }));
+    });
+    return parsed;
   } catch (e) {
     console.error("Failed to parse tasks from localStorage", e);
     return {};
@@ -73,6 +83,39 @@ function formatTaskMeta(isoDate, timeText) {
   return `${datePart} · 30 m`;
 }
 
+function formatTrackedDuration(totalSeconds) {
+  const s = Math.max(0, Math.floor(totalSeconds));
+  const h = Math.floor(s / 3600);
+  const m = Math.floor((s % 3600) / 60);
+  const sec = s % 60;
+  if (h > 0) {
+    return `${h}:${String(m).padStart(2, "0")}:${String(sec).padStart(2, "0")}`;
+  }
+  return `${m}:${String(sec).padStart(2, "0")}`;
+}
+
+function readActiveTimer() {
+  try {
+    const raw = localStorage.getItem(ACTIVE_TIMER_KEY);
+    if (!raw) return null;
+    const o = JSON.parse(raw);
+    if (o && typeof o.taskId === "string" && typeof o.segmentStart === "number") {
+      return { taskId: o.taskId, segmentStart: o.segmentStart };
+    }
+  } catch (e) {
+    console.error("Failed to read active timer", e);
+  }
+  return null;
+}
+
+function writeActiveTimer(state) {
+  if (!state) {
+    localStorage.removeItem(ACTIVE_TIMER_KEY);
+    return;
+  }
+  localStorage.setItem(ACTIVE_TIMER_KEY, JSON.stringify(state));
+}
+
 document.addEventListener("DOMContentLoaded", () => {
   const datePicker = document.getElementById("datePicker");
   const todayBtn = document.getElementById("todayBtn");
@@ -110,6 +153,7 @@ document.addEventListener("DOMContentLoaded", () => {
   let currentDate = getTodayISO();
   let currentFilter = "all";
   let currentView = "today";
+  let timerDisplayInterval = null;
   const hasSidebarDatepicker = !!sidebarDatePicker && typeof window.$ === "function";
   const addTaskModal = addTaskModalEl && window.bootstrap ? new window.bootstrap.Modal(addTaskModalEl) : null;
 
@@ -175,6 +219,7 @@ document.addEventListener("DOMContentLoaded", () => {
       completed: false,
       focus: false,
       createdAt: Date.now(),
+      loggedSeconds: 0,
     };
     tasks.push(newTask);
     setTasksForDate(dateISO, tasks);
@@ -211,6 +256,104 @@ document.addEventListener("DOMContentLoaded", () => {
   function setTasksForDate(dateISO, tasks) {
     tasksByDate[dateISO] = tasks;
     saveAllTasks(tasksByDate);
+  }
+
+  function findDateForTaskId(taskId) {
+    for (const dateISO of Object.keys(tasksByDate)) {
+      if ((tasksByDate[dateISO] || []).some((t) => t.id === taskId)) return dateISO;
+    }
+    return null;
+  }
+
+  function findTaskById(taskId) {
+    for (const tasks of Object.values(tasksByDate)) {
+      const t = tasks.find((x) => x.id === taskId);
+      if (t) return t;
+    }
+    return null;
+  }
+
+  function getDisplayedSecondsForTask(taskId) {
+    const task = findTaskById(taskId);
+    if (!task) return 0;
+    const base = typeof task.loggedSeconds === "number" ? task.loggedSeconds : 0;
+    const active = readActiveTimer();
+    if (active && active.taskId === taskId) {
+      return base + Math.floor((Date.now() - active.segmentStart) / 1000);
+    }
+    return base;
+  }
+
+  function commitActiveSegment() {
+    const state = readActiveTimer();
+    if (!state) return;
+    const dateISO = findDateForTaskId(state.taskId);
+    if (!dateISO) {
+      writeActiveTimer(null);
+      if (timerDisplayInterval) {
+        clearInterval(timerDisplayInterval);
+        timerDisplayInterval = null;
+      }
+      return;
+    }
+    const add = Math.floor((Date.now() - state.segmentStart) / 1000);
+    if (add > 0) {
+      const tasks = getTasksForDate(dateISO).map((t) =>
+        t.id === state.taskId
+          ? { ...t, loggedSeconds: (typeof t.loggedSeconds === "number" ? t.loggedSeconds : 0) + add }
+          : t,
+      );
+      setTasksForDate(dateISO, tasks);
+    }
+    writeActiveTimer(null);
+    if (timerDisplayInterval) {
+      clearInterval(timerDisplayInterval);
+      timerDisplayInterval = null;
+    }
+  }
+
+  function clearActiveTimerForTask(taskId) {
+    const state = readActiveTimer();
+    if (state && state.taskId === taskId) {
+      writeActiveTimer(null);
+      if (timerDisplayInterval) {
+        clearInterval(timerDisplayInterval);
+        timerDisplayInterval = null;
+      }
+    }
+  }
+
+  function startTaskTimer(taskId) {
+    if (!findTaskById(taskId)) return;
+    commitActiveSegment();
+    writeActiveTimer({ taskId, segmentStart: Date.now() });
+    scheduleTimerTick();
+    renderTasks();
+  }
+
+  function pauseTaskTimer() {
+    commitActiveSegment();
+    renderTasks();
+  }
+
+  function scheduleTimerTick() {
+    if (timerDisplayInterval) {
+      clearInterval(timerDisplayInterval);
+      timerDisplayInterval = null;
+    }
+    if (!readActiveTimer()) return;
+    timerDisplayInterval = setInterval(() => {
+      updateActiveTimerDisplays();
+    }, 1000);
+  }
+
+  function updateActiveTimerDisplays() {
+    const state = readActiveTimer();
+    if (!state) return;
+    const el = document.getElementById(`task-timer-display-${state.taskId}`);
+    if (el) {
+      el.textContent = formatTrackedDuration(getDisplayedSecondsForTask(state.taskId));
+    }
   }
 
   function getAllTasksWithDate() {
@@ -370,11 +513,58 @@ document.addEventListener("DOMContentLoaded", () => {
         meta.innerHTML = `<i class="fa-regular fa-calendar"></i><span>${formatTaskMeta(task.__date, task.time)}</span>`;
         content.appendChild(meta);
 
+        const timerRow = document.createElement("div");
+        timerRow.className = "task-timer-row d-flex flex-wrap align-items-center gap-2 mt-1";
+
+        const swIcon = document.createElement("i");
+        swIcon.className = "fa-solid fa-stopwatch task-timer-icon";
+        swIcon.setAttribute("aria-hidden", "true");
+
+        const timeLabel = document.createElement("span");
+        timeLabel.className = "task-timer-display small";
+        timeLabel.id = `task-timer-display-${task.id}`;
+        timeLabel.textContent = formatTrackedDuration(getDisplayedSecondsForTask(task.id));
+
+        const activeTimer = readActiveTimer();
+        const isRunning = !!(activeTimer && activeTimer.taskId === task.id);
+
+        const timerBtn = document.createElement("button");
+        timerBtn.type = "button";
+        timerBtn.className = "btn btn-sm task-timer-btn";
+        if (isRunning) {
+          timerBtn.classList.add("btn-warning");
+          timerBtn.innerHTML = '<i class="fa-solid fa-pause me-1" aria-hidden="true"></i>Pause';
+          timerBtn.setAttribute("aria-label", "Pause time tracking for this task");
+          timerBtn.addEventListener("click", () => pauseTaskTimer());
+        } else {
+          timerBtn.classList.add("btn-outline-success");
+          timerBtn.innerHTML = '<i class="fa-solid fa-play me-1" aria-hidden="true"></i>Start';
+          timerBtn.setAttribute("aria-label", "Start time tracking for this task");
+          timerBtn.addEventListener("click", () => startTaskTimer(task.id));
+        }
+
+        if (task.completed && !isRunning) {
+          timerBtn.disabled = true;
+          timerBtn.classList.remove("btn-outline-success", "btn-warning");
+          timerBtn.classList.add("btn-outline-secondary");
+          timerBtn.innerHTML = '<i class="fa-solid fa-play me-1" aria-hidden="true"></i>Start';
+          timerBtn.title = "Uncheck the task to track time";
+        }
+
+        if (isRunning) {
+          timeLabel.classList.add("task-timer-display--active");
+        }
+
+        timerRow.appendChild(swIcon);
+        timerRow.appendChild(timeLabel);
+        timerRow.appendChild(timerBtn);
+        content.appendChild(timerRow);
+
         left.appendChild(checkbox);
         left.appendChild(content);
 
         const right = document.createElement("div");
-        right.className = "d-flex align-items-center gap-2";
+        right.className = "d-flex align-items-center gap-2 flex-shrink-0";
 
         const focusBtn = document.createElement("button");
         focusBtn.className = "btn btn-outline-info btn-xs btn-sm";
@@ -416,6 +606,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function deleteTask(id) {
+    clearActiveTimerForTask(id);
     Object.keys(tasksByDate).forEach((dateISO) => {
       tasksByDate[dateISO] = tasksByDate[dateISO].filter((t) => t.id !== id);
     });
@@ -424,6 +615,10 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function toggleTaskCompletion(id) {
+    const state = readActiveTimer();
+    if (state && state.taskId === id) {
+      commitActiveSegment();
+    }
     mutateTaskById(id, (task) => ({ ...task, completed: !task.completed }));
     renderTasks();
   }
@@ -525,6 +720,17 @@ document.addEventListener("DOMContentLoaded", () => {
   clearDayBtn.addEventListener("click", () => {
     if (!isDateScopedView()) return;
     if (!confirm("Clear all tasks for this day?")) return;
+    const state = readActiveTimer();
+    if (state) {
+      const d = findDateForTaskId(state.taskId);
+      if (d === currentDate) {
+        writeActiveTimer(null);
+        if (timerDisplayInterval) {
+          clearInterval(timerDisplayInterval);
+          timerDisplayInterval = null;
+        }
+      }
+    }
     setTasksForDate(currentDate, []);
     renderTasks();
   });
@@ -593,10 +799,40 @@ document.addEventListener("DOMContentLoaded", () => {
     syncSidebarPickerFromCurrentDate();
     updateHeader();
     renderTasks();
+    if (readActiveTimer()) {
+      scheduleTimerTick();
+    }
   });
 
+  function ensureActiveTimerConsistency() {
+    const state = readActiveTimer();
+    if (!state) return;
+    if (!findTaskById(state.taskId)) {
+      writeActiveTimer(null);
+      if (timerDisplayInterval) {
+        clearInterval(timerDisplayInterval);
+        timerDisplayInterval = null;
+      }
+    }
+  }
+
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === "hidden") {
+      commitActiveSegment();
+      renderTasks();
+    }
+  });
+
+  window.addEventListener("beforeunload", () => {
+    commitActiveSegment();
+  });
+
+  ensureActiveTimerConsistency();
   updateHeader();
   syncUrl();
   renderTasks();
+  if (readActiveTimer()) {
+    scheduleTimerTick();
+  }
 });
 

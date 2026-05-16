@@ -650,18 +650,166 @@ body {
 }
 
 .landing-footer {
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
-  font-size: 0.88rem;
-  color: rgba(165, 180, 252, 0.85);
+  position: relative;
+  margin-top: 0;
+  padding: 0 0 2rem;
+  font-size: 0.9rem;
+  color: rgba(199, 210, 254, 0.82);
+  background: linear-gradient(180deg, transparent 0%, rgba(4, 3, 12, 0.92) 18%, rgba(3, 2, 8, 0.98) 100%);
 }
 
-.landing-footer-brand {
-  font-weight: 600;
-  color: #e5e7eb;
+.landing-footer-accent {
+  height: 3px;
+  margin-bottom: 2.5rem;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(124, 92, 255, 0.85) 18%,
+    rgba(233, 133, 146, 0.95) 50%,
+    rgba(251, 191, 36, 0.75) 72%,
+    transparent
+  );
+  opacity: 0.9;
 }
 
-.landing-footer-note {
-  opacity: 0.85;
+.landing-footer-main {
+  display: grid;
+  gap: 2.25rem 2rem;
+  padding-bottom: 2.25rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+@media (min-width: 768px) {
+  .landing-footer-main {
+    grid-template-columns: minmax(0, 1.35fr) minmax(0, 0.85fr) minmax(0, 1fr);
+    align-items: start;
+  }
+}
+
+.landing-footer-about {
+  max-width: 22rem;
+}
+
+.landing-footer-brand-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 700;
+  font-size: 1.05rem;
+  letter-spacing: -0.02em;
+  color: #fff !important;
+  text-decoration: none;
+  margin-bottom: 0.85rem;
+  transition: color 0.15s ease, opacity 0.15s ease;
+}
+
+.landing-footer-brand-link:hover {
+  color: #fde68a !important;
+}
+
+.landing-footer-tagline {
+  margin: 0;
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: rgba(199, 210, 254, 0.78);
+}
+
+.landing-footer-heading {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(196, 181, 253, 0.95);
+  margin: 0 0 1rem;
+}
+
+.landing-footer-links {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.landing-footer-links a {
+  color: rgba(226, 232, 255, 0.88) !important;
+  text-decoration: none;
+  transition: color 0.15s ease, transform 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.landing-footer-links a:hover {
+  color: #fff !important;
+}
+
+.landing-footer-links a::after {
+  content: "\f054";
+  font-family: "Font Awesome 6 Free";
+  font-weight: 900;
+  font-size: 0.55rem;
+  opacity: 0;
+  transform: translateX(-4px);
+  transition:
+    opacity 0.15s ease,
+    transform 0.15s ease;
+}
+
+.landing-footer-links a:hover::after {
+  opacity: 0.65;
+  transform: translateX(2px);
+}
+
+.landing-footer-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.85rem;
+  color: rgba(226, 232, 255, 0.82);
+  padding: 0.35rem 0.65rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.055);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.landing-footer-pill i {
+  font-size: 0.75rem;
+  color: #a5b4fc;
+  opacity: 0.95;
+}
+
+.landing-footer-bottom {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  padding-top: 1.35rem;
+  text-align: center;
+}
+
+@media (min-width: 576px) {
+  .landing-footer-bottom {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    text-align: left;
+  }
+}
+
+.landing-footer-copy,
+.landing-footer-meta {
+  margin: 0;
+  font-size: 0.82rem;
+}
+
+.landing-footer-copy {
+  color: rgba(203, 213, 245, 0.88);
+  font-weight: 500;
+}
+
+.landing-footer-meta {
+  color: rgba(148, 163, 236, 0.55);
 }
 
 @media (max-width: 575px) {

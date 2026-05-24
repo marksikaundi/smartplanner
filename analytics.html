@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -23,19 +23,16 @@
       <aside class="dashboard-sidebar">
         <div class="sidebar-top">
           <div class="sidebar-brand">
-            <a href="index.html" class="logo-dot" aria-label="Smart Planner — Home">
+            <a
+              href="index.html"
+              class="logo-dot"
+              aria-label="Smart Planner — Home"
+            >
               <i class="fa-solid fa-calendar-check" aria-hidden="true"></i>
             </a>
             <span class="sidebar-brand-label">Smart Planner</span>
           </div>
-          <div class="sidebar-top-icons">
-            <!-- <button type="button" class="icon-btn" aria-label="Notifications">
-              <i class="fa-regular fa-bell"></i>
-            </button>
-            <button type="button" class="icon-btn" aria-label="Settings">
-              <i class="fa-regular fa-circle-dot"></i>
-            </button> -->
-          </div>
+          <div class="sidebar-top-icons"></div>
         </div>
 
         <nav class="sidebar-nav">
@@ -67,7 +64,11 @@
             <i class="fa-regular fa-folder-open"></i>
             <span>Planning</span>
           </a>
-          <a class="sidebar-item active" href="analytics.html" aria-current="page">
+          <a
+            class="sidebar-item active"
+            href="analytics.html"
+            aria-current="page"
+          >
             <i class="fa-solid fa-chart-line"></i>
             <span>Analytics</span>
           </a>
@@ -77,7 +78,9 @@
           <div class="sidebar-user">
             <div>
               <div class="small fw-semibold text-white">Today's Date</div>
-              <div class="small text-white-50"><span id="sidebarSelectedDateLabel">—</span></div>
+              <div class="small text-white-50">
+                <span id="sidebarSelectedDateLabel">—</span>
+              </div>
             </div>
           </div>
         </div>
@@ -91,64 +94,123 @@
           </div>
           <div class="dashboard-actions">
             <a href="planner.html" class="btn btn-outline-secondary btn-sm">
-              <i class="fa-solid fa-arrow-left me-1" aria-hidden="true"></i>Back to planner
+              <i class="fa-solid fa-arrow-left me-1" aria-hidden="true"></i>Back
+              to planner
             </a>
-            <button id="themeToggleBtn" class="icon-btn-light" type="button" aria-label="Toggle theme">
+            <button
+              id="themeToggleBtn"
+              class="icon-btn-light"
+              type="button"
+              aria-label="Toggle theme"
+            >
               <i class="fa-regular fa-moon"></i>
             </button>
-            <button type="button" class="btn btn-outline-secondary btn-sm" id="analyticsRefreshBtn" title="Refresh analytics">
-              <i class="fa-solid fa-rotate-right me-1" aria-hidden="true"></i>Refresh
+            <button
+              type="button"
+              class="btn btn-outline-secondary btn-sm"
+              id="analyticsRefreshBtn"
+              title="Refresh analytics"
+            >
+              <i class="fa-solid fa-rotate-right me-1" aria-hidden="true"></i
+              >Refresh
             </button>
           </div>
         </div>
 
-        <section class="analytics-panel projects-panel mt-2 mb-0" aria-labelledby="analyticsHeading">
-          <h5 id="analyticsHeading" class="visually-hidden">Analytics details</h5>
+        <section
+          class="analytics-panel projects-panel mt-2 mb-0"
+          aria-labelledby="analyticsHeading"
+        >
+          <h5 id="analyticsHeading" class="visually-hidden">
+            Analytics details
+          </h5>
           <p class="text-muted small mb-3">
-            All-time overview from tasks in your browser storage, plus the activity log (creates, completions, time logged,
-            focus changes, clears).
+            All-time overview from tasks in your browser storage, plus the
+            activity log (creates, completions, time logged, focus changes,
+            clears).
           </p>
 
           <div class="analytics-stat-grid">
             <article class="analytics-stat-chip">
-              <div class="analytics-stat-icon" aria-hidden="true"><i class="fa-solid fa-list"></i></div>
+              <div class="analytics-stat-icon" aria-hidden="true">
+                <i class="fa-solid fa-list"></i>
+              </div>
               <div class="analytics-stat-body">
-                <span class="analytics-stat-value" id="analyticsAllTotal">0</span>
+                <span class="analytics-stat-value" id="analyticsAllTotal"
+                  >0</span
+                >
                 <span class="analytics-stat-label">Total tasks</span>
               </div>
             </article>
             <article class="analytics-stat-chip">
-              <div class="analytics-stat-icon analytics-stat-icon--done" aria-hidden="true"><i class="fa-solid fa-check"></i></div>
+              <div
+                class="analytics-stat-icon analytics-stat-icon--done"
+                aria-hidden="true"
+              >
+                <i class="fa-solid fa-check"></i>
+              </div>
               <div class="analytics-stat-body">
-                <span class="analytics-stat-value" id="analyticsCompletedAll">0</span>
+                <span class="analytics-stat-value" id="analyticsCompletedAll"
+                  >0</span
+                >
                 <span class="analytics-stat-label">Completed</span>
               </div>
             </article>
             <article class="analytics-stat-chip">
-              <div class="analytics-stat-icon analytics-stat-icon--open" aria-hidden="true"><i class="fa-regular fa-circle"></i></div>
+              <div
+                class="analytics-stat-icon analytics-stat-icon--open"
+                aria-hidden="true"
+              >
+                <i class="fa-regular fa-circle"></i>
+              </div>
               <div class="analytics-stat-body">
-                <span class="analytics-stat-value" id="analyticsPendingAll">0</span>
+                <span class="analytics-stat-value" id="analyticsPendingAll"
+                  >0</span
+                >
                 <span class="analytics-stat-label">Open</span>
               </div>
             </article>
             <article class="analytics-stat-chip">
-              <div class="analytics-stat-icon analytics-stat-icon--time" aria-hidden="true"><i class="fa-solid fa-stopwatch"></i></div>
+              <div
+                class="analytics-stat-icon analytics-stat-icon--time"
+                aria-hidden="true"
+              >
+                <i class="fa-solid fa-stopwatch"></i>
+              </div>
               <div class="analytics-stat-body">
-                <span class="analytics-stat-value analytics-stat-value--mono" id="analyticsTimeTotal">0:00</span>
+                <span
+                  class="analytics-stat-value analytics-stat-value--mono"
+                  id="analyticsTimeTotal"
+                  >0:00</span
+                >
                 <span class="analytics-stat-label">Time tracked</span>
               </div>
             </article>
             <article class="analytics-stat-chip">
-              <div class="analytics-stat-icon analytics-stat-icon--cal" aria-hidden="true"><i class="fa-solid fa-calendar-week"></i></div>
+              <div
+                class="analytics-stat-icon analytics-stat-icon--cal"
+                aria-hidden="true"
+              >
+                <i class="fa-solid fa-calendar-week"></i>
+              </div>
               <div class="analytics-stat-body">
-                <span class="analytics-stat-value" id="analyticsActiveDays">0</span>
+                <span class="analytics-stat-value" id="analyticsActiveDays"
+                  >0</span
+                >
                 <span class="analytics-stat-label">Days with tasks</span>
               </div>
             </article>
             <article class="analytics-stat-chip">
-              <div class="analytics-stat-icon analytics-stat-icon--track" aria-hidden="true"><i class="fa-solid fa-hourglass-half"></i></div>
+              <div
+                class="analytics-stat-icon analytics-stat-icon--track"
+                aria-hidden="true"
+              >
+                <i class="fa-solid fa-hourglass-half"></i>
+              </div>
               <div class="analytics-stat-body">
-                <span class="analytics-stat-value" id="analyticsTrackedTasks">0</span>
+                <span class="analytics-stat-value" id="analyticsTrackedTasks"
+                  >0</span
+                >
                 <span class="analytics-stat-label">Tasks with time</span>
               </div>
             </article>
@@ -186,7 +248,10 @@
 
           <div class="mt-4">
             <h6 class="analytics-subheading">Activity log</h6>
-            <ul id="analyticsActivityFeed" class="analytics-feed list-unstyled mb-0"></ul>
+            <ul
+              id="analyticsActivityFeed"
+              class="analytics-feed list-unstyled mb-0"
+            ></ul>
           </div>
         </section>
       </main>

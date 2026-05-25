@@ -125,9 +125,7 @@ function getLastNDaysISO(n) {
   return out;
 }
 
-/* ==========================================================================
-   SECTION: Activity log descriptions
-   ========================================================================== */
+  //  SECTION: Activity log descriptions
 function activityGlyph(type) {
   const map = {
     task_created: { icon: "fa-plus-circle", tone: "analytics-glyph--create" },

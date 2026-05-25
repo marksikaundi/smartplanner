@@ -1,26 +1,9 @@
-/**
- * planner-common.js — Shared storage & utilities
- * Used by: planner.html (app.js), analytics.html (analytics-page.js)
- *
- * SECTION INDEX (search for "SECTION:"):
- *   SECTION: Storage keys
- *   SECTION: Date helpers
- *   SECTION: Load tasks & activity log
- *   SECTION: Formatting helpers
- *   SECTION: Activity log descriptions
- *   SECTION: Task flattening
- */
 
-/* ==========================================================================
-   SECTION: Storage keys
-   ========================================================================== */
 const STORAGE_KEY = "smartPlannerTasks";
 const ACTIVITY_LOG_KEY = "smartPlannerActivityLog";
 const ACTIVITY_LOG_MAX = 400;
 
-/* ==========================================================================
-   SECTION: Date helpers
-   ========================================================================== */
+//  SECTION: Date helpers
 function getTodayISO() {
   return toISODateLocal(new Date());
 }
@@ -43,9 +26,7 @@ function startOfLocalDay(d) {
   return copy;
 }
 
-/* ==========================================================================
-   SECTION: Load tasks & activity log
-   ========================================================================== */
+  //  SECTION: Load tasks & activity log
 function loadAllTasks() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
@@ -82,9 +63,7 @@ function loadActivityLog() {
   }
 }
 
-/* ==========================================================================
-   SECTION: Formatting helpers
-   ========================================================================== */
+  //  SECTION: Formatting helpers
 function formatReadableDate(isoDate) {
   const d = parseISODateLocal(isoDate);
   return d.toLocaleDateString(undefined, {
@@ -161,9 +140,7 @@ function describeActivityEntry(e) {
   }
 }
 
-/* ==========================================================================
-   SECTION: Task flattening
-   ========================================================================== */
+  //  SECTION: Task flattening
 function flattenTasksWithDates(tasksByDate) {
   const all = [];
   Object.entries(tasksByDate).forEach(([dateISO, tasks]) => {

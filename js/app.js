@@ -17,9 +17,7 @@
  *   SECTION: Startup
  */
 
-/* ==========================================================================
-   SECTION: Constants & activity persistence
-   ========================================================================== */
+  //  SECTION: Constants & activity persistence
 const THEME_STORAGE_KEY = "smartPlannerTheme";
 const ACTIVE_TIMER_KEY = "smartPlannerActiveTimer";
 const ALLOWED_VIEWS = new Set(["today", "inbox", "upcoming", "meetings", "design"]);
@@ -46,9 +44,7 @@ function generateId() {
   return `${Date.now()}-${Math.random().toString(16).slice(2)}`;
 }
 
-/* ==========================================================================
-   SECTION: Helpers (dates, timer, formatting)
-   ========================================================================== */
+  //  SECTION: Helpers (dates, timer, formatting)
 function formatSubheading(isoDate) {
   const todayISO = getTodayISO();
   if (isoDate === todayISO) return "Today";
@@ -89,9 +85,7 @@ function writeActiveTimer(state) {
   localStorage.setItem(ACTIVE_TIMER_KEY, JSON.stringify(state));
 }
 
-/* ==========================================================================
-   SECTION: DOMContentLoaded — init & state
-   ========================================================================== */
+  //  SECTION: DOMContentLoaded — init & state
 document.addEventListener("DOMContentLoaded", () => {
   const datePicker = document.getElementById("datePicker");
   const todayBtn = document.getElementById("todayBtn");
@@ -866,9 +860,7 @@ document.addEventListener("DOMContentLoaded", () => {
     commitActiveSegment();
   });
 
-  /* ==========================================================================
-     SECTION: Startup
-     ========================================================================== */
+  //  SECTION: Startup
   ensureActiveTimerConsistency();
   updateHeader();
   syncUrl();

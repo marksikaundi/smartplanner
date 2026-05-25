@@ -8,14 +8,11 @@
  *   SECTION: DOMContentLoaded — theme, refresh, startup
  */
 
-/* ==========================================================================
-   SECTION: Theme key
-   ========================================================================== */
+  //  SECTION: Theme key
+  
 const THEME_STORAGE_KEY = "smartPlannerTheme";
 
-/* ==========================================================================
-   SECTION: renderAnalyticsPage (stats, charts, table, feed)
-   ========================================================================== */
+  //  SECTION: renderAnalyticsPage (stats, charts, table, feed)
 function renderAnalyticsPage() {
   const analyticsAllTotalEl = document.getElementById("analyticsAllTotal");
   const analyticsCompletedAllEl = document.getElementById("analyticsCompletedAll");
@@ -237,9 +234,7 @@ function renderAnalyticsPage() {
   }
 }
 
-/* ==========================================================================
-   SECTION: DOMContentLoaded — theme, refresh, startup
-   ========================================================================== */
+  //  SECTION: DOMContentLoaded — theme, refresh, startup
 document.addEventListener("DOMContentLoaded", () => {
   const themeToggleBtn = document.getElementById("themeToggleBtn");
   const sidebarSelectedDateLabel = document.getElementById("sidebarSelectedDateLabel");

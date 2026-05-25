@@ -2,14 +2,18 @@
 
 Use this during your demo or slides. **Suggested length: 5–8 minutes.**
 
+**Find sections:** search `SECTION:` in this file, or use the headings below.
+
 ---
 
+<!-- SECTION: Opening -->
 ## 30-second opening (say this first)
 
 > **Smart Planner** is a browser-based daily task dashboard. You plan by date, switch views like Today and Meetings, track time on tasks, and set one focus priority—all without creating an account. Everything is stored on your device in the browser, so it is fast, private, and works offline after the first load.
 
 ---
 
+<!-- SECTION: Q&A one-liners -->
 ## One-line answers (if someone asks quickly)
 
 | Question | Answer |
@@ -22,6 +26,7 @@ Use this during your demo or slides. **Suggested length: 5–8 minutes.**
 
 ---
 
+<!-- SECTION: Problem & solution -->
 ## Problem → Solution (30 seconds)
 
 **Problem**
@@ -36,6 +41,7 @@ Use this during your demo or slides. **Suggested length: 5–8 minutes.**
 
 ---
 
+<!-- SECTION: Architecture diagram -->
 ## Architecture (show this diagram)
 
 ```mermaid
@@ -74,6 +80,7 @@ flowchart LR
 
 ---
 
+<!-- SECTION: Slide outline -->
 ## Suggested slide order (7 slides)
 
 | # | Slide title | What to say (bullet) |
@@ -88,6 +95,7 @@ flowchart LR
 
 ---
 
+<!-- SECTION: Live demo script -->
 ## Live demo script (3–4 minutes)
 
 Do this in order so the story is clear.
@@ -167,6 +175,7 @@ Do this in order so the story is clear.
 
 ---
 
+<!-- SECTION: Feature cheat sheet -->
 ## Feature cheat sheet (for slides or handout)
 
 | Feature | What it does | Why it matters |
@@ -185,6 +194,7 @@ Do this in order so the story is clear.
 
 ---
 
+<!-- SECTION: Tech stack talking points -->
 ## Tech stack (30 seconds — for technical audience)
 
 - **Frontend only:** HTML, CSS, Bootstrap 5, Font Awesome
@@ -198,6 +208,7 @@ Do this in order so the story is clear.
 
 ---
 
+<!-- SECTION: Activity log -->
 ## Activity log (explain in one breath)
 
 > When you create, complete, delete, log time, set focus, or clear a day, we append an event. Analytics turns that into a timeline so users see *what happened*, not just *what’s on the list today*.
@@ -206,6 +217,7 @@ Event types: `task_created`, `task_completed`, `task_reopened`, `task_deleted`, 
 
 ---
 
+<!-- SECTION: Q&A prep -->
 ## Possible questions & answers
 
 **Q: Where is the data stored?**  
@@ -228,12 +240,14 @@ A: Small scope, no build step, easy to open and demo in any classroom or lab mac
 
 ---
 
+<!-- SECTION: Closing -->
 ## Closing statement (15 seconds)
 
 > Smart Planner shows a full product flow—landing, daily planning, time tracking, and analytics—using only the browser. It’s private by default, fast to run, and demonstrates real features users expect from a modern task app, without the complexity of accounts or a server.
 
 ---
 
+<!-- SECTION: Pre-demo checklist -->
 ## Quick checklist before you present
 
 - [ ] Run from `http://localhost` (not `file://`) so date picker and URLs work reliably
@@ -245,6 +259,7 @@ A: Small scope, no build step, easy to open and demo in any classroom or lab mac
 
 ---
 
+<!-- SECTION: Files reference -->
 ## Files to mention if asked “what did you build?”
 
 | File | Role |

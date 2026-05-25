@@ -1,10 +1,36 @@
+/**
+ * Smart Planner — style.css
+ *
+ * SECTION INDEX (search for "SECTION:"):
+ *   SECTION: Global base
+ *   SECTION: Landing page
+ *   SECTION: Landing — hero & preview
+ *   SECTION: Landing — features, workflow, CTA
+ *   SECTION: Landing — footer
+ *   SECTION: Legacy / shared utilities
+ *   SECTION: Calendar & datepicker
+ *   SECTION: Dashboard (planner + analytics layout)
+ *   SECTION: Dashboard — sidebar
+ *   SECTION: Dashboard — main, stats, tasks
+ *   SECTION: Dashboard — dark mode
+ *   SECTION: Dashboard — task timers
+ *   SECTION: Analytics page
+ *   SECTION: Analytics — dark mode glyphs
+ *   SECTION: Responsive breakpoints
+ */
+
+/* ==========================================================================
+   SECTION: Global base
+   ========================================================================== */
 body {
   font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   background: radial-gradient(circle at top right, #111827 0%, #0f1115 35%, #0a0c10 100%);
   color: #f8f9fa;
 }
 
-/* ---------- Landing page ---------- */
+/* ==========================================================================
+   SECTION: Landing page
+   ========================================================================== */
 .landing-page {
   min-height: 100vh;
   background:
@@ -177,6 +203,7 @@ body {
   }
 }
 
+/* --- Landing: hero & preview mockup --- */
 .landing-hero {
   position: relative;
   overflow: hidden;
@@ -463,6 +490,7 @@ body {
   color: #9f1330;
 }
 
+/* --- Landing: features, workflow, CTA band --- */
 .landing-section {
   padding: 4rem 0;
   border-top: 1px solid rgba(255, 255, 255, 0.06);
@@ -649,6 +677,9 @@ body {
   flex-shrink: 0;
 }
 
+/* ==========================================================================
+   SECTION: Landing — footer
+   ========================================================================== */
 .landing-footer {
   position: relative;
   margin-top: 0;
@@ -819,6 +850,9 @@ body {
   }
 }
 
+/* ==========================================================================
+   SECTION: Legacy / shared utilities
+   ========================================================================== */
 .landing-stat-card {
   backdrop-filter: blur(3px);
 }
@@ -1026,6 +1060,9 @@ body {
   font-size: 0.65rem;
 }
 
+/* ==========================================================================
+   SECTION: Calendar & datepicker (sidebar date picker)
+   ========================================================================== */
 .datepicker {
   background-color: #05070c;
   color: #e9ecef;
@@ -1087,6 +1124,9 @@ body {
   background-color: rgba(255, 255, 255, 0.02);
 }
 
+/* ==========================================================================
+   SECTION: Dashboard (planner.html + analytics.html)
+   ========================================================================== */
 .dashboard-page {
   background: #2a1e68;
   color: #222;
@@ -1100,6 +1140,7 @@ body {
   padding: 0.45rem;
 }
 
+/* --- Dashboard: sidebar navigation --- */
 .dashboard-page .dashboard-sidebar {
   background: #2f1f72;
   color: #fff;
@@ -1283,6 +1324,7 @@ body {
   font-weight: 700;
 }
 
+/* --- Dashboard: main area, header, stats, task list --- */
 .dashboard-page .dashboard-main {
   background: #f9f9fb;
   border-radius: 0.75rem;
@@ -1330,6 +1372,9 @@ body {
   padding: 0.3rem 0.7rem;
 }
 
+/* ==========================================================================
+   SECTION: Dashboard — dark mode
+   ========================================================================== */
 .dashboard-page.dark-mode {
   background: #1a1530;
   color: #e8e9ee;
@@ -1529,6 +1574,9 @@ body {
   display: none;
 }
 
+/* ==========================================================================
+   SECTION: Dashboard — task timers (start / pause)
+   ========================================================================== */
 .dashboard-page .task-timer-row {
   max-width: 100%;
 }
@@ -1568,6 +1616,9 @@ body {
   color: #7c8aad;
 }
 
+/* ==========================================================================
+   SECTION: Analytics page (analytics.html)
+   ========================================================================== */
 .dashboard-page .analytics-page-main {
   scroll-margin-top: 1.25rem;
 }
@@ -1918,6 +1969,7 @@ body {
   color: #64748b;
 }
 
+/* --- Analytics: activity feed icon tones (dark mode) --- */
 .dashboard-page.dark-mode .analytics-glyph--create,
 .dashboard-page.dark-mode .analytics-glyph--done {
   background: rgba(16, 185, 129, 0.15);
@@ -1981,6 +2033,9 @@ body {
   opacity: 0.65;
 }
 
+/* ==========================================================================
+   SECTION: Responsive breakpoints
+   ========================================================================== */
 @media (max-width: 767px) {
   nav .navbar-brand {
     font-size: 1rem;

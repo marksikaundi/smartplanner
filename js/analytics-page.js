@@ -1,5 +1,21 @@
+/**
+ * analytics-page.js — Analytics dashboard (analytics.html)
+ * Requires: planner-common.js (loaded first)
+ *
+ * SECTION INDEX (search for "SECTION:"):
+ *   SECTION: Theme key
+ *   SECTION: renderAnalyticsPage (stats, charts, table, feed)
+ *   SECTION: DOMContentLoaded — theme, refresh, startup
+ */
+
+/* ==========================================================================
+   SECTION: Theme key
+   ========================================================================== */
 const THEME_STORAGE_KEY = "smartPlannerTheme";
 
+/* ==========================================================================
+   SECTION: renderAnalyticsPage (stats, charts, table, feed)
+   ========================================================================== */
 function renderAnalyticsPage() {
   const analyticsAllTotalEl = document.getElementById("analyticsAllTotal");
   const analyticsCompletedAllEl = document.getElementById("analyticsCompletedAll");
@@ -35,6 +51,7 @@ function renderAnalyticsPage() {
   if (analyticsActiveDaysEl) analyticsActiveDaysEl.textContent = String(activeDays);
   if (analyticsTrackedTasksEl) analyticsTrackedTasksEl.textContent = String(withTime);
 
+  /* --- Category breakdown bars --- */
   if (analyticsCategoryBars) {
     analyticsCategoryBars.innerHTML = "";
     const catCount = {};
@@ -76,6 +93,7 @@ function renderAnalyticsPage() {
     }
   }
 
+  /* --- Last 14 days bar chart --- */
   if (analyticsDayBars) {
     analyticsDayBars.innerHTML = "";
     const days = getLastNDaysISO(14);
@@ -105,6 +123,7 @@ function renderAnalyticsPage() {
     analyticsDayBars.appendChild(grid);
   }
 
+  /* --- All tasks table --- */
   if (analyticsTableBody) {
     analyticsTableBody.innerHTML = "";
     const sortedTasks = all.slice().sort((a, b) => {
@@ -174,6 +193,7 @@ function renderAnalyticsPage() {
     }
   }
 
+  /* --- Activity log feed --- */
   if (analyticsActivityFeed) {
     analyticsActivityFeed.innerHTML = "";
     const log = loadActivityLog();
@@ -217,6 +237,9 @@ function renderAnalyticsPage() {
   }
 }
 
+/* ==========================================================================
+   SECTION: DOMContentLoaded — theme, refresh, startup
+   ========================================================================== */
 document.addEventListener("DOMContentLoaded", () => {
   const themeToggleBtn = document.getElementById("themeToggleBtn");
   const sidebarSelectedDateLabel = document.getElementById("sidebarSelectedDateLabel");

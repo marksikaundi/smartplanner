@@ -24,6 +24,7 @@
   </head>
   <body class="dashboard-page">
     <div class="dashboard-app">
+      <!-- SECTION: Sidebar navigation -->
       <aside class="dashboard-sidebar">
         <div class="sidebar-top">
           <div class="sidebar-brand">
@@ -83,7 +84,9 @@
         </div>
       </aside>
 
+      <!-- SECTION: Main dashboard -->
       <main class="dashboard-main">
+        <!-- SECTION: Header (date picker, theme, add task) -->
         <div class="dashboard-header">
           <div>
             <h4 class="mb-1" id="selectedDateHeading">My Tasks Dashboard</h4>
@@ -103,6 +106,7 @@
           </div>
         </div>
 
+        <!-- SECTION: Stats cards (total, completed, progress) -->
         <section class="stats-grid">
           <article class="stat-card">
             <div class="stat-icon"><i class="fa-regular fa-calendar"></i></div>
@@ -121,6 +125,7 @@
           </article>
         </section>
 
+        <!-- SECTION: Task form, filters, and task list -->
         <section class="projects-panel">
           <div class="projects-head">
             <h5 class="mb-0">My Projects</h5>
@@ -152,6 +157,7 @@
           <p class="text-muted small mt-3 mb-0" id="emptyState">No tasks yet for this day. Add your first task above.</p>
         </section>
 
+        <!-- SECTION: Focus task display -->
         <section class="focus-inline mt-3">
           <div id="focusTaskContainer" class="focus-inline-box">
             <span class="text-muted">Focus task: </span>
@@ -161,6 +167,7 @@
       </main>
     </div>
 
+    <!-- SECTION: Add Task modal -->
     <div class="modal fade" id="addTaskModal" tabindex="-1" aria-labelledby="addTaskModalLabel" aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
@@ -217,6 +224,7 @@
       </div>
     </div>
 
+    <!-- SECTION: Scripts (Bootstrap, jQuery, datepicker, app logic) -->
     <script
       src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
       integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"

@@ -1,5 +1,25 @@
-// Simple localStorage-based planner (loads js/planner-common.js first)
+/**
+ * app.js — Planner dashboard logic (planner.html)
+ * Requires: planner-common.js (loaded first)
+ *
+ * SECTION INDEX (search for "SECTION:"):
+ *   SECTION: Constants & activity persistence
+ *   SECTION: Helpers (dates, timer, formatting)
+ *   SECTION: DOMContentLoaded — init & state
+ *   SECTION: URL routing & sidebar sync
+ *   SECTION: Theme toggle
+ *   SECTION: Task CRUD & storage
+ *   SECTION: Views & filters
+ *   SECTION: Render task list
+ *   SECTION: Time tracking (start / pause)
+ *   SECTION: Focus task
+ *   SECTION: Event listeners
+ *   SECTION: Startup
+ */
 
+/* ==========================================================================
+   SECTION: Constants & activity persistence
+   ========================================================================== */
 const THEME_STORAGE_KEY = "smartPlannerTheme";
 const ACTIVE_TIMER_KEY = "smartPlannerActiveTimer";
 const ALLOWED_VIEWS = new Set(["today", "inbox", "upcoming", "meetings", "design"]);
@@ -26,6 +46,9 @@ function generateId() {
   return `${Date.now()}-${Math.random().toString(16).slice(2)}`;
 }
 
+/* ==========================================================================
+   SECTION: Helpers (dates, timer, formatting)
+   ========================================================================== */
 function formatSubheading(isoDate) {
   const todayISO = getTodayISO();
   if (isoDate === todayISO) return "Today";
@@ -66,6 +89,9 @@ function writeActiveTimer(state) {
   localStorage.setItem(ACTIVE_TIMER_KEY, JSON.stringify(state));
 }
 
+/* ==========================================================================
+   SECTION: DOMContentLoaded — init & state
+   ========================================================================== */
 document.addEventListener("DOMContentLoaded", () => {
   const datePicker = document.getElementById("datePicker");
   const todayBtn = document.getElementById("todayBtn");
@@ -111,6 +137,7 @@ document.addEventListener("DOMContentLoaded", () => {
     return /^\d{4}-\d{2}-\d{2}$/.test(value);
   }
 
+  /* --- URL routing & sidebar sync --- */
   function applyStateFromUrl() {
     const params = new URLSearchParams(window.location.search);
     const view = params.get("view");
@@ -182,6 +209,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  /* --- Theme toggle --- */
   function applyTheme(theme) {
     const isDark = theme === "dark";
     document.body.classList.toggle("dark-mode", isDark);
@@ -206,6 +234,7 @@ document.addEventListener("DOMContentLoaded", () => {
   datePicker.value = currentDate;
   applyTheme(localStorage.getItem(THEME_STORAGE_KEY) === "dark" ? "dark" : "light");
 
+  /* --- Task CRUD & storage --- */
   function getTasksForDate(dateISO) {
     return tasksByDate[dateISO] || [];
   }
@@ -241,6 +270,7 @@ document.addEventListener("DOMContentLoaded", () => {
     return base;
   }
 
+  /* --- Time tracking (start / pause) — see also readActiveTimer above --- */
   function commitActiveSegment() {
     const state = readActiveTimer();
     if (!state) return;
@@ -333,6 +363,7 @@ document.addEventListener("DOMContentLoaded", () => {
     return all;
   }
 
+  /* --- Views & filters --- */
   function getTasksForCurrentView() {
     const todayISO = getTodayISO();
     const all = getAllTasksWithDate();
@@ -411,6 +442,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
+  /* --- Render task list --- */
   function renderTasks() {
     const tasks = getTasksForCurrentView();
     const completedCount = tasks.filter((t) => t.completed).length;
@@ -631,6 +663,7 @@ document.addEventListener("DOMContentLoaded", () => {
     renderTasks();
   }
 
+  /* --- Focus task --- */
   function getFocusTask() {
     return getTasksForDate(currentDate).find((t) => t.focus);
   }
@@ -654,6 +687,9 @@ document.addEventListener("DOMContentLoaded", () => {
     updateViewUIState();
   }
 
+  /* ==========================================================================
+     SECTION: Event listeners
+     ========================================================================== */
   taskForm.addEventListener("submit", (e) => {
     e.preventDefault();
     addTask();
@@ -830,6 +866,9 @@ document.addEventListener("DOMContentLoaded", () => {
     commitActiveSegment();
   });
 
+  /* ==========================================================================
+     SECTION: Startup
+     ========================================================================== */
   ensureActiveTimerConsistency();
   updateHeader();
   syncUrl();

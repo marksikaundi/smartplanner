@@ -1,5 +1,7 @@
 # Smart Planner
 
+<!-- SECTION: Overview — see Table of contents below for all sections -->
+
 A **local-first**, browser-based daily task planner. Plan by date, organize work across views, track time on tasks, set a single focus item, and review analytics—all without sign-up or a backend. Data stays in your browser via `localStorage`.
 
 ---
@@ -22,6 +24,7 @@ A **local-first**, browser-based daily task planner. Plan by date, organize work
 
 ---
 
+<!-- SECTION: Overview -->
 ## Overview
 
 Smart Planner is a static web app with three main surfaces:
@@ -36,6 +39,7 @@ The app is designed for **privacy and speed**: no accounts, no API calls for tas
 
 ---
 
+<!-- SECTION: Features -->
 ## Features
 
 ### Landing page (`index.html`)
@@ -102,6 +106,7 @@ Events are recorded automatically (max **400** entries) and power the analytics 
 
 ---
 
+<!-- SECTION: Pages -->
 ## Pages
 
 ```
@@ -119,6 +124,7 @@ Shared assets:
 
 ---
 
+<!-- SECTION: Tech stack -->
 ## Tech stack
 
 | Layer | Technology |
@@ -135,6 +141,7 @@ No build step, npm package, or backend server is required.
 
 ---
 
+<!-- SECTION: Project structure -->
 ## Project structure
 
 ```
@@ -151,8 +158,23 @@ smart-planner/
     └── analytics-page.js   # Analytics page logic
 ```
 
+### Navigate the codebase
+
+In your editor, search for **`SECTION:`** to jump to labeled blocks:
+
+| File | What you will find |
+|------|---------------------|
+| `css/style.css` | Index at top + Landing, Dashboard, Analytics, Dark mode, Responsive |
+| `index.html` | Header, Hero, Features, Workflow, CTA, Footer |
+| `planner.html` | Sidebar, Stats, Tasks, Focus, Modal |
+| `analytics.html` | Stats, Charts, Table, Activity log |
+| `js/planner-common.js` | Storage keys, dates, activity helpers |
+| `js/app.js` | Planner logic, timers, views, events |
+| `js/analytics-page.js` | Charts, table, feed rendering |
+
 ---
 
+<!-- SECTION: Getting started -->
 ## Getting started
 
 ### Option 1: Open directly
@@ -179,6 +201,7 @@ Then visit:
 
 ---
 
+<!-- SECTION: How to use -->
 ## How to use
 
 1. Open the **landing page** and click **Open Planner** (or go straight to `planner.html`).
@@ -194,6 +217,7 @@ Then visit:
 
 ---
 
+<!-- SECTION: Data & storage -->
 ## Data & storage
 
 ### Tasks (`smartPlannerTasks`)
@@ -232,6 +256,7 @@ Clearing site data in the browser removes all tasks and history.
 
 ---
 
+<!-- SECTION: URL routing -->
 ## URL routing
 
 Planner state is reflected in the query string:
@@ -251,6 +276,7 @@ Browser **Back/Forward** restores view and date via `popstate`.
 
 ---
 
+<!-- SECTION: Analytics & activity log -->
 ## Analytics & activity log
 
 The analytics page reads the same `localStorage` data as the planner:
@@ -265,6 +291,7 @@ Use **Refresh** on the analytics header to re-read storage after changes in anot
 
 ---
 
+<!-- SECTION: Browser support -->
 ## Browser support
 
 Works best in current versions of:
@@ -277,6 +304,7 @@ Requires JavaScript and `localStorage`. Third-party CDNs (Bootstrap, Font Awesom
 
 ---
 
+<!-- SECTION: Development history -->
 ## Development history
 
 The project evolved through incremental features (from git history):
@@ -293,6 +321,7 @@ The project evolved through incremental features (from git history):
 
 ---
 
+<!-- SECTION: License -->
 ## License
 
 No license file is included in the repository. Add one if you plan to distribute or open-source the project.

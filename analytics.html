@@ -20,6 +20,7 @@
   </head>
   <body class="dashboard-page analytics-standalone-page">
     <div class="dashboard-app">
+      <!-- SECTION: Sidebar navigation -->
       <aside class="dashboard-sidebar">
         <div class="sidebar-top">
           <div class="sidebar-brand">
@@ -86,7 +87,9 @@
         </div>
       </aside>
 
+      <!-- SECTION: Analytics main content -->
       <main class="dashboard-main analytics-page-main">
+        <!-- SECTION: Header (back link, theme, refresh) -->
         <div class="dashboard-header">
           <div>
             <h4 class="mb-1">Analytics &amp; activity</h4>
@@ -124,6 +127,7 @@
           <h5 id="analyticsHeading" class="visually-hidden">
             Analytics details
           </h5>
+          <!-- SECTION: Summary stat chips -->
           <p class="text-muted small mb-3">
             All-time overview from tasks in your browser storage, plus the
             activity log (creates, completions, time logged, focus changes,
@@ -216,6 +220,7 @@
             </article>
           </div>
 
+          <!-- SECTION: Charts (14-day bars + category breakdown) -->
           <div class="row g-3 mt-1">
             <div class="col-lg-7">
               <h6 class="analytics-subheading">Tasks per day · last 14 days</h6>
@@ -227,6 +232,7 @@
             </div>
           </div>
 
+          <!-- SECTION: All tasks table -->
           <div class="mt-4">
             <h6 class="analytics-subheading">All tasks (newest dates first)</h6>
             <div class="table-responsive analytics-table-wrap">
@@ -246,6 +252,7 @@
             </div>
           </div>
 
+          <!-- SECTION: Activity log feed -->
           <div class="mt-4">
             <h6 class="analytics-subheading">Activity log</h6>
             <ul
@@ -257,6 +264,7 @@
       </main>
     </div>
 
+    <!-- SECTION: Scripts (Bootstrap, shared storage, analytics logic) -->
     <script
       src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
       integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"

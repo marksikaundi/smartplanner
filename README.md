@@ -1,4 +1,4 @@
-# Smart Planner
+# Smart Planner pro for information and communication university 
 
 <!-- SECTION: Overview — see Table of contents below for all sections -->
 

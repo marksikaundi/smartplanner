@@ -90,7 +90,7 @@ The app is designed for **privacy and speed**: no accounts, no API calls for tas
 - **Refresh** button and auto-refresh when returning to the tab
 - Shared sidebar navigation and dark mode
 
-### Activity logging
+### Activity log
 
 Events are recorded automatically (max **400** entries) and power the analytics feed:
 

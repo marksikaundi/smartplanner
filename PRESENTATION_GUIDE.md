@@ -42,7 +42,7 @@ Use this during your demo or slides. **Suggested length: 5–8 minutes.**
 ---
 
 <!-- SECTION: Architecture diagram -->
-## Architecture (show this diagram)
+## Architecture 
 
 ```mermaid
 flowchart LR

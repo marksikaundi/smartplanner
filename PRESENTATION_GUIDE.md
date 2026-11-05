@@ -7,7 +7,7 @@ Use this during your demo or slides. **Suggested length: 5–8 minutes.**
 ---
 
 <!-- SECTION: Opening -->
-## 30-second opening (say this first)
+## 30-second opening 
 
 > **Smart Planner** is a browser-based daily task dashboard. You plan by date, switch views like Today and Meetings, track time on tasks, and set one focus priority—all without creating an account. Everything is stored on your device in the browser, so it is fast, private, and works offline after the first load.
 
